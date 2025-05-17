@@ -42,13 +42,14 @@ namespace Blizzard.Temperature
         {
             Debug.Log(_temperatureService);
             _temperatureService.DoHeatDiffusionStep(Time.deltaTime * _timeScale);
+            _temperatureService.ComputeHeatmap();
             _temperatureText.text = $"{_temperatureService.Grid.GetAt(_selectedCell).temperature}°"; // Display temperature at selected cell
             UpdateHeatmap();
         }
 
         private void SetupTemperatureService()
         {
-            var mainGrid = new BasicWorldGrid<TemperatureCell>(1f, 1f, 1000, 1000); // Arbitrary main grid dimensions
+            var mainGrid = new DenseWorldGrid<TemperatureCell>(1f, 1f, 1000, 1000); // Arbitrary main grid dimensions
             mainGrid.Initialize(new TemperatureCell
             {
                 temperature = 10, // Set initial temperature of all cells to 10
@@ -57,7 +58,7 @@ namespace Blizzard.Temperature
             });
             _temperatureService = new TemperatureService(
                     mainGrid, 
-                    new BasicGrid<TemperatureCell>(_windowWidth, _windowHeight),
+                    new BasicDenseGrid<TemperatureCell>(_windowWidth, _windowHeight),
                     _heatDiffusionShader
                 );
             Debug.Log(_temperatureService);

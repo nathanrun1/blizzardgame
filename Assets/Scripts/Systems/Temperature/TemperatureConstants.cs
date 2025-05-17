@@ -9,5 +9,8 @@ namespace Blizzard.Temperature
         public static float DiffusionFactor = 0.9f;
 
         public static Vector2Int ComputeThreadGroupDimensions = new(8, 8);
+
+        public static float DefaultHeatValue = 0f;
+        public static float DefaultInsulationValue = 0f;
     }
 }

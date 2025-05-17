@@ -24,8 +24,9 @@ namespace Blizzard
 
         private void UpdatePlayerVelocity()
         {
-            //_rigidBody.AddForce(_movementVector - _rigidBody.linearVelocity, ForceMode.VelocityChange);
-            _rigidBody.linearVelocity = _movementVector * _walkSpeed * Time.fixedDeltaTime;
+            _rigidBody.MovePosition(_rigidBody.position + _movementVector * _walkSpeed * Time.fixedDeltaTime);
+        //    _rigidBody.AddForce(_movementVector - _rigidBody.linearVelocity, ForceMode.VelocityChange);
+        //    _rigidBody.linearVelocity = _movementVector * _walkSpeed;
         }
 
         private void PlayerLookAtMouse()
@@ -49,13 +50,13 @@ namespace Blizzard
         }
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        private void Start()
         {
             AddInputListener();
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             PlayerLookAtMouse();
         }

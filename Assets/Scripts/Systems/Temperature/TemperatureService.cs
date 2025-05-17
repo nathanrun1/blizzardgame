@@ -2,12 +2,18 @@ using UnityEngine;
 using Blizzard.Grid;
 using System.Collections;
 using UnityEditor.PackageManager.UI;
+using System;
 
 
 namespace Blizzard.Temperature
 {
     public class TemperatureService
     {
+        /// <summary>
+        /// Invoked when a temperature simulation step is completed
+        /// </summary>
+        public event Action OnTemperatureUpdate;
+
         /// <summary>
         /// Grid containing temperature data for a large set region of the scene
         /// </summary>
@@ -20,12 +26,12 @@ namespace Blizzard.Temperature
         /// <summary>
         /// Subregion of grid that gets updated at each step
         /// </summary>
-        private IGrid<TemperatureCell> _window;
-
+        private IDenseGrid<TemperatureCell> _window;
         /// <summary>
-        /// Whether or not heat diffusion simulation is currently enabled
+        /// Offset of window location in main grid
         /// </summary>
-        private bool _doHeatDiffusion = false;
+        private Vector2Int _windowOffset;
+
         /// <summary>
         /// Compute shader used to compute heat diffusion
         /// </summary>
@@ -39,7 +45,7 @@ namespace Blizzard.Temperature
         /// </summary>
         private ComputeBuffer _outputBuffer;
 
-        public TemperatureService(IWorldGrid<TemperatureCell> grid, IGrid<TemperatureCell> window, ComputeShader heatDiffusionShader)
+        public TemperatureService(IWorldGrid<TemperatureCell> grid, IDenseGrid<TemperatureCell> window, ComputeShader heatDiffusionShader)
         {
             Grid = grid;
             _window = window;
@@ -66,10 +72,14 @@ namespace Blizzard.Temperature
                 TemperatureConstants.ComputeThreadGroupDimensions.y;
             _heatDiffusionShader.Dispatch(0, (_window.Width * _window.Height) / threadGroupSize, 1, 1);
             _outputBuffer.GetData(_window.GetData()); // TODO: async this (currently waits for GPU to finish)
-            Grid.ReadFromSubgrid(_window, new(0, 0)); // TODO: get offset from somewhere
+            Grid.ReadFromDenseGrid(_window, new(0, 0)); // TODO: get offset from somewhere
 
-            Debug.Log(_window.Width);
-            _heatDiffusionShader.Dispatch(1, _window.Width, _window.Height, 1); // Render heatmap
+            OnTemperatureUpdate?.Invoke();
+        }
+
+        public void ComputeHeatmap()
+        {
+            _heatDiffusionShader.Dispatch(1, _window.Width, _window.Height, 1);
         }
 
 
@@ -79,30 +89,29 @@ namespace Blizzard.Temperature
         /// <summary>
         /// Populates temperature grid with random temperatures between given range
         /// </summary>
-        private void PopulateRandomTemperatureData(float minInclusive, float maxInclusive)
-        {
-            for (int x = 0; x < Grid.Width; ++x)
-            {
-                for (int y = 0; y < Grid.Height; ++y)
-                {
-                    TemperatureCell cur = Grid.GetAt(x, y);
-                    Grid.SetAt(x, y, new TemperatureCell
-                    {
-                        temperature = Random.Range(minInclusive, maxInclusive),
-                        insulation = cur.insulation,
-                        heat = cur.heat
-                    });
-                }
-            }
-        }
+        //private void PopulateRandomTemperatureData(float minInclusive, float maxInclusive)
+        //{
+        //    for (int x = 0; x < Grid.Width; ++x)
+        //    {
+        //        for (int y = 0; y < Grid.Height; ++y)
+        //        {
+        //            TemperatureCell cur = Grid.GetAt(x, y);
+        //            Grid.SetAt(x, y, new TemperatureCell
+        //            {
+        //                temperature = Random.Range(minInclusive, maxInclusive),
+        //                insulation = cur.insulation,
+        //                heat = cur.heat
+        //            });
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Fetches data from main grid into window grid, and copies it to input compute buffer.
         /// </summary>
-        /// <param name="offset"></param>
         private void UpdateActiveSubgrid(Vector2Int offset)
         {
-            Grid.WriteToSubgrid(_window, offset);
+            Grid.WriteToDenseGrid(_window, offset);
             _inputBuffer.SetData(_window.GetData());
         }
         
@@ -119,8 +128,6 @@ namespace Blizzard.Temperature
             _heatDiffusionShader.SetBuffer(0, "next", _outputBuffer);
             _heatDiffusionShader.SetInt("width", _window.Width);
             _heatDiffusionShader.SetInt("height", _window.Height);
-            _heatDiffusionShader.SetInt("selectedX", 0);
-            _heatDiffusionShader.SetInt("selectedY", 0);
             _heatDiffusionShader.SetFloat("diffusionFactor", TemperatureConstants.DiffusionFactor);
         }
 
@@ -137,6 +144,9 @@ namespace Blizzard.Temperature
 
             _heatDiffusionShader.SetBuffer(1, "prev", _inputBuffer);
             _heatDiffusionShader.SetTexture(1, "heatmap", HeatmapTexture);
+            _heatDiffusionShader.SetFloat("defaultAlpha", 1);
+            _heatDiffusionShader.SetInt("selectedX", 0);
+            _heatDiffusionShader.SetInt("selectedY", 0);
         }
 
         private void DisposeComputeBuffers()

@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5860e2f5e00e72f448d4f62c3309c4ad, type: 3}
+  m_Name: Square
+  m_EditorClassIdentifier: 
+  obstaclePrefab: {fileID: 5606261413696615922, guid: 622b82170f51fa447ab4d33bd0584963, type: 3}
