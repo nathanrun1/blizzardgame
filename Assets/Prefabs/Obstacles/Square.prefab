@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingInsulation: 0.9
-  _startingHeat: 10
+  _startingHeat: -10
 --- !u!61 &3989951527430796683
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -148,7 +148,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.25, y: 0.25}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!50 &3645967852482406556
 Rigidbody2D:

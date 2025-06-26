@@ -2,6 +2,7 @@ using UnityEngine;
 using Blizzard.Grid;
 using System;
 using Blizzard.Temperature;
+using Zenject;
 
 namespace Blizzard.Obstacles
 {
@@ -16,14 +17,13 @@ namespace Blizzard.Obstacles
         public ISparseWorldGrid<Obstacle> Grid { get; private set; }
 
 
-        private TemperatureService _temperatureService;
+        [Inject] private TemperatureService _temperatureService;
 
-        
-        
-        public ObstacleGridService(ISparseWorldGrid<Obstacle> grid, TemperatureService temperatureService)
+
+        public ObstacleGridService(ISparseWorldGrid<Obstacle> grid)
         {
             this.Grid = grid;
-            this._temperatureService = temperatureService;
+            //this._temperatureService = temperatureService;
         }
 
         
@@ -86,6 +86,7 @@ namespace Blizzard.Obstacles
         /// </summary>
         private void UpdateTemperatureSimData(Vector2Int gridPosition, Obstacle obstacle)
         {
+            Debug.Log(_temperatureService);
             TemperatureCell newTemperatureCell = _temperatureService.Grid.GetAt(gridPosition);
             if (obstacle != null)
             {

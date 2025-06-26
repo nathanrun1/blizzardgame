@@ -3,6 +3,7 @@ using Blizzard.Grid;
 using System.Collections;
 using UnityEditor.PackageManager.UI;
 using System;
+using System.ComponentModel;
 
 
 namespace Blizzard.Temperature
@@ -18,10 +19,12 @@ namespace Blizzard.Temperature
         /// Grid containing temperature data for a large set region of the scene
         /// </summary>
         public IWorldGrid<TemperatureCell> Grid { get; private set; }
+
         /// <summary>
         /// Texture displaying a heatmap of the current computed subregion of the scene.
         /// </summary>
         public RenderTexture HeatmapTexture { get; private set; }
+
 
         /// <summary>
         /// Subregion of grid that gets updated at each step
@@ -44,6 +47,7 @@ namespace Blizzard.Temperature
         /// Stores temperature data copied from compute shader to window
         /// </summary>
         private ComputeBuffer _outputBuffer;
+
 
         public TemperatureService(IWorldGrid<TemperatureCell> grid, IDenseGrid<TemperatureCell> window, ComputeShader heatDiffusionShader)
         {
@@ -77,34 +81,31 @@ namespace Blizzard.Temperature
             OnTemperatureUpdate?.Invoke();
         }
 
+        /// <summary>
+        /// Computes current heatmap from most recent diffusion step
+        /// </summary>
         public void ComputeHeatmap()
         {
             _heatDiffusionShader.Dispatch(1, _window.Width, _window.Height, 1);
         }
 
-
-
-
+        /// <summary>
+        /// Retrieves temperature value at given world position
+        /// </summary>
+        public float GetTemperatureAtWorldPos(Vector2 worldPosition)
+        {
+            Vector2Int gridPos = Grid.WorldToCellPos(worldPosition);
+            return Grid.GetAt(gridPos).temperature;
+        }
 
         /// <summary>
-        /// Populates temperature grid with random temperatures between given range
+        /// Retrieves temperature value at given world position, translating from 3D to 2D world position
         /// </summary>
-        //private void PopulateRandomTemperatureData(float minInclusive, float maxInclusive)
-        //{
-        //    for (int x = 0; x < Grid.Width; ++x)
-        //    {
-        //        for (int y = 0; y < Grid.Height; ++y)
-        //        {
-        //            TemperatureCell cur = Grid.GetAt(x, y);
-        //            Grid.SetAt(x, y, new TemperatureCell
-        //            {
-        //                temperature = Random.Range(minInclusive, maxInclusive),
-        //                insulation = cur.insulation,
-        //                heat = cur.heat
-        //            });
-        //        }
-        //    }
-        //}
+        public float GetTemperatureAtWorldPos(Vector3 worldPosition3d)
+        {
+            Vector2 worldPosition = new(worldPosition3d.x, worldPosition3d.y);
+            return GetTemperatureAtWorldPos(worldPosition);
+        }
 
         /// <summary>
         /// Fetches data from main grid into window grid, and copies it to input compute buffer.
