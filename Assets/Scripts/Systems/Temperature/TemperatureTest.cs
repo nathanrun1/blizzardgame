@@ -11,7 +11,7 @@ namespace Blizzard.Temperature
     public class TemperatureTest : MonoBehaviour
     {
         [SerializeField] private ComputeShader _heatDiffusionShader;
-        [SerializeField] private PlayerInput _playerInput;
+        [SerializeField] private InputService _playerInput;
 
         [Header("Simulation Params")]
         [SerializeField] private int _windowWidth = 16;

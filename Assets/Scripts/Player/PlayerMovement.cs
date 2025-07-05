@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using Zenject;
 
 namespace Blizzard
 {
@@ -11,15 +11,16 @@ namespace Blizzard
         [SerializeField] private GameObject _playerObj;
         [Tooltip("Speed in units/second")]
         [SerializeField] private float _walkSpeed;
-        [SerializeField] private PlayerInput _playerInput;
+        
+        [Inject] private InputService _inputService;
 
         private Vector2 _movementVector = new Vector2(0, 0);
 
-        private void OnMoveInput(InputAction.CallbackContext context)
+
+        private void UpdateMovementVector()
         {
-            Vector2 rawInput = context.ReadValue<Vector2>();
-            //Debug.Log(rawInput);
-            _movementVector = rawInput.magnitude > 0.95f ? rawInput : Vector2.zero; // TODO: Fix so that input doesn't do weird shit, for now just ensure magnitude is 1 since when it drifts it's not normalized
+            Vector2 rawInput = _inputService.inputActions.Player.Move.ReadValue<Vector2>();
+            _movementVector = rawInput.magnitude > 0.95f ? rawInput : Vector2.zero;
         }
 
         private void UpdatePlayerVelocity()
@@ -37,25 +38,6 @@ namespace Blizzard
             _playerObj.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
         }
 
-        private void AddInputListener()
-        {
-            Action addInputListener = () =>
-            {
-                _playerInput.inputActions.Player.Move.performed += OnMoveInput;
-                _playerInput.inputActions.Player.Move.canceled += OnMoveInput;
-            };
-
-            if (!_playerInput.inputReady) _playerInput.OnInputReady += addInputListener;
-            else addInputListener.Invoke();
-        }
-
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        private void Start()
-        {
-            AddInputListener();
-        }
-
-        // Update is called once per frame
         private void Update()
         {
             PlayerLookAtMouse();
@@ -63,6 +45,7 @@ namespace Blizzard
 
         private void FixedUpdate()
         {
+            UpdateMovementVector();
             UpdatePlayerVelocity();
         }
     }

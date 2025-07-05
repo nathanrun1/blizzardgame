@@ -19,7 +19,7 @@ namespace Blizzard
         [SerializeField] PlayerTemperatureConfig _config;
 
         [Header("Testing")]
-        [SerializeField] float _bodyInsulation = 0f;
+        [SerializeField, Range(0f, 1f)] float _bodyInsulation = 0f;
         [SerializeField] float _timeScale = 1f;
         [SerializeField] bool _useTestExternalTemp = false;
         [SerializeField] float _TESTExternalTemperature;
@@ -52,16 +52,16 @@ namespace Blizzard
 
             float externalTemperature = _useTestExternalTemp ? _TESTExternalTemperature : _temperatureService.GetTemperatureAtWorldPos(transform.position);
             float tempDelta = deltaTime * (_bodyHeat + (1 - _bodyInsulation) * _config.bodyTemperatureChangeRate * (GetExternalTemperature() - BodyTemperature));
-            Debug.Log($"Temp diff: {GetExternalTemperature() - BodyTemperature}");
-            Debug.Log($"Insulated temp diff: {(1 - _bodyInsulation) * (GetExternalTemperature() - BodyTemperature)}");
-            Debug.Log("Temp delta w/o heat: " + (1 - _bodyInsulation) * _config.bodyTemperatureChangeRate * (GetExternalTemperature() - BodyTemperature));
+            //Debug.Log($"Temp diff: {GetExternalTemperature() - BodyTemperature}");
+            //Debug.Log($"Insulated temp diff: {(1 - _bodyInsulation) * (GetExternalTemperature() - BodyTemperature)}");
+            //Debug.Log("Temp delta w/o heat: " + (1 - _bodyInsulation) * _config.bodyTemperatureChangeRate * (GetExternalTemperature() - BodyTemperature));
             BodyTemperature += tempDelta;
         }
 
         private void DisplayTemperature()
         {
-            _textAreaTemperature.text = $"{GetExternalTemperature()}°";
-            _textBodyTemperature.text = $"{Math.Round(BodyTemperature, 2)}°";
+            _textAreaTemperature.text = $"External temperature: {GetExternalTemperature()}°C";
+            _textBodyTemperature.text = $"Body temperature: {Math.Round(BodyTemperature, 2)}°C\nBody insulation: {_bodyInsulation * 100}%";
         }
 
         private float GetExternalTemperature()

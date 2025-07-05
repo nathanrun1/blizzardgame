@@ -19,11 +19,16 @@ namespace Blizzard.Obstacles
 
         [Inject] private TemperatureService _temperatureService;
 
+        /// <summary>
+        /// Empty object that is a parent to all instantiated obstacles
+        /// </summary>
+        private Transform _obstaclesParent;
 
-        public ObstacleGridService(ISparseWorldGrid<Obstacle> grid)
+
+        public ObstacleGridService(ISparseWorldGrid<Obstacle> grid, Transform obstaclesParent = null)
         {
             this.Grid = grid;
-            //this._temperatureService = temperatureService;
+            this._obstaclesParent = obstaclesParent;
         }
 
         
@@ -54,13 +59,11 @@ namespace Blizzard.Obstacles
                 throw new ArgumentException($"Grid position {gridPosition} occupied!");
             }
 
-            Obstacle obstacle = MonoBehaviour.Instantiate(obstacleData.obstaclePrefab);
-            obstacle.transform.position = Grid.CellToWorldPosCenter(gridPosition);
-            obstacle.SetTemperatureGetter(() =>
-            {
-                return _temperatureService.Grid.GetAt(gridPosition).temperature;
-            });
+            Vector3 obstaclePosition = Grid.CellToWorldPosCenter(gridPosition);
 
+            Obstacle obstacle = obstacleData.CreateObstacle(obstaclePosition);
+            if (_obstaclesParent != null) obstacle.transform.parent = _obstaclesParent;
+                
             Grid.SetAt(gridPosition, obstacle);
 
             UpdateTemperatureSimData(gridPosition, obstacle);
@@ -86,7 +89,6 @@ namespace Blizzard.Obstacles
         /// </summary>
         private void UpdateTemperatureSimData(Vector2Int gridPosition, Obstacle obstacle)
         {
-            Debug.Log(_temperatureService);
             TemperatureCell newTemperatureCell = _temperatureService.Grid.GetAt(gridPosition);
             if (obstacle != null)
             {

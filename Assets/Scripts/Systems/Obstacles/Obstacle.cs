@@ -1,4 +1,5 @@
 using Blizzard.Temperature;
+using ModestTree;
 using System;
 using UnityEngine;
 
@@ -11,30 +12,31 @@ namespace Blizzard.Obstacles
     {
         public event Action OnDestroy;
 
-        public float Temperature { get => _temperatureGetter(); }
-        public float Heat { get; protected set; }
-        public float Insulation { get; protected set; }
-
-        [SerializeField] private float _startingInsulation = TemperatureConstants.DefaultInsulationValue;
-        [SerializeField] private float _startingHeat = TemperatureConstants.DefaultHeatValue;
+        public float Heat { get; protected set; } = TemperatureConstants.DefaultHeatValue;
+        public float Insulation { get; protected set; } = TemperatureConstants.DefaultInsulationValue;
 
 
-        private Func<float> _temperatureGetter;
-
-
-        private void Awake()
+        public virtual void Init(float startingHeat, float startingInsulation)
         {
-            this.Insulation = _startingInsulation;
-            this.Heat = _startingHeat;
+            SetHeat(startingHeat);
+            SetInsulation(startingInsulation);
         }
 
+        /// <summary>
+        /// Sets insulation of this obstacle to given value
+        /// </summary>
+        public void SetInsulation(float insulation)
+        {
+            Assert.That(0 <= insulation && insulation <= 1);
+            this.Insulation = insulation;
+        }
 
         /// <summary>
-        /// Sets delegate that retrieves the obstacle's current temperature to
+        /// Sets heat of this obstacle to given value
         /// </summary>
-        public void SetTemperatureGetter(Func<float> getter) // may be a better approach, but whatever it WORKS BRO
+        public void SetHeat(float heat)
         {
-            this._temperatureGetter = getter;
+            this.Heat = heat;
         }
 
         /// <summary>
