@@ -19,6 +19,8 @@ namespace Blizzard.Obstacles
         [SerializeField] Image _heatmap;
         [SerializeField] GameObject _player;
         [SerializeField] TextMeshProUGUI _playerTemp;
+        [Header("Testing")]
+        [SerializeField] bool _doTemperatureHeatStep = true;
 
 
         [Inject] private TemperatureService _temperatureService;
@@ -26,8 +28,11 @@ namespace Blizzard.Obstacles
 
         private void Update()
         {
-            _temperatureService.DoHeatDiffusionStep(Time.deltaTime);
-            _temperatureService.ComputeHeatmap();
+            if (_doTemperatureHeatStep)
+            {
+                _temperatureService.DoHeatDiffusionStep(Time.deltaTime);
+                _temperatureService.ComputeHeatmap();
+            }
             UpdateHeatmap();
         }
 

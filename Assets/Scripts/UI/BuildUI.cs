@@ -8,11 +8,10 @@ using Blizzard.Obstacles;
 using Blizzard.Grid;
 using Blizzard.Building;
 using Blizzard.Utilities;
-using System.ComponentModel;
-using UnityEngine.UIElements;
+using Blizzard.Inventory;
 
 
-namespace Blizzard
+namespace Blizzard.UI
 {   
     public class BuildUI : MonoBehaviour
     {
@@ -27,6 +26,7 @@ namespace Blizzard
             public StateMachine stateMachine;
 
             public ObstacleGridService obstacleGridService;
+            public InventoryService inventoryService;
             // Testing:
             public BuildingData testBuilding;
             public TextMeshProUGUI buildModeTest;
@@ -96,8 +96,18 @@ namespace Blizzard
 
             public void OnInputPlaceBuilding(Vector3 position)
             {
-                // Build the building!
+                // Attempt to spend cost
+                if (!_stateContext.inventoryService.TryRemoveItems(_buildingData.cost.items))
+                {
+                    Debug.Log("Cannot afford to place building!");
+                    // TODO: Handle player cannot afford building
+
+                    return;
+                }
+
+                // Cost successfully spent, place the building down:
                 Vector2Int mouseGridPosition = _stateContext.obstacleGridService.Grid.WorldToCellPos(Camera.main.ScreenToWorldPoint(position));
+
                 Debug.Log($"Placing at {mouseGridPosition}");
                 _stateContext.obstacleGridService.PlaceObstacleAt(mouseGridPosition, _buildingData.obstacleData);
             }
@@ -111,6 +121,7 @@ namespace Blizzard
 
 
         [Inject] private ObstacleGridService _obstacleGridService;
+        [Inject] private InventoryService _inventoryService;
         [Inject] private InputService _inputService;
 
         [Header("Config")]
@@ -142,6 +153,7 @@ namespace Blizzard
         {
             _stateContext.stateMachine = _stateMachine;
             _stateContext.obstacleGridService = _obstacleGridService;
+            _stateContext.inventoryService = _inventoryService;
             _stateContext.testBuilding = _testBuilding;
             _stateContext.buildModeTest = _buildModeTest;
 

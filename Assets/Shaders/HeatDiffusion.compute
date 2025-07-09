@@ -63,7 +63,8 @@ void CalculateDiffusion(uint3 id : SV_DispatchThreadID)
 
 int isSelected(uint3 pos)
 {
-    return (pos.x == selectedX && pos.y == selectedY) ? 1 : 0;
+    return 0;
+    //return (pos.x == selectedX && pos.y == selectedY) ? 1 : 0; // enable for debug purposes
 }
 
 [numthreads(8, 8, 1)]

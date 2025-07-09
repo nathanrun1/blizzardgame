@@ -1,8 +1,6 @@
 using UnityEngine;
 using Blizzard.Obstacles;
-using Blizzard.Temperature;
-using System;
-using ModestTree;
+using Blizzard.Inventory;
 
 namespace Blizzard.Building
 {
@@ -19,6 +17,11 @@ namespace Blizzard.Building
         /// </summary>
         public string displayName;
 
-        // public Cost cost??
+        /// <summary>
+        /// Cost to build this building
+        /// </summary>
+        public ItemGroupData cost;
     }
 }
+
+// "I am a Master Builder!" 

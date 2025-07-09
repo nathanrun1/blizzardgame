@@ -62,6 +62,7 @@ namespace Blizzard.Obstacles
             Vector3 obstaclePosition = Grid.CellToWorldPosCenter(gridPosition);
 
             Obstacle obstacle = obstacleData.CreateObstacle(obstaclePosition);
+            obstacle.OnDestroy += () => OnObstacleDestroyed(gridPosition);
             if (_obstaclesParent != null) obstacle.transform.parent = _obstaclesParent;
                 
             Grid.SetAt(gridPosition, obstacle);
@@ -83,6 +84,19 @@ namespace Blizzard.Obstacles
             return true;
         }
 
+
+
+        /// <summary>
+        /// Invoked when an obstacle at the given grid position is destroyed.
+        /// Removes the obstacle from the Obstacle Grid at the given grid position if it exists
+        /// </summary>
+        private void OnObstacleDestroyed(Vector2Int gridPosition)
+        {
+            if (Grid.TryGetValue(gridPosition, out _))
+            {
+                Grid.RemoveAt(gridPosition);
+            }
+        }
 
         /// <summary>
         /// Invoked whenever data relevant to temperature service is updated at a specific position (e.g. heat or insulation)

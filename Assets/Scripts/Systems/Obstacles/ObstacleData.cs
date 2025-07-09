@@ -3,6 +3,7 @@ using Blizzard.Obstacles;
 using Blizzard.Temperature;
 using System;
 using ModestTree;
+using Zenject;
 
 namespace Blizzard.Obstacles
 {
@@ -22,16 +23,17 @@ namespace Blizzard.Obstacles
         /// </summary>
         public float startingInsulation = TemperatureConstants.DefaultInsulationValue;
 
+        [Inject] DiContainer _diContainer;
 
         /// <summary>
         /// Creates an obstacle using 'obstaclePrefab'
         /// </summary>
         /// <param name="position">Global position to instantiate obstacle at</param>
-        public Obstacle CreateObstacle(Vector3 position)
+        public virtual Obstacle CreateObstacle(Vector3 position)
         {
             Assert.That(obstaclePrefab != null, "obstaclePrefab not provided!");
 
-            Obstacle obstacle = MonoBehaviour.Instantiate(obstaclePrefab);
+            Obstacle obstacle = _diContainer.InstantiatePrefabForComponent<Obstacle>(obstaclePrefab);
             obstacle.Init(startingHeat, startingInsulation);
             obstacle.transform.position = position;
 

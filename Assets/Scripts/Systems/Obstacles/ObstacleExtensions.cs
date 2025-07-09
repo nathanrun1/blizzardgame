@@ -1,10 +1,17 @@
+using Unity.Burst;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
+using ModestTree;
+using Zenject;
 
 namespace Blizzard.Obstacles
 {
+    [BurstCompile]
     public static class ObstacleExtensions
     {
+        [Inject] static DiContainer _diContainer;
+
         /// <summary>
         /// Generates a "preview" gameobject of this obstacle.
         /// </summary>
