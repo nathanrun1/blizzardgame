@@ -34,6 +34,13 @@ namespace Blizzard.Inventory
     {
         public List<InventorySlot> inventorySlots;
 
+        /// <summary>
+        /// Event that's invoked when the inventory is modified.
+        /// Invoked once per slot modified.
+        /// Args: (index of modified slot: int)
+        /// </summary>
+        public event Action<int> OnInventoryModified;
+
         public InventoryService(int slotAmount)
         {
             inventorySlots = new List<InventorySlot>();
@@ -53,8 +60,10 @@ namespace Blizzard.Inventory
             if (!fill && !CanFitItem(item, amount)) return 0; // If not set to fill and can't fit all items, don't add any
 
             int leftToAdd = amount;
-            foreach (InventorySlot slot in inventorySlots)
+            for (int i = 0; i < inventorySlots.Count; ++i)
             {
+                InventorySlot slot = inventorySlots[i];
+
                 if (slot.Empty() || item == slot.item)
                 {
                     // Add max(stacksize - amount in slot, amount left to add)
@@ -63,6 +72,8 @@ namespace Blizzard.Inventory
                     leftToAdd -= amountToAdd;
 
                     if (slot.Empty()) slot.item = item;
+
+                    OnInventoryModified.Invoke(i);
 
                     Debug.Log($"Added {amountToAdd}x {item.displayName}!");
 
@@ -171,8 +182,10 @@ namespace Blizzard.Inventory
             }
 
             int leftToRemove = amount;
-            foreach (InventorySlot slot in inventorySlots)
+            for (int i = 0; i < inventorySlots.Count; ++i)
             {
+                InventorySlot slot = inventorySlots[i];
+
                 if (item == slot.item)
                 {
                     // Remove min(amount in slot, amount left to remove)
@@ -181,6 +194,8 @@ namespace Blizzard.Inventory
 
                     slot.amount -= amountToRemove;
                     if (slot.amount == 0) slot.item = null;
+
+                    OnInventoryModified.Invoke(i);
 
                     leftToRemove -= amountToRemove;
                     if (leftToRemove <= 0) break;
@@ -233,6 +248,8 @@ namespace Blizzard.Inventory
                 InventorySlot slot = inventorySlots[i];
                 slot.amount -= toRemove[i];
                 if (slot.amount == 0) slot.item = null;
+
+                OnInventoryModified.Invoke(i);
 
                 Assert.That(slot.amount >= 0, "Removed more of an item than there was in inventory! Likely an implementation error.");
             }

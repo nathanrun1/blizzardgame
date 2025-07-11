@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8128e8049e55fe8449890840d1c555ee, type: 3}
-  m_Name: CraftUI
+  m_Name: InventoryUI
   m_EditorClassIdentifier: 
-  id: 1
-  stringId: crafting
-  uiPrefab: {fileID: 3784186900395658795, guid: 019529d51609c0b47a4257cf4808a599, type: 3}
+  id: 2
+  stringId: inventory
+  uiPrefab: {fileID: 7705260661457189049, guid: 825f1aac8dac92242aa9bd39ea7505f7, type: 3}
