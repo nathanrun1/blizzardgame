@@ -2,10 +2,19 @@ using UnityEngine;
 using Zenject;
 using Blizzard.Inventory;
 using Sirenix.OdinInspector;
+using Blizzard.UI;
 
 public class DebugManager : MonoBehaviour
 {
     [Inject] InventoryService _inventoryService;
+    [Inject] UIService _uiService;
+
+    [FoldoutGroup("UI")]
+    [Button]
+    private void InitUI(int id)
+    {
+        _uiService.InitUI(id);
+    }
 
     [FoldoutGroup("Inventory")]
     [Button]

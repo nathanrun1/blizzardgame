@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Blizzard.UI
 {
     /// <summary>
-    /// A UI prefab that can be instantiated through UIService
+    /// Database of UI prefabs instantiatable through UIService
     /// </summary>
     [CreateAssetMenu(fileName = "UIDatabase", menuName = "ScriptableObjects/UI/UIDatabase")]
     public class UIDatabase : ScriptableObject

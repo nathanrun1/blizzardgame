@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 814c2ccaa7a67f84c821445cccf8c910, type: 3}
-  m_Name: UIDatabase
+  m_Script: {fileID: 11500000, guid: 8128e8049e55fe8449890840d1c555ee, type: 3}
+  m_Name: CraftUI
   m_EditorClassIdentifier: 
-  uiDatas:
-  - {fileID: 11400000, guid: 7825661013e93c348ba1ff0fd1e36446, type: 2}
-  - {fileID: 11400000, guid: a60f1ecd4ee19024cb5959b5ee7f3114, type: 2}
+  id: 1
+  stringId: crafting
+  uiPrefab: {fileID: 0}

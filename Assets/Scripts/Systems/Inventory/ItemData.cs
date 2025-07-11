@@ -48,5 +48,10 @@ namespace Blizzard.Inventory
         {
             return !(other == null) && this.id == other.id;
         }
+
+        /// <summary>
+        /// Invoked when the player equips ("holds") from inventory
+        /// </summary>
+        public virtual void Equip() { }
     }
 }

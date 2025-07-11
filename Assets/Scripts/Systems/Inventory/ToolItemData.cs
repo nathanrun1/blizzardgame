@@ -15,5 +15,10 @@ namespace Blizzard.Inventory
         /// Category of this item, determines how its used and its attributes
         /// </summary>
         [HideInInspector] public override ItemCategory category { get; set; } = ItemCategory.Tool;
+
+        public override void Equip()
+        {
+            // TODO: Logic to "hold" the tool
+        }
     }
 }

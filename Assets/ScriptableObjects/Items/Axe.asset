@@ -9,9 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 814c2ccaa7a67f84c821445cccf8c910, type: 3}
-  m_Name: UIDatabase
+  m_Script: {fileID: 11500000, guid: 4b8f1fb34849b5e45b4e137e433e4dc0, type: 3}
+  m_Name: Axe
   m_EditorClassIdentifier: 
-  uiDatas:
-  - {fileID: 11400000, guid: 7825661013e93c348ba1ff0fd1e36446, type: 2}
-  - {fileID: 11400000, guid: a60f1ecd4ee19024cb5959b5ee7f3114, type: 2}
+  id: 1
+  displayName: Axe
+  icon: {fileID: 7075770675005161047, guid: bad68de7bd263ff45925cfa8a763fe4a, type: 3}
+  stackSize: 1
+  itemGainColor:
+    serializedVersion: 2
+    rgba: 4294967295

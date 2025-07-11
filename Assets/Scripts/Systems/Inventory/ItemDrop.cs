@@ -30,14 +30,9 @@ namespace Blizzard.Interaction
             int amountAdded = _inventoryService.TryAddItem(_testItemData, _testItemAmount, true);
             _testItemAmount -= amountAdded;
 
-            _uiService.InitUI("item_gain", new ItemGainUI_Args
-            {
-                item = _testItemData,
-                amount = amountAdded,
-                worldPosition = gameObject.transform.position
-            });
+            _uiService.ItemGain(_testItemData, amountAdded, gameObject.transform.position);
     
-        if (_testItemAmount == 0) DisableDrop(); // Only remove once entire drop has been collected.
+            if (_testItemAmount == 0) DisableDrop(); // Only remove once entire drop has been collected.
         }
 
         private void DisableDrop()

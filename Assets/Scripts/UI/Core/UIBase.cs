@@ -13,7 +13,8 @@ namespace Blizzard.UI
 
         public void SetParent(RectTransform parent)
         {
-            transform.SetParent(parent);
+            Debug.Log((transform as RectTransform).sizeDelta);
+            transform.SetParent(parent, worldPositionStays: false);
             this._parent = parent;
         }
 
