@@ -12,9 +12,7 @@ namespace Blizzard
     public class PlayerTemperature : MonoBehaviour
     {
         [Inject] TemperatureService _temperatureService;
-
-        [SerializeField] TextMeshProUGUI _textAreaTemperature;
-        [SerializeField] TextMeshProUGUI _textBodyTemperature;
+        
         [Header("Config")]
         [SerializeField] PlayerTemperatureConfig _config;
 
@@ -60,8 +58,7 @@ namespace Blizzard
 
         private void DisplayTemperature()
         {
-            _textAreaTemperature.text = $"External temperature: {GetExternalTemperature()}°C";
-            _textBodyTemperature.text = $"Body temperature: {Math.Round(BodyTemperature, 2)}°C\nBody insulation: {_bodyInsulation * 100}%";
+            // TODO: Some temperature display UI
         }
 
         private float GetExternalTemperature()

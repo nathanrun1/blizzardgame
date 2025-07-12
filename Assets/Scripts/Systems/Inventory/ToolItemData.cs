@@ -1,24 +1,31 @@
 using UnityEngine;
-using Blizzard.Obstacles;
-using Blizzard.Temperature;
-using System;
-using ModestTree;
-using System.ComponentModel;
-using System.Collections.Generic;
+using Blizzard.Player;
+using Zenject;
 
 namespace Blizzard.Inventory
 {
     [CreateAssetMenu(fileName = "ToolItemData", menuName = "ScriptableObjects/Inventory/ToolItemData")]
     public class ToolItemData : ItemData
     {
+        public ToolBehaviour toolPrefab;
+
         /// <summary>
         /// Category of this item, determines how its used and its attributes
         /// </summary>
         [HideInInspector] public override ItemCategory category { get; set; } = ItemCategory.Tool;
 
+        [Inject] PlayerService _playerService;
+
         public override void Equip()
         {
-            // TODO: Logic to "hold" the tool
+            base.Equip();
+            _playerService.EquipTool(this);
+        }
+
+        public override void Unequip()
+        {
+            base.Unequip();
+            _playerService.UnequipTool();
         }
     }
 }

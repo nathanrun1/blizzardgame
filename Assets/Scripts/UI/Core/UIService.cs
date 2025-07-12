@@ -9,10 +9,6 @@ namespace Blizzard.UI
     public class UIService
     {
         /// <summary>
-        /// Database of instantiatable UI prefabs
-        /// </summary>
-        private UIDatabase _uiDatabase;
-        /// <summary>
         /// Parent of instantiated UI prefabs
         /// </summary>
         private RectTransform _uiParent;
@@ -24,7 +20,7 @@ namespace Blizzard.UI
 
         public UIService(UIDatabase uiDatabase, RectTransform uiParent)
         {
-            this._uiDatabase = uiDatabase;
+            Debug.Log("DI Container: " + _diContainer);
             this._uiParent = uiParent;
 
             InitDictionaries(uiDatabase);

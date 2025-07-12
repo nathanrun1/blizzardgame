@@ -34,6 +34,8 @@ namespace Blizzard.Inventory
     {
         public List<InventorySlot> inventorySlots;
 
+        public ItemData equippedItem = null;
+
         /// <summary>
         /// Event that's invoked when the inventory is modified.
         /// Invoked once per slot modified.
@@ -73,7 +75,7 @@ namespace Blizzard.Inventory
 
                     if (slot.Empty()) slot.item = item;
 
-                    OnInventoryModified.Invoke(i);
+                    OnInventoryModified?.Invoke(i);
 
                     Debug.Log($"Added {amountToAdd}x {item.displayName}!");
 
@@ -195,7 +197,7 @@ namespace Blizzard.Inventory
                     slot.amount -= amountToRemove;
                     if (slot.amount == 0) slot.item = null;
 
-                    OnInventoryModified.Invoke(i);
+                    OnInventoryModified?.Invoke(i);
 
                     leftToRemove -= amountToRemove;
                     if (leftToRemove <= 0) break;
@@ -249,12 +251,34 @@ namespace Blizzard.Inventory
                 slot.amount -= toRemove[i];
                 if (slot.amount == 0) slot.item = null;
 
-                OnInventoryModified.Invoke(i);
+                OnInventoryModified?.Invoke(i);
 
                 Assert.That(slot.amount >= 0, "Removed more of an item than there was in inventory! Likely an implementation error.");
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// "Equips" the item at the given slot index, unequips any currently equipped item
+        /// </summary>
+        public void EquipItem(int slotIndex)
+        {
+            Assert.That(0 <= slotIndex && slotIndex <= inventorySlots.Count, $"Invalid slot index given ({slotIndex}) when attempting to equip item! # Slots: " + inventorySlots.Count);
+
+            UnequipItem();
+
+            equippedItem = inventorySlots[slotIndex].item;
+            if (equippedItem != null) equippedItem.Equip();
+        }
+
+
+        /// <summary>
+        /// Unequips the currently equipped item, if any
+        /// </summary>
+        public void UnequipItem()
+        {
+            if (equippedItem) equippedItem.Unequip();
         }
     }
 }

@@ -50,8 +50,13 @@ namespace Blizzard.Inventory
         }
 
         /// <summary>
-        /// Invoked when the player equips ("holds") from inventory
+        /// Invoked when the player equips ("holds") this item from inventory
         /// </summary>
         public virtual void Equip() { }
+
+        /// <summary>
+        /// Invoked when the player unequips (stops "holding") this item type, assuming it is currently equipped
+        /// </summary>
+        public virtual void Unequip() { }
     }
 }

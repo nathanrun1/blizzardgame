@@ -33,7 +33,7 @@ namespace Blizzard.UI
             // Select slot with number key
             _inputService.inputActions.Player.NumberKey.performed += (ctx) =>
             {
-                SetSelectedSlot(ctx.ReadValue<int>());
+                SetSelectedSlot((int)ctx.ReadValue<float>() - 1);
             };
         }
 
@@ -93,6 +93,7 @@ namespace Blizzard.UI
             // TODO: Logic for on item selection (e.g. tool is equipped, building is ready to build)
 
             _selectedSlotIndex = selection;
+            _inventoryService.EquipItem(selection);
         }
     }
 }

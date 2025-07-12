@@ -3351,7 +3351,7 @@ GameObject:
   - component: {fileID: 1952077823}
   - component: {fileID: 1952077824}
   m_Layer: 0
-  m_Name: UiServiceInstaller
+  m_Name: UIServiceInstaller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
