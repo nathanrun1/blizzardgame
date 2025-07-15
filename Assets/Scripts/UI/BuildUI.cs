@@ -9,114 +9,26 @@ using Blizzard.Grid;
 using Blizzard.Building;
 using Blizzard.Utilities;
 using Blizzard.Inventory;
+using UnityEngine.UIElements;
+using Unity.VisualScripting;
+using UnityEditor.IMGUI.Controls;
+using ModestTree;
 
 
 namespace Blizzard.UI
 {   
-    public class BuildUI : MonoBehaviour
+    public class BuildUI : UIBase
     {
-        private interface IBuildState : IState
+        public struct Args
         {
-            public void OnInputPlaceBuilding(Vector3 position) { }
-            public void OnInputToggleBuild() { }
-        }
-
-        private class BuildStateContext
-        {
-            public StateMachine stateMachine;
-
-            public ObstacleGridService obstacleGridService;
-            public InventoryService inventoryService;
-            // Testing:
-            public BuildingData testBuilding;
-            public TextMeshProUGUI buildModeTest;
-        }
-
-        private class SelectState : IBuildState
-        {
-            private BuildStateContext _stateContext;
-
-            public SelectState(BuildStateContext stateContext)
-            {
-                _stateContext = stateContext;
-            }
-
-            public void Enter() 
-            {
-                _stateContext.buildModeTest.text = "BUILDING MODE: OFF"; // TEMP hardcoded
-            }
-            public void Exit() { }
-
-            public void Update() { }
-
-            public void OnInputPlaceBuilding(Vector3 _) { }
-            public void OnInputToggleBuild() 
-            {
-                // Enter building mode
-                _stateContext.stateMachine.ChangeState(new BuildState(_stateContext, _stateContext.testBuilding)); // TEMP: use test building (should manage building selection somewhere)
-            }
-        }
-
-        private class BuildState : IBuildState
-        {
-            private BuildStateContext _stateContext;
             /// <summary>
-            /// Currently selected building
+            /// Building to build, associated with item
             /// </summary>
-            private BuildingData _buildingData;
+            public BuildingData buildingData;
             /// <summary>
-            /// 
+            /// Slot where building item is located in inventorySlots.
             /// </summary>
-            private GameObject _buildingPreview;
-
-            public BuildState(BuildStateContext stateContext, BuildingData buildingData)
-            {
-                _stateContext = stateContext;
-                _buildingData = buildingData;
-            }
-            public void Enter()
-            {
-                Debug.Log($"Building a {_buildingData.displayName}");
-                _stateContext.buildModeTest.text = "BUILDING MODE: ON"; // TEMP hardcoded
-
-                _buildingPreview = _buildingData.obstacleData.obstaclePrefab.CreatePreview();
-            }
-
-            public void Exit() 
-            {
-                MonoBehaviour.Destroy(_buildingPreview); // TEMP, TOOD: Change to pooling
-            }
-
-            public void Update()
-            {
-                // Display preview of building at mouse pos
-                Vector2Int mouseGridPosition = _stateContext.obstacleGridService.Grid.WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-                _buildingPreview.transform.position = _stateContext.obstacleGridService.Grid.CellToWorldPosCenter(mouseGridPosition);
-            }
-
-            public void OnInputPlaceBuilding(Vector3 position)
-            {
-                // Attempt to spend cost
-                if (!_stateContext.inventoryService.TryRemoveItems(_buildingData.cost))
-                {
-                    Debug.Log("Cannot afford to place building!");
-                    // TODO: Handle player cannot afford building
-
-                    return;
-                }
-
-                // Cost successfully spent, place the building down:
-                Vector2Int mouseGridPosition = _stateContext.obstacleGridService.Grid.WorldToCellPos(Camera.main.ScreenToWorldPoint(position));
-
-                Debug.Log($"Placing at {mouseGridPosition}");
-                _stateContext.obstacleGridService.PlaceObstacleAt(mouseGridPosition, _buildingData.obstacleData);
-            }
-
-            public void OnInputToggleBuild()
-            {
-                // Exit building mode
-                _stateContext.stateMachine.ChangeState(new SelectState(_stateContext));
-            }
+            public int itemSlot;
         }
 
 
@@ -124,43 +36,85 @@ namespace Blizzard.UI
         [Inject] private InventoryService _inventoryService;
         [Inject] private InputService _inputService;
 
+        /// <summary>
+        /// How often build preview gets updated (ideally less than framerate for performance)
+        /// </summary>
         [Header("Config")]
         [SerializeField] private float _updateDelay = 0.2f;
-
-        [Header("Testing")]
-        [SerializeField] private BuildingData _testBuilding;
-        [SerializeField] private TextMeshProUGUI _buildModeTest;
-        [SerializeField] private UnityEngine.UI.Button _buildToggleButton;
-
-        private StateMachine _stateMachine = new StateMachine();
-        private BuildStateContext _stateContext = new BuildStateContext();
+        /// <summary>
+        /// Building preview is tinted with this color when location is occupied
+        /// </summary>
+        [SerializeField] private Color _occupiedLocationColor;
 
         private float _updateDelayTimer = 0f;
 
-        private void OnInputFire(InputAction.CallbackContext _)
+        private BuildingData _buildingData;
+        private int _buildItemSlotIndex;
+        /// <summary>
+        /// Visual-only copy of the building, to preview to the player as to where the building will be placed
+        /// </summary>
+        private GameObject _buildingPreview;
+        private GameObject _occupiedBuildingPreview;
+
+        public override void Setup(object args)
         {
-            IBuildState state = _stateMachine.currentState as IBuildState;
-            if (!InputAssistant.IsPointerOverUIElement()) state.OnInputPlaceBuilding(Input.mousePosition);
+            Args buildArgs;
+            try
+            {
+                buildArgs = (Args)args;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new ArgumentException("Incorrect argument type given!");
+            }
+
+            _buildingData = buildArgs.buildingData;
+            _buildItemSlotIndex = buildArgs.itemSlot;
+            if (_buildingData == null)
+            {
+                throw new ArgumentException("Building Data is null!");
+            }
+
+            // Bind input
+            _inputService.inputActions.Player.Build.performed += OnInputBuild;
+
+            // Init building preview
+            _buildingPreview = _buildingData.obstacleData.obstaclePrefab.CreatePreview();
+
+            // Init occupied building preview (swapped with building preview when location occupied)
+            _occupiedBuildingPreview = Instantiate(_buildingPreview);
+            foreach (SpriteRenderer spriteRenderer in _occupiedBuildingPreview.GetComponentsInChildren<SpriteRenderer>())
+            {
+                spriteRenderer.color *= _occupiedLocationColor;
+            }
         }
 
-        private void OnInputToggleBuild()
+        public override void Close(bool destroy = true)
         {
-            IBuildState state = _stateMachine.currentState as IBuildState;
-            state.OnInputToggleBuild();
-        }
+            // Unbind input
+            _inputService.inputActions.Player.Build.performed -= OnInputBuild;
+
+            // Destroy previews
+            Destroy(_buildingPreview.gameObject);
+            Destroy(_occupiedBuildingPreview.gameObject);
             
-        private void Start()
+            base.Close(destroy);
+        }
+
+        private void OnInputBuild(InputAction.CallbackContext _)
         {
-            _stateContext.stateMachine = _stateMachine;
-            _stateContext.obstacleGridService = _obstacleGridService;
-            _stateContext.inventoryService = _inventoryService;
-            _stateContext.testBuilding = _testBuilding;
-            _stateContext.buildModeTest = _buildModeTest;
+            Vector2Int mouseGridPosition = _obstacleGridService.Grid.WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            if (_obstacleGridService.IsOccupied(mouseGridPosition)) return; // Location occupied
 
-            _stateMachine.ChangeState(new SelectState(_stateContext));
+            // Sanity check: Ensure item corresponding to building is the correct item
+            BuildingItemData buildItem = _inventoryService.inventorySlots[_buildItemSlotIndex].item as BuildingItemData;
+            Assert.That(buildItem != null && buildItem.buildingData == _buildingData, "Given inventory slot does not contain matching item to building!");
 
-            _inputService.inputActions.Player.Fire.performed += OnInputFire;
-            _buildToggleButton.onClick.AddListener(OnInputToggleBuild);
+            // Remove one of the building from inventory
+            _inventoryService.TryRemoveItemAt(_buildItemSlotIndex, 1);
+
+            Debug.Log($"Placing at {mouseGridPosition}");
+            _obstacleGridService.PlaceObstacleAt(mouseGridPosition, _buildingData.obstacleData);
         }
 
         private void Update()
@@ -169,8 +123,29 @@ namespace Blizzard.UI
             if (_updateDelayTimer > _updateDelay)
             {
                 _updateDelayTimer -= _updateDelay;
-                _stateMachine.Update();
+                UpdatePreview();
             }
+        }
+
+        private void UpdatePreview()
+        {
+            Vector2Int mouseGridPosition = _obstacleGridService.Grid.WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+            GameObject preview;
+            if (_obstacleGridService.IsOccupied(mouseGridPosition))
+            {
+                preview = _occupiedBuildingPreview;
+                _occupiedBuildingPreview.SetActive(true);
+                _buildingPreview.SetActive(false);
+            } 
+            else
+            {
+                preview = _buildingPreview;
+                _occupiedBuildingPreview.SetActive(false);
+                _buildingPreview.SetActive(true);
+            }
+
+            preview.transform.position = _obstacleGridService.Grid.CellToWorldPosCenter(mouseGridPosition);
         }
     }
 }

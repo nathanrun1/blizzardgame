@@ -15,6 +15,12 @@ public class DebugManager : MonoBehaviour
     {
         _uiService.InitUI(id);
     }
+    [FoldoutGroup("UI")]
+    [Button]
+    private void CloseUI(int id)
+    {
+        _uiService.CloseUI(id);
+    }
 
     [FoldoutGroup("Inventory")]
     [Button]

@@ -13,7 +13,7 @@ namespace Blizzard.Inventory
         /// </summary>
         public static void ItemGain(this UIService uiService, ItemData item, int amount, Vector3 collectPosition)
         {
-            uiService.InitUI("item_gain", new ItemGainUI_Args
+            uiService.InitUI("item_gain", new ItemGainUI.Args
             {
                 item = item,
                 amount = amount,

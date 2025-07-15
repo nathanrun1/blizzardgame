@@ -15,3 +15,5 @@ MonoBehaviour:
   id: 0
   stringId: item_gain
   uiPrefab: {fileID: -2343436868196972236, guid: 23c8be17acbbec440823b686481279fe, type: 3}
+  isSingle: 0
+  destroyOnClose: 1

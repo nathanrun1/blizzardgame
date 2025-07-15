@@ -164,6 +164,15 @@ namespace Blizzard
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Build"",
+                    ""type"": ""Button"",
+                    ""id"": ""36c33a7c-4acb-410d-91a5-e4a5bae5858a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -527,6 +536,28 @@ namespace Blizzard
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Space"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""34b99063-8a65-4f37-9310-4e988892fb92"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Build"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b609419f-38be-401f-8196-3cf3b9bd81a6"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Build"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1122,6 +1153,7 @@ namespace Blizzard
             m_Player_NumberKey = m_Player.FindAction("NumberKey", throwIfNotFound: true);
             m_Player_DropItem = m_Player.FindAction("DropItem", throwIfNotFound: true);
             m_Player_Space = m_Player.FindAction("Space", throwIfNotFound: true);
+            m_Player_Build = m_Player.FindAction("Build", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1223,6 +1255,7 @@ namespace Blizzard
         private readonly InputAction m_Player_NumberKey;
         private readonly InputAction m_Player_DropItem;
         private readonly InputAction m_Player_Space;
+        private readonly InputAction m_Player_Build;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
         /// </summary>
@@ -1266,6 +1299,10 @@ namespace Blizzard
             /// Provides access to the underlying input action "Player/Space".
             /// </summary>
             public InputAction @Space => m_Wrapper.m_Player_Space;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/Build".
+            /// </summary>
+            public InputAction @Build => m_Wrapper.m_Player_Build;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1316,6 +1353,9 @@ namespace Blizzard
                 @Space.started += instance.OnSpace;
                 @Space.performed += instance.OnSpace;
                 @Space.canceled += instance.OnSpace;
+                @Build.started += instance.OnBuild;
+                @Build.performed += instance.OnBuild;
+                @Build.canceled += instance.OnBuild;
             }
 
             /// <summary>
@@ -1351,6 +1391,9 @@ namespace Blizzard
                 @Space.started -= instance.OnSpace;
                 @Space.performed -= instance.OnSpace;
                 @Space.canceled -= instance.OnSpace;
+                @Build.started -= instance.OnBuild;
+                @Build.performed -= instance.OnBuild;
+                @Build.canceled -= instance.OnBuild;
             }
 
             /// <summary>
@@ -1707,6 +1750,13 @@ namespace Blizzard
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSpace(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Build" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnBuild(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

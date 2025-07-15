@@ -31,12 +31,18 @@ namespace Blizzard.UI
         [Inject] InventoryService _inventoryService;
         [Inject] UIService _uiService;
 
+        private bool _setup = false;
+
         public override void Setup(object args)
         {
-            _categoriesPanel.SetActive(true);
-            _recipeListPanel.SetActive(false);
-            _recipePanel.SetActive(false);
-            LoadCategoriesUI();
+            if (!_setup) // Only need to setup once
+            { 
+                _categoriesPanel.SetActive(true);
+                _recipeListPanel.SetActive(false);
+                _recipePanel.SetActive(false);
+                LoadCategoriesUI();
+                _setup = true;
+            }
         }
 
         private void LoadCategoriesUI()
@@ -70,19 +76,6 @@ namespace Blizzard.UI
 
             _craftButton.GetComponentInChildren<TextMeshProUGUI>().text = $"Craft {recipe.result.displayName}";
             _craftButton.onClick.AddListener(() => OnCraft(recipe));
-        }
-
-
-
-        private void Awake()
-        {
-            // TEMP: move to setup
-            //LinkButtons();
-        }
-
-        private void LinkButtons()
-        {
-            //_craftButton.onClick.AddListener(() => OnCraft(_craftingDatabase.craftingCategories[0].recipes[0])); // TEMP hardcoded
         }
 
         private void OnCraft(CraftingRecipe recipe)

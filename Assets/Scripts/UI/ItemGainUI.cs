@@ -14,6 +14,16 @@ namespace Blizzard.UI
     /// </summary>
     public class ItemGainUI : UIBase
     {
+        public struct Args
+        {
+            public ItemData item;
+            public int amount;
+            /// <summary>
+            /// World position to display the UI at
+            /// </summary>
+            public Vector3 worldPosition;
+        }
+
         [Header("GameObject References")]
         [SerializeField] private Image _icon;
         [SerializeField] private TextMeshProUGUI _count;
@@ -28,18 +38,17 @@ namespace Blizzard.UI
 
         public override void Setup(object args)
         {
-            ItemGainUI_Args itemGainArgs;
+            Args itemGainArgs;
             try
             {
-                itemGainArgs = (ItemGainUI_Args)args;
+                itemGainArgs = (Args)args;
             }
             catch (InvalidCastException e)
             {
-                Debug.LogError("Incorrect argument type given! ItemGainUI");
-                throw e;
+                throw new ArgumentException("Incorrect argument type given!");
             }
 
-            if (itemGainArgs.amount == 0) Destroy(gameObject); // Only display non-zero amount
+            if (itemGainArgs.amount == 0) Close(); // Only display non-zero amount
 
             transform.localPosition = GetUILocalPos(itemGainArgs.worldPosition);
             GainItemAnim(itemGainArgs.item, itemGainArgs.amount);
@@ -82,7 +91,7 @@ namespace Blizzard.UI
                 //seq.Join(_icon.DOColor(new Color(initialCountColor.r, initialCountColor.g, initialCountColor.b, 0), ANIM_LENGTH));
                 seq.OnComplete(() =>
                 {
-                    Destroy(gameObject);
+                    Close();
                 });
                 seq.Play();
             }
@@ -104,20 +113,10 @@ namespace Blizzard.UI
                 //seq.Join(_icon.DOColor(new Color(initialCountColor.r, initialCountColor.g, initialCountColor.b, 0), ANIM_LENGTH));
                 seq.OnComplete(() =>
                 {
-                    Destroy(gameObject);
+                    Close();
                 });
                 seq.Play();
             }
         }
-    }
-
-    public struct ItemGainUI_Args
-    {
-        public ItemData item;
-        public int amount;
-        /// <summary>
-        /// World position to display the UI at
-        /// </summary>
-        public Vector3 worldPosition;
     }
 }

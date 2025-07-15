@@ -21,5 +21,14 @@ namespace Blizzard.UI
         /// Prefab of UI element, parented to Main Canvas on instantiation
         /// </summary>
         public UIBase uiPrefab;
+        /// <summary>
+        /// Whether only one instance of this ui can be active
+        /// </summary>
+        public bool isSingle;
+        /// <summary>
+        /// Whether to destroy the ui prefab when it is closed, and thus to reinstantiate it every time it is opened.
+        /// Ignored if isSingle set to false (assumed to be true)
+        /// </summary>
+        public bool destroyOnClose;
     }
 }

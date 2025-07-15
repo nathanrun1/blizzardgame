@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -23,5 +24,15 @@ namespace Blizzard.UI
         /// </summary>
         /// <param name="data"></param>
         public abstract void Setup(object args);
+
+        /// <summary>
+        /// Closes the UI
+        /// </summary>
+        /// <param name="destroy">Whether to destroy the prefab, if false will instead set itself inactive</param>
+        public virtual void Close(bool destroy = true)
+        {
+            if (destroy) Destroy(gameObject);
+            else gameObject.SetActive(false);
+        }
     }
 }

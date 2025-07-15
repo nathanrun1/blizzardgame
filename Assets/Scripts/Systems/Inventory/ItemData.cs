@@ -11,6 +11,17 @@ namespace Blizzard.Inventory
     }
 
     /// <summary>
+    /// Data passed to an item when it is equipped
+    /// </summary>
+    public struct EquipData
+    {
+        /// <summary>
+        /// Index of its slot in the inventory
+        /// </summary>
+        public int slotIndex;
+    }
+
+    /// <summary>
     /// Configuration for a type of item
     /// </summary>
     public abstract class ItemData : ScriptableObject, IEquatable<ItemData>
@@ -52,7 +63,7 @@ namespace Blizzard.Inventory
         /// <summary>
         /// Invoked when the player equips ("holds") this item from inventory
         /// </summary>
-        public virtual void Equip() { }
+        public virtual void Equip(EquipData equipData) { }
 
         /// <summary>
         /// Invoked when the player unequips (stops "holding") this item type, assuming it is currently equipped

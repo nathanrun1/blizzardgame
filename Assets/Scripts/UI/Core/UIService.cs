@@ -15,8 +15,18 @@ namespace Blizzard.UI
 
         [Inject] DiContainer _diContainer;
 
-        private Dictionary<int, UIBase> _intPrefabDict = new Dictionary<int, UIBase>();
-        private Dictionary<string, UIBase> _strPrefabDict = new Dictionary<string, UIBase>();
+        private Dictionary<int, UIData> _intDict = new Dictionary<int, UIData>();
+        private Dictionary<string, UIData> _strDict = new Dictionary<string, UIData>();
+
+        /// <summary>
+        /// Active UI instances, mapped by ID
+        /// </summary>
+        private Dictionary<int, UIBase> _activeUI = new Dictionary<int, UIBase>();
+
+        /// <summary>
+        /// Inactive but ready UI instances, pooled for reuse, mapped by ID
+        /// </summary>
+        private Dictionary<int, UIBase> _inactiveUI = new Dictionary<int, UIBase>();
 
         public UIService(UIDatabase uiDatabase, RectTransform uiParent)
         {
@@ -34,17 +44,14 @@ namespace Blizzard.UI
         /// <param name="args"></param>
         public void InitUI(int id, object args = null)
         {
-            UIBase uiPrefab;
-            if (_intPrefabDict.ContainsKey(id)) uiPrefab = _intPrefabDict[id];
+            UIData uiData;
+            if (_intDict.ContainsKey(id)) uiData = _intDict[id];
             else
             {
                 throw new KeyNotFoundException("No UI prefab exists with this id: " + id);
             }
 
-            UIBase uiObj = _diContainer.InstantiatePrefabForComponent<UIBase>(uiPrefab);
-
-            uiObj.SetParent(_uiParent);
-            uiObj.Setup(args);
+            InitUI(uiData, args);
         }
 
         /// <summary>
@@ -53,17 +60,63 @@ namespace Blizzard.UI
         /// </summary>
         public void InitUI(string stringId, object args = null)
         {
-            UIBase uiPrefab;
-            if (_strPrefabDict.ContainsKey(stringId)) uiPrefab = _strPrefabDict[stringId];
+            UIData uiData;
+            if (_strDict.ContainsKey(stringId)) uiData = _strDict[stringId];
             else
             {
                 throw new KeyNotFoundException("No UI prefab exists with this id: " + stringId);
             }
 
-            UIBase uiObj = _diContainer.InstantiatePrefabForComponent<UIBase>(uiPrefab);
+            InitUI(uiData, args);
+        }
 
-            uiObj.SetParent(_uiParent);
+        /// <summary>
+        /// Closes UI of given id, if there is an active instance of it
+        /// </summary>
+        public void CloseUI(int id)
+        {
+            if (!_activeUI.ContainsKey(id))
+            {
+                Debug.LogError($"Attempted to close UI (id {id}), but not open or isSingle set to false");
+                return;
+            }
+
+            bool destroyOnClose = _intDict[id].destroyOnClose;
+            UIBase uiObj = _activeUI[id];
+            uiObj.Close(destroyOnClose);
+
+            // If not destroyed, move to inactive pool to be reused
+            if (!destroyOnClose) _inactiveUI.Add(id, uiObj);
+
+            _activeUI.Remove(id);
+        }
+
+        /// <summary>
+        /// Closes UI of given string id, if there is an active instance of it
+        /// </summary>
+        public void CloseUI(string stringId)
+        {
+            int id = _strDict[stringId].id;
+            CloseUI(id);
+        }
+
+
+        private void InitUI(UIData uiData, object args) 
+        {
+            UIBase uiObj;
+            if (!_inactiveUI.TryGetValue(uiData.id, out uiObj)) // Prioritize inactive pool before instantiating
+            {
+                uiObj = _diContainer.InstantiatePrefabForComponent<UIBase>(uiData.uiPrefab);
+                uiObj.SetParent(_uiParent);
+            }
+            else
+            {
+                uiObj.gameObject.SetActive(true);
+            }
+
             uiObj.Setup(args);
+
+            if (uiData.isSingle) _activeUI.Add(uiData.id, uiObj); // Track active UI instance only if single
         }
 
 
@@ -72,8 +125,8 @@ namespace Blizzard.UI
             Debug.Log("Initializing UI prefab dictionaries");
             foreach (UIData uiData in uiDatabase.uiDatas)
             {
-                _intPrefabDict.Add(uiData.id, uiData.uiPrefab);
-                _strPrefabDict.Add(uiData.stringId, uiData.uiPrefab);
+                _intDict.Add(uiData.id, uiData);
+                _strDict.Add(uiData.stringId, uiData);
             }
         }
     }

@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8128e8049e55fe8449890840d1c555ee, type: 3}
-  m_Name: CraftUI
+  m_Script: {fileID: 11500000, guid: 713791fcdd56d7144a63bd4e51b0906d, type: 3}
+  m_Name: Campfire
   m_EditorClassIdentifier: 
-  id: 1
-  stringId: crafting
-  uiPrefab: {fileID: 3784186900395658795, guid: 019529d51609c0b47a4257cf4808a599, type: 3}
-  isSingle: 1
-  destroyOnClose: 0
+  obstacleData: {fileID: 11400000, guid: 32caf7ee23bb7314f917c2f10a3b45f8, type: 2}
+  displayName: Campfire

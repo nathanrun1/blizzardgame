@@ -18,11 +18,6 @@ namespace Blizzard.Building
         /// Display name
         /// </summary>
         public string displayName;
-
-        /// <summary>
-        /// Cost to build this building
-        /// </summary>
-        public List<ItemAmountPair> cost;
     }
 }
 

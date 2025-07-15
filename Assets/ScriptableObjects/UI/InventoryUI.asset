@@ -15,3 +15,5 @@ MonoBehaviour:
   id: 2
   stringId: inventory
   uiPrefab: {fileID: 7705260661457189049, guid: 825f1aac8dac92242aa9bd39ea7505f7, type: 3}
+  isSingle: 1
+  destroyOnClose: 1

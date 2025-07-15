@@ -16,15 +16,13 @@ namespace Blizzard.Inventory
 
         [Inject] PlayerService _playerService;
 
-        public override void Equip()
+        public override void Equip(EquipData _)
         {
-            base.Equip();
             _playerService.EquipTool(this);
         }
 
         public override void Unequip()
         {
-            base.Unequip();
             _playerService.UnequipTool();
         }
     }
