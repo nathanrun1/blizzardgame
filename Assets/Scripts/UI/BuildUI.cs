@@ -97,7 +97,7 @@ namespace Blizzard.UI
             public void OnInputPlaceBuilding(Vector3 position)
             {
                 // Attempt to spend cost
-                if (!_stateContext.inventoryService.TryRemoveItems(_buildingData.cost.items))
+                if (!_stateContext.inventoryService.TryRemoveItems(_buildingData.cost))
                 {
                     Debug.Log("Cannot afford to place building!");
                     // TODO: Handle player cannot afford building

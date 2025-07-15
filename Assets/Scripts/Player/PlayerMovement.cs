@@ -7,8 +7,9 @@ namespace Blizzard
 {
     public class PlayerMovement : MonoBehaviour
     {
+        [SerializeField] public GameObject playerObj;
+
         [SerializeField] private Rigidbody2D _rigidBody;
-        [SerializeField] private GameObject _playerObj;
         [Tooltip("Speed in units/second")]
         [SerializeField] private float _walkSpeed;
         
@@ -35,7 +36,7 @@ namespace Blizzard
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Vector2 diff = mousePos - new Vector2(Screen.width / 2, Screen.height / 2);
             float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
-            _playerObj.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
+            playerObj.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
         }
 
         private void Update()

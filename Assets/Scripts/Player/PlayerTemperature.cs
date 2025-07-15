@@ -48,12 +48,9 @@ namespace Blizzard
             //float tempDelta = internalEquiv - BodyTemperature; // Difference btwn current body temperature and stable body temperature
             //BodyTemperature += (1 - _bodyInsulation) * deltaTime * _bodyTemperatureChangeRate * tempDelta;
 
-            float externalTemperature = _useTestExternalTemp ? _TESTExternalTemperature : _temperatureService.GetTemperatureAtWorldPos(transform.position);
-            float tempDelta = deltaTime * (_bodyHeat + (1 - _bodyInsulation) * _config.bodyTemperatureChangeRate * (GetExternalTemperature() - BodyTemperature));
-            //Debug.Log($"Temp diff: {GetExternalTemperature() - BodyTemperature}");
-            //Debug.Log($"Insulated temp diff: {(1 - _bodyInsulation) * (GetExternalTemperature() - BodyTemperature)}");
-            //Debug.Log("Temp delta w/o heat: " + (1 - _bodyInsulation) * _config.bodyTemperatureChangeRate * (GetExternalTemperature() - BodyTemperature));
-            BodyTemperature += tempDelta;
+            //float externalTemperature = _useTestExternalTemp ? _TESTExternalTemperature : _temperatureService.GetTemperatureAtWorldPos(transform.position);
+            //float tempDelta = deltaTime * (_bodyHeat + (1 - _bodyInsulation) * _config.bodyTemperatureChangeRate * (GetExternalTemperature() - BodyTemperature));
+            //BodyTemperature += tempDelta;
         }
 
         private void DisplayTemperature()

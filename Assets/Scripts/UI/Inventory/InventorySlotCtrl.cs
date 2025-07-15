@@ -15,7 +15,7 @@ public class InventorySlotCtrl : MonoBehaviour
     /// </summary>
     public void Setup(ItemData item, int amount)
     {
-        if (item != null)
+        if (item != null && amount > 0)
         {
             // Slot not empty
             _itemIcon.enabled = true;

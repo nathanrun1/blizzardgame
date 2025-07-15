@@ -2,6 +2,7 @@ using Blizzard.Obstacles;
 using Blizzard.Player;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Zenject;
 
 namespace Blizzard
@@ -13,13 +14,15 @@ namespace Blizzard
         [SerializeField] GameObject _axeStationary;
         [SerializeField] GameObject _axeSwing;
         [Header("Axe Config")]
-        [SerializeField] float baseSwingCooldown = 0.5f;
+        [SerializeField] float _baseSwingCooldown = 0.5f;
         [Header("Testing")]
         [SerializeField] bool _visualizeHitbox = false;
 
         [Inject] InputService _inputService;
 
         private LineRenderer _hitboxLineRenderer;
+
+        private float _cooldown;
 
         private void Awake()
         {
@@ -31,9 +34,29 @@ namespace Blizzard
             BindInput();
         }
 
+        private void Update()
+        {
+            if (_cooldown > 0) _cooldown -= Time.deltaTime;
+        }
+
+        private void OnDestroy()
+        {
+            UnbindInput();
+        }
+
         private void BindInput()
         {
-            _inputService.inputActions.Player.Fire.performed += (_) => OnSwing();
+            _inputService.inputActions.Player.Fire.performed += OnInputFire;
+        }
+
+        private void UnbindInput()
+        {
+            _inputService.inputActions.Player.Fire.performed -= OnInputFire;
+        }
+
+        private void OnInputFire(InputAction.CallbackContext ctx)
+        {
+            if (!_inputService.IsPointerOverUIElement() && _cooldown <= 0) OnSwing();
         }
 
         /// <summary>
@@ -41,6 +64,7 @@ namespace Blizzard
         /// </summary>
         private void OnSwing()
         {
+            _cooldown = CalculateCooldown();
             Collider2D[] hitObjects = AxeDetectHit();
 
             foreach (Collider2D obj in hitObjects)
@@ -62,7 +86,13 @@ namespace Blizzard
         private int CalculateDamage()
         {
             // TODO: maybe base calculation on temperature? or maybe like a constant that affects some shit
-            return baseDamage;
+            return _baseDamage;
+        }
+
+        private float CalculateCooldown()
+        {
+            // TODO: depend cooldown calc on temperature probably
+            return _baseSwingCooldown;
         }
 
         /// <summary>

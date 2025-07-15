@@ -19,3 +19,4 @@ MonoBehaviour:
   itemGainColor:
     serializedVersion: 2
     rgba: 4294967295
+  toolPrefab: {fileID: -3016606283695672373, guid: 57d97c79e6dd7c64bb9a0d1f328a9960, type: 3}

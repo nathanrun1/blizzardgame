@@ -1,11 +1,7 @@
 using Blizzard.Inventory;
-using Blizzard.Temperature;
-using ModestTree;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
-using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEditor.Search;
 using UnityEngine;
 using Zenject;
@@ -27,37 +23,42 @@ namespace Blizzard.Obstacles
         /// </summary>
         public uint ToolType { get; private set; }
 
-
+        [SerializeField] int _startingHealth = 100;
+        [SerializeField] uint _toolType;
         /// <summary>
         /// Resources given to the player when harvested
         /// </summary>
-        private ItemGroupData _resources;
+        [SerializeField] private List<ItemAmountPair> _resources;
 
         [Inject] private InventoryService _inventoryService;
 
-        public void InitHarvestable(int startingHealth, ItemGroupData resources, uint toolType)
+        private void Awake()
         {
-            this.Health = startingHealth;
-            this._resources = resources;
-            this.ToolType = toolType;
+            this.ToolType = _toolType;
+        }
 
-            this.OnDestroy += OnHarvested;
+        public void Init()
+        {
+            this.Health = _startingHealth;
         }
 
         [Button]
-        public void Damage(int damage)
+        public virtual void Damage(int damage)
         {
             Health -= damage;
             if (Health <= 0)
             {
                 Health = 0;
-                Destroy();
+                Harvest();
             }
         }
 
-        private void OnHarvested()
+        /// <summary>
+        /// "Harvests" the harvestable, destroying it and adding the resources to the player's inventory.
+        /// </summary>
+        private void Harvest()
         {
-            List<ItemAmountPair> items = new(_resources.items);
+            List<ItemAmountPair> items = new(_resources);
             Debug.Log($"Harvested! Adding {items.Count} different items to inv!");
             Debug.Log(_inventoryService);
             _inventoryService.TryAddItems(items);
@@ -67,6 +68,8 @@ namespace Blizzard.Obstacles
                 // Some items weren't succesfully added
                 // TODO: Drop the items on the ground
             }
+
+            Destroy();
         }
     }
 }

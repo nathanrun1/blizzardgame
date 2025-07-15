@@ -148,19 +148,10 @@ namespace Blizzard
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""DropWood"",
+                    ""name"": ""DropItem"",
                     ""type"": ""Button"",
                     ""id"": ""b346f410-2784-474b-bf30-4d5c706fff64"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""DropMetal"",
-                    ""type"": ""Button"",
-                    ""id"": ""bbc51f2d-f0a1-4711-9224-678b84eeceea"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -524,18 +515,7 @@ namespace Blizzard
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""DropWood"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f51af75b-de20-46f2-b661-707b6299c872"",
-                    ""path"": ""<Keyboard>/z"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DropMetal"",
+                    ""action"": ""DropItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1140,8 +1120,7 @@ namespace Blizzard
             m_Player_Interact1 = m_Player.FindAction("Interact1", throwIfNotFound: true);
             m_Player_Interact2 = m_Player.FindAction("Interact2", throwIfNotFound: true);
             m_Player_NumberKey = m_Player.FindAction("NumberKey", throwIfNotFound: true);
-            m_Player_DropWood = m_Player.FindAction("DropWood", throwIfNotFound: true);
-            m_Player_DropMetal = m_Player.FindAction("DropMetal", throwIfNotFound: true);
+            m_Player_DropItem = m_Player.FindAction("DropItem", throwIfNotFound: true);
             m_Player_Space = m_Player.FindAction("Space", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
@@ -1242,8 +1221,7 @@ namespace Blizzard
         private readonly InputAction m_Player_Interact1;
         private readonly InputAction m_Player_Interact2;
         private readonly InputAction m_Player_NumberKey;
-        private readonly InputAction m_Player_DropWood;
-        private readonly InputAction m_Player_DropMetal;
+        private readonly InputAction m_Player_DropItem;
         private readonly InputAction m_Player_Space;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
@@ -1281,13 +1259,9 @@ namespace Blizzard
             /// </summary>
             public InputAction @NumberKey => m_Wrapper.m_Player_NumberKey;
             /// <summary>
-            /// Provides access to the underlying input action "Player/DropWood".
+            /// Provides access to the underlying input action "Player/DropItem".
             /// </summary>
-            public InputAction @DropWood => m_Wrapper.m_Player_DropWood;
-            /// <summary>
-            /// Provides access to the underlying input action "Player/DropMetal".
-            /// </summary>
-            public InputAction @DropMetal => m_Wrapper.m_Player_DropMetal;
+            public InputAction @DropItem => m_Wrapper.m_Player_DropItem;
             /// <summary>
             /// Provides access to the underlying input action "Player/Space".
             /// </summary>
@@ -1336,12 +1310,9 @@ namespace Blizzard
                 @NumberKey.started += instance.OnNumberKey;
                 @NumberKey.performed += instance.OnNumberKey;
                 @NumberKey.canceled += instance.OnNumberKey;
-                @DropWood.started += instance.OnDropWood;
-                @DropWood.performed += instance.OnDropWood;
-                @DropWood.canceled += instance.OnDropWood;
-                @DropMetal.started += instance.OnDropMetal;
-                @DropMetal.performed += instance.OnDropMetal;
-                @DropMetal.canceled += instance.OnDropMetal;
+                @DropItem.started += instance.OnDropItem;
+                @DropItem.performed += instance.OnDropItem;
+                @DropItem.canceled += instance.OnDropItem;
                 @Space.started += instance.OnSpace;
                 @Space.performed += instance.OnSpace;
                 @Space.canceled += instance.OnSpace;
@@ -1374,12 +1345,9 @@ namespace Blizzard
                 @NumberKey.started -= instance.OnNumberKey;
                 @NumberKey.performed -= instance.OnNumberKey;
                 @NumberKey.canceled -= instance.OnNumberKey;
-                @DropWood.started -= instance.OnDropWood;
-                @DropWood.performed -= instance.OnDropWood;
-                @DropWood.canceled -= instance.OnDropWood;
-                @DropMetal.started -= instance.OnDropMetal;
-                @DropMetal.performed -= instance.OnDropMetal;
-                @DropMetal.canceled -= instance.OnDropMetal;
+                @DropItem.started -= instance.OnDropItem;
+                @DropItem.performed -= instance.OnDropItem;
+                @DropItem.canceled -= instance.OnDropItem;
                 @Space.started -= instance.OnSpace;
                 @Space.performed -= instance.OnSpace;
                 @Space.canceled -= instance.OnSpace;
@@ -1726,19 +1694,12 @@ namespace Blizzard
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnNumberKey(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "DropWood" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "DropItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnDropWood(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "DropMetal" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnDropMetal(InputAction.CallbackContext context);
+            void OnDropItem(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Space" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

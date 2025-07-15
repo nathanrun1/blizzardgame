@@ -172,8 +172,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ebde265eee0847429c3dc5697f6bb52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerObj: {fileID: 2476823487067467090}
   _rigidBody: {fileID: 5996225031606313502}
-  _playerObj: {fileID: 2476823487067467090}
   _walkSpeed: 2
 --- !u!50 &5996225031606313502
 Rigidbody2D:

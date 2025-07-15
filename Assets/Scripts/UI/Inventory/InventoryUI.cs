@@ -3,18 +3,28 @@ using UnityEngine;
 using Blizzard.Inventory;
 using Zenject;
 using ModestTree;
+using Blizzard.Utilities;
+using Blizzard.Environment;
+using Blizzard.Player;
 
 
 namespace Blizzard.UI
 {
+    /// <summary>
+    /// Handles inventory UI & other inventory interactions
+    /// </summary>
     public class InventoryUI : UIBase
     {
         [Header("References")]
         [SerializeField] InventorySlotCtrl _inventorySlotPrefab;
         [SerializeField] Transform _inventorySlotParent;
+        [Header("Config")]
+        [SerializeField] float _itemDropDistance = 1;
 
         [Inject] InventoryService _inventoryService;
+        [Inject] PlayerService _playerService;
         [Inject] InputService _inputService;
+        [Inject] EnvPrefabService _envPrefabService;
 
         private List<InventorySlotCtrl> _uiSlots = new List<InventorySlotCtrl>();
         /// <summary>
@@ -35,6 +45,9 @@ namespace Blizzard.UI
             {
                 SetSelectedSlot((int)ctx.ReadValue<float>() - 1);
             };
+
+            // Drop item
+            _inputService.inputActions.Player.DropItem.performed += (_) => DropSelectedItem();
         }
 
         private void InitSlots()
@@ -94,6 +107,25 @@ namespace Blizzard.UI
 
             _selectedSlotIndex = selection;
             _inventoryService.EquipItem(selection);
+        }
+
+        private void DropSelectedItem()
+        {
+            ItemData itemToDrop = _inventoryService.inventorySlots[_selectedSlotIndex].item;
+            if (itemToDrop == null) return; // No item to drop from selected slot
+
+            // Attempt drop
+            int amountRemoved = _inventoryService.TryRemoveItemAt(_selectedSlotIndex, 1);
+
+            if (amountRemoved == 0) return; // Items wasn't successfully removed, do not drop
+
+            ItemDrop dropObj = _envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
+
+            Vector2 plrFacingDirection = _playerService.GetFacingDirection();
+            dropObj.transform.position = _playerService.playerCtrl.transform.position + 
+                                        new Vector3(plrFacingDirection.x, plrFacingDirection.y, 0) * _itemDropDistance;
+
+            dropObj.Setup(new ItemAmountPair { item = itemToDrop, amount = amountRemoved }); // (amountRemoved should be one, failsafe regardless)
         }
     }
 }

@@ -12,11 +12,11 @@ namespace Blizzard.Player
         /// <summary>
         /// Base damage that this tool does to harvestables
         /// </summary>
-        [SerializeField] protected int baseDamage;
+        [SerializeField] protected int _baseDamage;
         /// <summary>
         /// Tool type
         /// </summary>
-        [SerializeField] protected ToolType toolType;
+        [SerializeField] protected ToolType _toolType;
 
 
         /// <summary>
@@ -24,9 +24,9 @@ namespace Blizzard.Player
         /// </summary>
         protected virtual void Harvest(Harvestable harvestable, int damage = -1)
         {
-            if ((harvestable.ToolType & (uint)toolType) == 0) return; // Tool type does not match
+            if ((harvestable.ToolType & (uint)_toolType) == 0) return; // Tool type does not match
 
-            int damageToApply = damage == -1 ? baseDamage : damage;
+            int damageToApply = damage == -1 ? _baseDamage : damage;
             harvestable.Damage(damageToApply);
         }
     }

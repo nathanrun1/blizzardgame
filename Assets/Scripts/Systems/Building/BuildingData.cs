@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Blizzard.Obstacles;
 using Blizzard.Inventory;
+using NUnit.Framework;
 
 namespace Blizzard.Building
 {
@@ -20,7 +22,7 @@ namespace Blizzard.Building
         /// <summary>
         /// Cost to build this building
         /// </summary>
-        public ItemGroupData cost;
+        public List<ItemAmountPair> cost;
     }
 }
 

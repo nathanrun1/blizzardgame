@@ -13,6 +13,7 @@ namespace Blizzard.Player
     public class PlayerService : IInitializable
     {
         public PlayerCtrl playerCtrl;
+        public PlayerMovement playerMovement;
 
         public ToolBehaviour equippedTool { get; private set; }
 
@@ -41,7 +42,10 @@ namespace Blizzard.Player
         private void InitPlayer(PlayerCtrl playerPrefab, Transform environment, CinemachineCamera cinemachineCamera)
         {
             Debug.Log(playerPrefab);
-            this.playerCtrl = _diContainer.InstantiatePrefabForComponent<PlayerCtrl>(playerPrefab, environment); // Initialize player obj
+
+            playerCtrl = _diContainer.InstantiatePrefabForComponent<PlayerCtrl>(playerPrefab, environment); // Initialize player obj
+            playerMovement = playerCtrl.GetComponent<PlayerMovement>();
+
             cinemachineCamera.Target.TrackingTarget = this.playerCtrl.transform; // Set camera tracking target to player
         }
 
@@ -64,10 +68,24 @@ namespace Blizzard.Player
         /// </summary>
         public void UnequipTool()
         {
+            Debug.Log("Equipped tool: " + equippedTool);
             if (equippedTool != null)
             {
-                MonoBehaviour.Destroy(equippedTool); // TODO: obj pooling
+                Debug.Log("Tool exists");
+                MonoBehaviour.Destroy(equippedTool.gameObject); // TODO: obj pooling
             }
+        }
+
+        /// <summary>
+        /// Returns unit vector pointing in the direction the player is facing in
+        /// </summary>
+        /// <returns></returns>
+        public Vector2 GetFacingDirection()
+        {
+            float playerAngle = Mathf.Deg2Rad * (playerMovement.playerObj.transform.eulerAngles.z + 90); // 90 degrees is player sprite rotation offset
+            Debug.Log("Player angle: " + playerAngle);
+
+            return new Vector2(Mathf.Cos(playerAngle), Mathf.Sin(playerAngle));
         }
     }
 }

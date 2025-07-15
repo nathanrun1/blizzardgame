@@ -51,6 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _inventorySlotPrefab: {fileID: 8440055761240909647, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
   _inventorySlotParent: {fileID: 6737061987236732148}
+  _itemDropDistance: 1
 --- !u!1 &4332207110966441193
 GameObject:
   m_ObjectHideFlags: 0

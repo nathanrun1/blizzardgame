@@ -22,6 +22,16 @@ namespace Blizzard.Inventory
         public int amount = 0;
     }
 
+    /// <summary>
+    /// An item and an associated amount
+    /// </summary>
+    [Serializable]
+    public struct ItemAmountPair
+    {
+        public ItemData item;
+        public int amount;
+    }
+
     public static class InventorySlotExtensions 
     { 
         public static bool Empty(this InventorySlot slot)
@@ -32,7 +42,7 @@ namespace Blizzard.Inventory
 
     public class InventoryService
     {
-        public List<InventorySlot> inventorySlots;
+        public List<InventorySlot> inventorySlots { get; private set; }
 
         public ItemData equippedItem = null;
 
@@ -207,6 +217,32 @@ namespace Blizzard.Inventory
             if (drain) Assert.That(leftToRemove >= 0, "More than given amount was removed! Likely implementation error in InventoryService.");
             else Assert.That(leftToRemove == 0, "Not exactly the given amount removed, yet not set to drain! Likely implementation error in InventoryService.");
             return amount - leftToRemove;
+        }
+
+        /// <summary>
+        /// Attempts to remove given amount of item from a single slot
+        /// </summary>
+        /// <param name="slotIndex">Index of slot to remove from</param>
+        /// <param name="amount">Amount to remove</param>
+        /// <param name="drain">Iff set to true and can't remove entire amount, will remove as much as possible instead of none at all.</param>
+        /// <returns>Amount successfully removed</returns>
+        public int TryRemoveItemAt(int slotIndex, int amount, bool drain = false)
+        {
+            Assert.That(0 <= slotIndex && slotIndex <= inventorySlots.Count);
+
+            InventorySlot slot = inventorySlots[slotIndex];
+
+            if (slot.item == null) // No items to remove
+            if (!drain && slot.amount < amount) return 0; // Not enough to remove
+
+            int amountToRemove = Math.Min(slot.amount, amount);
+            slot.amount -= amountToRemove;
+
+            if (slot.amount == 0) slot.item = null;
+
+            OnInventoryModified?.Invoke(slotIndex);
+
+            return amountToRemove;
         }
 
         /// <summary>

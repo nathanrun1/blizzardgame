@@ -60,19 +60,10 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "DropWood",
+                    "name": "DropItem",
                     "type": "Button",
                     "id": "b346f410-2784-474b-bf30-4d5c706fff64",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "DropMetal",
-                    "type": "Button",
-                    "id": "bbc51f2d-f0a1-4711-9224-678b84eeceea",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -436,18 +427,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "DropWood",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f51af75b-de20-46f2-b661-707b6299c872",
-                    "path": "<Keyboard>/z",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DropMetal",
+                    "action": "DropItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

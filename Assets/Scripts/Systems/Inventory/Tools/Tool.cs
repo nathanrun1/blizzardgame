@@ -4,6 +4,16 @@ using UnityEngine;
 
 namespace Blizzard
 {
+    /// <summary>
+    /// Type of tool, determines which tools can harvest which harvestables.
+    /// Interpreted as a bit field.
+    /// </summary>
+    public enum ToolType
+    {
+        Axe = 0,
+        Pickaxe = 1
+    }
+
     public abstract class Tool
     {
         [Header("Tool Config")]
