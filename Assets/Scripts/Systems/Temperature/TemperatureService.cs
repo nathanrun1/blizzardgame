@@ -1,9 +1,6 @@
 using UnityEngine;
 using Blizzard.Grid;
-using System.Collections;
-using UnityEditor.PackageManager.UI;
 using System;
-using System.ComponentModel;
 using Zenject;
 using ModestTree;
 
@@ -27,6 +24,10 @@ namespace Blizzard.Temperature
         /// </summary>
         public RenderTexture HeatmapTexture { get; private set; }
         /// <summary>
+        /// Offset of the updated active subgrid
+        /// </summary>
+        public Vector2Int WindowOffset { get; set; }
+        /// <summary>
         /// Whether temperature simulation is active
         /// </summary>
         public bool Active { get; set; }
@@ -48,10 +49,6 @@ namespace Blizzard.Temperature
         /// Subregion of grid that gets updated at each step
         /// </summary>
         private IDenseGrid<TemperatureCell> _window;
-        /// <summary>
-        /// Offset of window location in main grid
-        /// </summary>
-        private Vector2Int _windowOffset;
 
         /// <summary>
         /// Compute shader used to compute heat diffusion
@@ -88,16 +85,16 @@ namespace Blizzard.Temperature
         public void FixedTick()
         {
             if (!Active) return;
-            DoHeatDiffusionStep(Time.fixedDeltaTime);
+            DoHeatDiffusionStep(Time.fixedDeltaTime, WindowOffset);
             ComputeHeatmap();
         }
 
         /// <summary>
         /// Compute a single heat diffusion step using given delta time. Updates temperature grid and heatmap texture.
         /// </summary>
-        public void DoHeatDiffusionStep(float deltaTime)
+        public void DoHeatDiffusionStep(float deltaTime, Vector2Int offset)
         {
-            UpdateActiveSubgrid(new(0, 0)); // TODO: get offset from somewhere
+            UpdateActiveSubgrid(offset); 
             _heatDiffusionShader.SetFloat("deltaTime", deltaTime);
 
             int threadGroupSize =
@@ -105,7 +102,7 @@ namespace Blizzard.Temperature
                 TemperatureConstants.ComputeThreadGroupDimensions.y;
             _heatDiffusionShader.Dispatch(0, (_window.Width * _window.Height) / threadGroupSize, 1, 1);
             _outputBuffer.GetData(_window.GetData()); // TODO: async this (currently waits for GPU to finish)
-            Grid.ReadFromDenseGrid(_window, new(0, 0)); // TODO: get offset from somewhere
+            Grid.ReadFromDenseGrid(_window, offset);
 
             OnTemperatureUpdate?.Invoke();
         }

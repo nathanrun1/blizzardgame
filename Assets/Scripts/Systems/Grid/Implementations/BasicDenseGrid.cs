@@ -89,7 +89,7 @@ namespace Blizzard.Grid
             SetAt(gridPosition.x, gridPosition.y, value);
         }
 
-        public void RemoveAt(Vector2Int gridPosition)
+        public void ResetAt(Vector2Int gridPosition)
         {
             SetAt(gridPosition.x, gridPosition.y, default);
         }

@@ -1,5 +1,6 @@
 using Blizzard.Obstacles;
 using Blizzard.Player;
+using DG.Tweening;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,8 +14,10 @@ namespace Blizzard
         [SerializeField] GameObject _axeHitbox;
         [SerializeField] GameObject _axeStationary;
         [SerializeField] GameObject _axeSwing;
-        [Header("Axe Config")]
+        [Header("Behavior Config")]
         [SerializeField] float _baseSwingCooldown = 0.5f;
+        [Header("Style Config")]
+        [SerializeField] float _animDuration = 0.15f;
         [Header("Testing")]
         [SerializeField] bool _visualizeHitbox = false;
 
@@ -65,6 +68,7 @@ namespace Blizzard
         private void OnSwing()
         {
             _cooldown = CalculateCooldown();
+            StartCoroutine(AxeSwingAnim());
             Collider2D[] hitObjects = AxeDetectHit();
 
             foreach (Collider2D obj in hitObjects)
@@ -75,8 +79,6 @@ namespace Blizzard
                 {
                     // Target is a harvestable
                     Harvest(harvestable, CalculateDamage());
-
-                    Debug.Log($"Hit a {harvestable.name}! Applying damage.");
                 }
 
                 // TODO: handle enemies
@@ -142,6 +144,36 @@ namespace Blizzard
             yield return new WaitForSeconds(0.3f);
             _axeHitbox.GetComponent<SpriteRenderer>().enabled = false; // temp
             _hitboxLineRenderer.enabled = false;
+        }
+
+        private IEnumerator AxeSwingAnim()
+        {
+            _axeStationary.SetActive(false);
+            _axeSwing.SetActive(true);
+
+            float animDuration = 0.15f;
+
+            Vector3 swingStartPos = new Vector3(0.35f, 0.35f, 0f);
+            Vector3 swingEndPos = new Vector3(-0.25f, 0.35f, 0f);
+
+            Quaternion swingStartRot = Quaternion.Euler(new Vector3(0, 0, 0));
+            Quaternion swingEndRot = Quaternion.Euler(new Vector3(0, 0, 90));
+
+            _axeSwing.transform.localPosition = swingStartPos;
+            _axeSwing.transform.localRotation = swingStartRot;
+
+
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(_axeSwing.transform.DOLocalRotateQuaternion(swingEndRot, animDuration));
+            sequence.Join(_axeSwing.transform.DOLocalMove(swingEndPos, animDuration));
+
+            sequence.OnComplete(() =>
+            {
+                _axeStationary.SetActive(true);
+                _axeSwing.SetActive(false);
+            });
+            sequence.Play();
+            yield return null;
         }
     }
 }

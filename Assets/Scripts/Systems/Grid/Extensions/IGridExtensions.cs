@@ -12,12 +12,12 @@ namespace Blizzard.Grid
         /// </summary>
         public static void WriteToDenseGrid<T>(this IGrid<T> grid, IDenseGrid<T> denseGrid, Vector2Int offset)
         {
-            for (int y = offset.y; y < offset.y + denseGrid.Height; ++y)
+            for (int y = 0; y < denseGrid.Height; ++y)
             {
-                for (int x = offset.x; x < offset.x + denseGrid.Width; ++x)
+                for (int x = 0; x < denseGrid.Width; ++x)
                 {
-                    int subgridIndex = (y - offset.y) * denseGrid.Width + (x - offset.x);
-                    denseGrid.SetAt(x, y, grid.GetAt(x, y));
+                    //int subgridIndex = (y - offset.y) * denseGrid.Width + (x - offset.x);
+                    denseGrid.SetAt(x, y, grid.GetAt(x + offset.x, y + offset.y));
                 }
             }
         }
@@ -27,12 +27,12 @@ namespace Blizzard.Grid
         /// </summary>
         public static void ReadFromDenseGrid<T>(this IGrid<T> grid, IDenseGrid<T> denseGrid, Vector2Int offset)
         {
-            for (int y = offset.y; y < offset.y + denseGrid.Height; ++y)
+            for (int y = 0; y < denseGrid.Height; ++y)
             {
-                for (int x = offset.x; x < offset.x + denseGrid.Width; ++x)
+                for (int x = 0; x < denseGrid.Width; ++x)
                 {
-                    int subgridIndex = (y - offset.y) * denseGrid.Width + (x - offset.x);
-                    grid.SetAt(x, y, denseGrid.GetAt(x, y));
+                    //int subgridIndex = (y - offset.y) * denseGrid.Width + (x - offset.x);
+                    grid.SetAt(x + offset.x, y + offset.y, denseGrid.GetAt(x, y));
                 }
             }
         }

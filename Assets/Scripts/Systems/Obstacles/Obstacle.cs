@@ -20,7 +20,7 @@ namespace Blizzard.Obstacles
         public float Insulation { get; protected set; } = TemperatureConstants.DefaultInsulationValue;
 
 
-        public void Init(float startingHeat, float startingInsulation)
+        public virtual void Init(float startingHeat, float startingInsulation)
         {
             Heat = startingHeat;
             Insulation = startingInsulation;

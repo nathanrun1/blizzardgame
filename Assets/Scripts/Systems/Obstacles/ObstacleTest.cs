@@ -30,8 +30,8 @@ namespace Blizzard.Obstacles
         {
             if (_doTemperatureHeatStep)
             {
-                _temperatureService.DoHeatDiffusionStep(Time.deltaTime);
-                _temperatureService.ComputeHeatmap();
+                //_temperatureService.DoHeatDiffusionStep(Time.deltaTime);
+                //_temperatureService.ComputeHeatmap();
             }
             UpdateHeatmap();
         }

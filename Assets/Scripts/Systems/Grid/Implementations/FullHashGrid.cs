@@ -6,8 +6,9 @@ namespace Blizzard.Grid
 {
     /// <summary>
     /// Implementation of grid using hash table.
+    /// All locations have default value until set, and resetting resets to default value.
     /// </summary>
-    public class HashGrid<T> : ISparseGrid<T>
+    public class FullHashGrid<T> : ISparseGrid<T>
     {
         public T DefaultCell { get; set; }
 
@@ -22,7 +23,7 @@ namespace Blizzard.Grid
 
         public T GetAt(Vector2Int gridPosition)
         {
-            return _hashmap[gridPosition];
+            return _hashmap.ContainsKey(gridPosition) ? _hashmap[gridPosition] : DefaultCell;
         }
 
         public bool TryGetValue(int x, int y, out T value)
@@ -32,7 +33,9 @@ namespace Blizzard.Grid
 
         public bool TryGetValue(Vector2Int gridPosition, out T value)
         {
-            return _hashmap.TryGetValue(gridPosition, out value);
+            // Since cells have default value, will always succeed
+            value = GetAt(gridPosition);
+            return true;
         }
 
         public void SetAt(int x, int y, T value)

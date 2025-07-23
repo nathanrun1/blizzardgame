@@ -16,14 +16,14 @@ namespace Blizzard.Temperature
 
         public override void InstallBindings()
         {
-            var mainGrid = new DenseWorldGrid<TemperatureCell>(CELL_SIDE_LENGTH, CELL_SIDE_LENGTH, 1000, 1000); // Arbitrary main grid dimensions
-            mainGrid.Initialize(new TemperatureCell
+            var mainGrid = new FullHashWorldGrid<TemperatureCell>(CELL_SIDE_LENGTH, CELL_SIDE_LENGTH);
+            mainGrid.DefaultCell = new TemperatureCell
             {
-                temperature = TemperatureConstants.StartingAmbientTemperature, // Set initial temperature of all cells to 20 (TEMP, MOVE TO CONFIG)
-                insulation = 0,
+                temperature = 5,
                 heat = 0,
+                insulation = 0,
                 ambient = 1
-            });
+            };
 
             Container.BindInterfacesAndSelfTo<TemperatureService>()
                 .FromNew()

@@ -40,8 +40,8 @@ namespace Blizzard.Grid
         public void SetAt(Vector2Int gridPosition, T value);
 
         /// <summary>
-        /// Sets cell data at given grid position to default value
+        /// Resets cell data at given grid position
         /// </summary>
-        public void RemoveAt(Vector2Int gridPosition);
+        public void ResetAt(Vector2Int gridPosition);
     }
 }

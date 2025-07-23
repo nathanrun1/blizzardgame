@@ -8,12 +8,21 @@ using Blizzard.UI;
 using Blizzard.Temperature;
 using Unity.VisualScripting;
 using System.Linq;
+using Blizzard.Obstacles;
 
 public class DebugManager : MonoBehaviour
 {
+    [System.Serializable]
+    struct ObstaclePlacement
+    {
+        public ObstacleData obstacle;
+        public Vector2Int position;
+    }
+
     [Inject] InventoryService _inventoryService;
     [Inject] UIService _uiService;
     [Inject] TemperatureService _temperatureService;
+    [Inject] ObstacleGridService _obstacleGridService;
 
     [FoldoutGroup("UI")]
     [SerializeField]
@@ -61,6 +70,19 @@ public class DebugManager : MonoBehaviour
         Debug.Log(str);
     }
 
+    [FoldoutGroup("Obstacles")]
+    [SerializeField] ObstaclePlacement[] _initialObstacles;
+    [FoldoutGroup("Obstacles")]
+    private void PlaceObstacle(ObstaclePlacement placement) 
+    {
+        _obstacleGridService.PlaceObstacleAt(placement.position, placement.obstacle);
+    }
+    [FoldoutGroup("Obstacles")]
+    private void RemoveObstacleAt(Vector2Int position)
+    {
+        _obstacleGridService.TryRemoveObstacleAt(position);
+    }
+
     
     [FoldoutGroup("Temperature")] 
     [SerializeField] bool _temperatureOverride = false;
@@ -80,6 +102,11 @@ public class DebugManager : MonoBehaviour
         }
 
         _inventoryService.TryAddItems(_startingItems.ToList());
+
+        foreach (ObstaclePlacement placement in _initialObstacles)
+        {
+            _obstacleGridService.PlaceObstacleAt(placement.position, placement.obstacle);
+        }
     }
 
     private void Update()

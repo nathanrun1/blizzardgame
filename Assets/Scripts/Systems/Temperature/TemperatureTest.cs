@@ -41,7 +41,7 @@ namespace Blizzard.Temperature
         void Update()
         {
             Debug.Log(_temperatureService);
-            _temperatureService.DoHeatDiffusionStep(Time.deltaTime * _timeScale);
+            //_temperatureService.DoHeatDiffusionStep(Time.deltaTime * _timeScale);
             _temperatureService.ComputeHeatmap();
             _temperatureText.text = $"{_temperatureService.Grid.GetAt(_selectedCell).temperature}°"; // Display temperature at selected cell
             UpdateHeatmap();

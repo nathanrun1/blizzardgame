@@ -1,17 +1,11 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using TMPro;
 using Zenject;
 using Blizzard.Obstacles;
 using Blizzard.Grid;
 using Blizzard.Building;
-using Blizzard.Utilities;
 using Blizzard.Inventory;
-using UnityEngine.UIElements;
-using Unity.VisualScripting;
-using UnityEditor.IMGUI.Controls;
 using ModestTree;
 
 
@@ -80,7 +74,6 @@ namespace Blizzard.UI
 
             // Init building preview
             _buildingPreview = _buildingData.obstacleData.obstaclePrefab.CreatePreview();
-            Debug.Log("BUILDING PREVIEW: " + _buildingPreview);
 
             // Init occupied building preview (swapped with building preview when location occupied)
             _occupiedBuildingPreview = Instantiate(_buildingPreview);
@@ -130,6 +123,7 @@ namespace Blizzard.UI
 
         private void UpdatePreview()
         {
+            Debug.Log("updating preview");
             Vector2Int mouseGridPosition = _obstacleGridService.Grid.WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
             GameObject preview;

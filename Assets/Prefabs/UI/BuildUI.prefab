@@ -49,4 +49,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _updateDelay: 0.2
-  _occupiedLocationColor: {r: 0.9433962, g: 0.17503259, b: 0.17503259, a: 0}
+  _occupiedLocationColor: {r: 0.9433962, g: 0.17503259, b: 0.17503259, a: 1}

@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using TMPro;
 using Zenject;
 using Blizzard.Temperature;
+using Blizzard.Grid;
 
 
 namespace Blizzard
@@ -36,6 +37,8 @@ namespace Blizzard
         private void Update()
         {
             UpdateBodyTemperature(Time.deltaTime * _timeScale);
+            // Update temperature service's window offset
+            _temperatureService.WindowOffset = _temperatureService.Grid.WorldToCellPos(transform.position) - new Vector2Int(16, 16); // TEMP: place player at center of window
         }
 
         private void UpdateBodyTemperature(float deltaTime)

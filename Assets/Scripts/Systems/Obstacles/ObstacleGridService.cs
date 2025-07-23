@@ -78,7 +78,7 @@ namespace Blizzard.Obstacles
         {
             if (!TryGetObstacleAt(gridPosition, out Obstacle obstacle)) return false;
             obstacle.Destroy();
-            Grid.RemoveAt(gridPosition);
+            Grid.ResetAt(gridPosition);
 
             UpdateTemperatureSimData(gridPosition, null);
 
@@ -95,7 +95,7 @@ namespace Blizzard.Obstacles
         {
             if (Grid.TryGetValue(gridPosition, out _))
             {
-                Grid.RemoveAt(gridPosition);
+                Grid.ResetAt(gridPosition);
             }
         }
 
