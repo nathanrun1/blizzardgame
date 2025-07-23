@@ -7,6 +7,7 @@ struct TemperatureCell
     float temperature;
     float heatSource;
     float insulation;
+    uint ambient;
 };
 
 RWStructuredBuffer<TemperatureCell> prev;
@@ -21,6 +22,11 @@ float diffusionFactor;
 uint selectedX;
 uint selectedY;
 float defaultAlpha;
+
+// Ambient Temperature
+float ambientTemperature;
+float ambientFactor;
+
 
 // Gets index in temperature array given x and y position. Clamps indexing inward.
 int getIndex(int xPos, int yPos)
@@ -54,11 +60,16 @@ void CalculateDiffusion(uint3 id : SV_DispatchThreadID)
         getNbrHeatTransfer(curCell.temperature, curCell.insulation, xPos, yPos - 1) +
         getNbrHeatTransfer(curCell.temperature, curCell.insulation, xPos, yPos + 1);
     
-    float diffusion = sumHeatTransfer * min(0.24, diffusionFactor * deltaTime); // Any factor above 0.25 is unstable
+    float diffusion = sumHeatTransfer * min(0.249, diffusionFactor * deltaTime); // Any factor above 0.25 is unstable
     float heat = curCell.heatSource * deltaTime;
-    next[id.x].temperature = curCell.temperature + diffusion + heat;
+    float postDiffusionTemperature = curCell.temperature + diffusion + heat;
+    
+    float ambient = (ambientTemperature - postDiffusionTemperature) * ambientFactor * curCell.ambient;
+    
+    next[id.x].temperature = postDiffusionTemperature + ambient;
     next[id.x].insulation = curCell.insulation;
     next[id.x].heatSource = curCell.heatSource;
+    next[id.x].ambient = curCell.ambient;
 }
 
 int isSelected(uint3 pos)

@@ -11,21 +11,24 @@ namespace Blizzard.Temperature
         const float CELL_SIDE_LENGTH = 0.5f;
 
         [SerializeField] ComputeShader _heatDiffusionShader;
+        [Header("Config")]
+        [SerializeField] bool _simulationIsActive = true;
 
         public override void InstallBindings()
         {
             var mainGrid = new DenseWorldGrid<TemperatureCell>(CELL_SIDE_LENGTH, CELL_SIDE_LENGTH, 1000, 1000); // Arbitrary main grid dimensions
             mainGrid.Initialize(new TemperatureCell
             {
-                temperature = 20, // Set initial temperature of all cells to 20 (TEMP, MOVE TO CONFIG)
+                temperature = TemperatureConstants.StartingAmbientTemperature, // Set initial temperature of all cells to 20 (TEMP, MOVE TO CONFIG)
                 insulation = 0,
-                heat = 0
+                heat = 0,
+                ambient = 1
             });
 
-            Container.Bind<TemperatureService>()
+            Container.BindInterfacesAndSelfTo<TemperatureService>()
                 .FromNew()
                 .AsSingle()
-                .WithArguments(mainGrid, new BasicDenseGrid<TemperatureCell>(SIM_WINDOW_WIDTH, SIM_WINDOW_HEIGHT), _heatDiffusionShader);
+                .WithArguments(mainGrid, new BasicDenseGrid<TemperatureCell>(SIM_WINDOW_WIDTH, SIM_WINDOW_HEIGHT), _heatDiffusionShader, _simulationIsActive);
         }
     }
 }

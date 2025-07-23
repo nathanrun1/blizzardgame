@@ -63,6 +63,7 @@ namespace Blizzard.Obstacles
 
             Obstacle obstacle = obstacleData.CreateObstacle(obstaclePosition);
             obstacle.OnDestroy += () => OnObstacleDestroyed(gridPosition);
+            obstacle.HeatDataUpdated += () => UpdateTemperatureSimData(gridPosition, obstacle);
             if (_obstaclesParent != null) obstacle.transform.parent = _obstaclesParent;
                 
             Grid.SetAt(gridPosition, obstacle);

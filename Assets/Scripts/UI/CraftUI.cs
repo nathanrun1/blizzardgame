@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Blizzard.Inventory;
 using Blizzard.Inventory.Crafting;
 using TMPro;
@@ -31,6 +32,8 @@ namespace Blizzard.UI
         [Inject] InventoryService _inventoryService;
         [Inject] UIService _uiService;
 
+        private List<Button> _activeRecipeButtons = new List<Button>();
+
         private bool _setup = false;
 
         public override void Setup(object args)
@@ -59,6 +62,13 @@ namespace Blizzard.UI
 
         private void LoadRecipeListUI(CraftingCategory category)
         {
+            // Clear existing recipe buttons
+            foreach (Button activeRecipeButton in _activeRecipeButtons)
+            {
+                Destroy(activeRecipeButton.gameObject);
+            }
+            _activeRecipeButtons.Clear();
+
             _recipeListPanel.SetActive(true);
             foreach (CraftingRecipe recipe in category.recipes)
             {
@@ -67,6 +77,8 @@ namespace Blizzard.UI
                 recipeButton.onClick.AddListener(() => LoadRecipeUI(recipe));
 
                 recipeButton.GetComponentInChildren<TextMeshProUGUI>().text = recipe.result.displayName;
+
+                _activeRecipeButtons.Add(recipeButton); // Track active recipe buttons to remove on category switch
             }
         }
 
@@ -75,6 +87,7 @@ namespace Blizzard.UI
             _recipePanel.gameObject.SetActive(true);
 
             _craftButton.GetComponentInChildren<TextMeshProUGUI>().text = $"Craft {recipe.result.displayName}";
+            _craftButton.onClick.RemoveAllListeners();
             _craftButton.onClick.AddListener(() => OnCraft(recipe));
         }
 

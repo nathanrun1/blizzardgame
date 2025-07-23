@@ -314,7 +314,10 @@ namespace Blizzard.Inventory
         /// </summary>
         public void UnequipItem()
         {
-            if (equippedItem) equippedItem.Unequip();
+            if (equippedItem == null) return;
+
+            equippedItem.Unequip();
+            equippedItem = null;
         }
     }
 }

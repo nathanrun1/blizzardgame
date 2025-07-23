@@ -17,10 +17,15 @@ namespace Blizzard.Temperature
         /// How much this cell insulates heat (range from 0 -> 1)
         /// </summary>
         public float insulation;
+        /// <summary>
+        /// Whether this cell naturally regresses to ambient temperature
+        /// 0 if false, 1 if true
+        /// </summary>
+        public int ambient;
 
         public static int GetSize()
         {
-            return sizeof(float) * 3;
+            return sizeof(float) * 4;
         }
     }
 }

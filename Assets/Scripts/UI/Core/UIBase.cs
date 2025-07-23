@@ -12,6 +12,8 @@ namespace Blizzard.UI
     {
         protected RectTransform _parent;
 
+        public event Action OnClose;
+
         public void SetParent(RectTransform parent)
         {
             Debug.Log((transform as RectTransform).sizeDelta);
@@ -31,6 +33,7 @@ namespace Blizzard.UI
         /// <param name="destroy">Whether to destroy the prefab, if false will instead set itself inactive</param>
         public virtual void Close(bool destroy = true)
         {
+            OnClose?.Invoke();
             if (destroy) Destroy(gameObject);
             else gameObject.SetActive(false);
         }

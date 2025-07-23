@@ -1,0 +1,30 @@
+using UnityEngine;
+using Zenject;
+using TMPro;
+using Blizzard.Player;
+using Blizzard.Temperature;
+
+
+// TODO: temperature UI show body and area temp using services thx
+
+namespace Blizzard.UI
+{
+    public class TemperatureUI : UIBase
+    {
+        [Inject] PlayerService _playerService;
+        [Inject] TemperatureService _temperatureService;
+
+        [Header("References")]
+        [SerializeField] private TextMeshProUGUI _bodyTemperature;
+        [SerializeField] private TextMeshProUGUI _areaTemperature;
+
+        public override void Setup(object args) { }
+
+        private void FixedUpdate()
+        {
+            _bodyTemperature.text = "Body: " + _playerService.PlayerTemperature.BodyTemperature.ToString() + '°';
+            _areaTemperature.text = "Area: " + _temperatureService.GetTemperatureAtWorldPos(_playerService.PlayerCtrl.transform.position).ToString() + '°';
+        }
+    }
+}
+

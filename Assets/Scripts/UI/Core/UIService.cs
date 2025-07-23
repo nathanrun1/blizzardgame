@@ -84,11 +84,6 @@ namespace Blizzard.UI
             bool destroyOnClose = _intDict[id].destroyOnClose;
             UIBase uiObj = _activeUI[id];
             uiObj.Close(destroyOnClose);
-
-            // If not destroyed, move to inactive pool to be reused
-            if (!destroyOnClose) _inactiveUI.Add(id, uiObj);
-
-            _activeUI.Remove(id);
         }
 
         /// <summary>
@@ -108,15 +103,37 @@ namespace Blizzard.UI
             {
                 uiObj = _diContainer.InstantiatePrefabForComponent<UIBase>(uiData.uiPrefab);
                 uiObj.SetParent(_uiParent);
+
+                if (uiData.isSingle && !uiData.destroyOnClose)
+                {
+                    // Set instance as inactive rather than destroy
+                    uiObj.OnClose += () =>
+                    {
+                        _activeUI.Remove(uiData.id);
+                        _inactiveUI.Add(uiData.id, uiObj);
+                    };
+                }
+                else if (uiData.isSingle)
+                {
+                    // Remove instance from active list before destroying
+                    uiObj.OnClose += () =>
+                    {
+                        _activeUI.Remove(uiData.id);
+                    };
+                }
             }
             else
             {
                 uiObj.gameObject.SetActive(true);
+                _inactiveUI.Remove(uiData.id); // No longer inactive
             }
 
             uiObj.Setup(args);
 
-            if (uiData.isSingle) _activeUI.Add(uiData.id, uiObj); // Track active UI instance only if single
+            if (uiData.isSingle)
+            {
+                _activeUI.Add(uiData.id, uiObj); // Track active UI instance only if single
+            }
         }
 
 

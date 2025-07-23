@@ -12,8 +12,9 @@ namespace Blizzard.Player
     /// </summary>
     public class PlayerService : IInitializable
     {
-        public PlayerCtrl playerCtrl;
-        public PlayerMovement playerMovement;
+        public PlayerCtrl PlayerCtrl;
+        public PlayerMovement PlayerMovement;
+        public PlayerTemperature PlayerTemperature;
 
         public ToolBehaviour equippedTool { get; private set; }
 
@@ -43,10 +44,11 @@ namespace Blizzard.Player
         {
             Debug.Log(playerPrefab);
 
-            playerCtrl = _diContainer.InstantiatePrefabForComponent<PlayerCtrl>(playerPrefab, environment); // Initialize player obj
-            playerMovement = playerCtrl.GetComponent<PlayerMovement>();
+            PlayerCtrl = _diContainer.InstantiatePrefabForComponent<PlayerCtrl>(playerPrefab, environment); // Initialize player obj
+            PlayerMovement = PlayerCtrl.GetComponent<PlayerMovement>();
+            PlayerTemperature = PlayerCtrl.GetComponent<PlayerTemperature>();
 
-            cinemachineCamera.Target.TrackingTarget = this.playerCtrl.transform; // Set camera tracking target to player
+            cinemachineCamera.Target.TrackingTarget = this.PlayerCtrl.transform; // Set camera tracking target to player
         }
 
 
@@ -60,7 +62,7 @@ namespace Blizzard.Player
             UnequipTool();
 
             // Instantiate tool prefab, parent to player transform
-            equippedTool = _diContainer.InstantiatePrefabForComponent<ToolBehaviour>(toolItemData.toolPrefab, this.playerCtrl.toolParent.transform);
+            equippedTool = _diContainer.InstantiatePrefabForComponent<ToolBehaviour>(toolItemData.toolPrefab, this.PlayerCtrl.toolParent.transform);
         }
 
         /// <summary>
@@ -82,7 +84,7 @@ namespace Blizzard.Player
         /// <returns></returns>
         public Vector2 GetFacingDirection()
         {
-            float playerAngle = Mathf.Deg2Rad * (playerMovement.playerObj.transform.eulerAngles.z + 90); // 90 degrees is player sprite rotation offset
+            float playerAngle = Mathf.Deg2Rad * (PlayerMovement.playerObj.transform.eulerAngles.z + 90); // 90 degrees is player sprite rotation offset
             Debug.Log("Player angle: " + playerAngle);
 
             return new Vector2(Mathf.Cos(playerAngle), Mathf.Sin(playerAngle));

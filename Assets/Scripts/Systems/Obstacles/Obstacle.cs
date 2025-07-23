@@ -11,6 +11,10 @@ namespace Blizzard.Obstacles
     public class Obstacle : MonoBehaviour
     {
         public event Action OnDestroy;
+        /// <summary>
+        /// Invoked whenever heat sim data has been updated.
+        /// </summary>
+        public event Action HeatDataUpdated;
 
         public float Heat { get; protected set; } = TemperatureConstants.DefaultHeatValue;
         public float Insulation { get; protected set; } = TemperatureConstants.DefaultInsulationValue;
@@ -18,25 +22,27 @@ namespace Blizzard.Obstacles
 
         public void Init(float startingHeat, float startingInsulation)
         {
-            SetHeat(startingHeat);
-            SetInsulation(startingInsulation);
+            Heat = startingHeat;
+            Insulation = startingInsulation;
         }
 
         /// <summary>
         /// Sets insulation of this obstacle to given value
         /// </summary>
-        public void SetInsulation(float insulation)
+        protected void SetInsulation(float insulation)
         {
             Assert.That(0 <= insulation && insulation <= 1);
             this.Insulation = insulation;
+            HeatDataUpdated?.Invoke();
         }
 
         /// <summary>
         /// Sets heat of this obstacle to given value
         /// </summary>
-        public void SetHeat(float heat)
+        protected void SetHeat(float heat)
         {
             this.Heat = heat;
+            HeatDataUpdated?.Invoke();
         }
 
         /// <summary>

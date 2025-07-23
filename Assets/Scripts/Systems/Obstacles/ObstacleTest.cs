@@ -48,7 +48,7 @@ namespace Blizzard.Obstacles
         {
             if (_obstacleGridService.TryGetObstacleAt(obstaclePosition, out Obstacle obstacle))
             {
-                Debug.Log($"Obstacle temperature: {_temperatureService.Grid.GetAt(obstaclePosition)}");
+                Debug.Log($"Obstacle temperature: {_temperatureService.Grid.GetAt(obstaclePosition).temperature}");
             }
         }
 

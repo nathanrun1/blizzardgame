@@ -54,7 +54,8 @@ namespace Blizzard.Temperature
             {
                 temperature = 10, // Set initial temperature of all cells to 10
                 insulation = 0,
-                heat = 0
+                heat = 0,
+                ambient = 1
             });
             _temperatureService = new TemperatureService(
                     mainGrid, 

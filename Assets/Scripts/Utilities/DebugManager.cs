@@ -3,12 +3,17 @@ using Zenject;
 using Blizzard.Inventory;
 using Sirenix.OdinInspector;
 using Blizzard.UI;
+using Blizzard.Temperature;
 
 public class DebugManager : MonoBehaviour
 {
     [Inject] InventoryService _inventoryService;
     [Inject] UIService _uiService;
+    [Inject] TemperatureService _temperatureService;
 
+    [FoldoutGroup("UI")]
+    [SerializeField]
+    int[] _startupUI;
     [FoldoutGroup("UI")]
     [Button]
     private void InitUI(int id)
@@ -48,5 +53,34 @@ public class DebugManager : MonoBehaviour
             else str += $"[{slot.amount}x {slot.item.displayName}]\n";
         }
         Debug.Log(str);
+    }
+
+    
+    [FoldoutGroup("Temperature")] 
+    [SerializeField] bool _temperatureOverride = false;
+    [FoldoutGroup("Temperature")]
+    [SerializeField] float _diffusionFactor = 0.3f;
+    [FoldoutGroup("Temperature")]
+    [SerializeField] float _ambientFactor = 0.0005f;
+    [FoldoutGroup("Temperature")]
+    [SerializeField] float _ambientTemperature;
+
+
+    private void Start()
+    {
+        foreach (int uiId in _startupUI)
+        {
+            InitUI(uiId);
+        }
+    }
+
+    private void Update()
+    {
+        if (_temperatureOverride)
+        {
+            _temperatureService.SetComputeFloat("diffusionFactor", _diffusionFactor);
+            _temperatureService.SetComputeFloat("ambientFactor", _ambientFactor);
+            _temperatureService.AmbientTemperature = _ambientTemperature;
+        }
     }
 }

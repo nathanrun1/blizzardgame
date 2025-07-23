@@ -6,6 +6,7 @@ using ModestTree;
 using Blizzard.Utilities;
 using Blizzard.Environment;
 using Blizzard.Player;
+using UnityEngine.InputSystem;
 
 
 namespace Blizzard.UI
@@ -31,24 +32,54 @@ namespace Blizzard.UI
         /// Index of selected slot in _inventoryService.inventorySlots (and thus also in _uiSlots)
         /// </summary>
         private int _selectedSlotIndex;
+        
+        private bool _setup = false;
 
         public override void Setup(object args)
         {
-            InitSlots();
+            if (!_setup) InitSlots();
+            else RefreshAllSlots();
+            
 
             _inventoryService.OnInventoryModified += RefreshSlot;
 
-            // -- Setup input --
+            // -- Bind input --
 
             // Select slot with number key
-            _inputService.inputActions.Player.NumberKey.performed += (ctx) =>
-            {
-                SetSelectedSlot((int)ctx.ReadValue<float>() - 1);
-            };
+            _inputService.inputActions.Player.NumberKey.performed += OnInputNumberKey;
 
             // Drop item
-            _inputService.inputActions.Player.DropItem.performed += (_) => DropSelectedItem();
+            _inputService.inputActions.Player.DropItem.performed += OnInputDropItem;
         }
+
+        public override void Close(bool destroy = true)
+        {
+            _inventoryService.OnInventoryModified -= RefreshSlot;
+
+
+            // Unbind Input
+            _inputService.inputActions.Player.NumberKey.performed -= OnInputNumberKey;
+            _inputService.inputActions.Player.DropItem.performed -= OnInputDropItem;
+
+            // Can't have equipped item if inventory UI closed
+            _inventoryService.UnequipItem();
+
+            base.Close(destroy);
+        }
+
+
+        // -- INPUT --
+        private void OnInputNumberKey(InputAction.CallbackContext ctx)
+        {
+            SetSelectedSlot((int)ctx.ReadValue<float>() - 1);
+        }
+
+        private void OnInputDropItem(InputAction.CallbackContext _)
+        {
+            DropSelectedItem();
+        }
+        // --
+
 
         private void InitSlots()
         {
@@ -76,6 +107,15 @@ namespace Blizzard.UI
 
             _uiSlots[index].Setup(_inventoryService.inventorySlots[index].item,
                                   _inventoryService.inventorySlots[index].amount);
+
+            if (_selectedSlotIndex == index)
+            {
+                // Re-equip this slot (unequip and equip)
+                // I.e. if item equipped and then removed, will be unequipped
+                //   And if slot selected and item added, will be equipped
+                _inventoryService.UnequipItem();
+                _inventoryService.EquipItem(index);
+            }
         }
 
         /// <summary>
@@ -122,7 +162,7 @@ namespace Blizzard.UI
             ItemDrop dropObj = _envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
 
             Vector2 plrFacingDirection = _playerService.GetFacingDirection();
-            dropObj.transform.position = _playerService.playerCtrl.transform.position + 
+            dropObj.transform.position = _playerService.PlayerCtrl.transform.position + 
                                         new Vector3(plrFacingDirection.x, plrFacingDirection.y, 0) * _itemDropDistance;
 
             dropObj.Setup(new ItemAmountPair { item = itemToDrop, amount = amountRemoved }); // (amountRemoved should be one, failsafe regardless)

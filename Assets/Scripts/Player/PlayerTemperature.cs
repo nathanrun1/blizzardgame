@@ -36,8 +36,6 @@ namespace Blizzard
         private void Update()
         {
             UpdateBodyTemperature(Time.deltaTime * _timeScale);
-
-            DisplayTemperature();
         }
 
         private void UpdateBodyTemperature(float deltaTime)
@@ -48,14 +46,8 @@ namespace Blizzard
             //float tempDelta = internalEquiv - BodyTemperature; // Difference btwn current body temperature and stable body temperature
             //BodyTemperature += (1 - _bodyInsulation) * deltaTime * _bodyTemperatureChangeRate * tempDelta;
 
-            //float externalTemperature = _useTestExternalTemp ? _TESTExternalTemperature : _temperatureService.GetTemperatureAtWorldPos(transform.position);
-            //float tempDelta = deltaTime * (_bodyHeat + (1 - _bodyInsulation) * _config.bodyTemperatureChangeRate * (GetExternalTemperature() - BodyTemperature));
-            //BodyTemperature += tempDelta;
-        }
-
-        private void DisplayTemperature()
-        {
-            // TODO: Some temperature display UI
+            float tempDelta = deltaTime * (_bodyHeat + (1 - _bodyInsulation) * _config.bodyTemperatureChangeRate * (GetExternalTemperature() - BodyTemperature));
+            BodyTemperature += tempDelta;
         }
 
         private float GetExternalTemperature()

@@ -22,3 +22,10 @@ MonoBehaviour:
         amount: 3
       - item: {fileID: 11400000, guid: 5dfeb5bbc8c7c534f99ebeb2af227776, type: 2}
         amount: 3
+  - categoryName: Buildings
+    recipes:
+    - result: {fileID: 11400000, guid: 58f069f80da867747ba5caace926de2a, type: 2}
+      resultAmount: 1
+      cost:
+      - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
+        amount: 5

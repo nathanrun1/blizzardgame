@@ -4,11 +4,13 @@ using System.Collections;
 using UnityEditor.PackageManager.UI;
 using System;
 using System.ComponentModel;
+using Zenject;
+using ModestTree;
 
 
 namespace Blizzard.Temperature
 {
-    public class TemperatureService
+    public class TemperatureService : IFixedTickable
     {
         /// <summary>
         /// Invoked when a temperature simulation step is completed
@@ -24,6 +26,22 @@ namespace Blizzard.Temperature
         /// Texture displaying a heatmap of the current computed subregion of the scene.
         /// </summary>
         public RenderTexture HeatmapTexture { get; private set; }
+        /// <summary>
+        /// Whether temperature simulation is active
+        /// </summary>
+        public bool Active { get; set; }
+
+        public float AmbientTemperature
+        {
+            get => _ambientTemperature;
+            set
+            {
+                // Update compute shader
+                _heatDiffusionShader.SetFloat("ambientTemperature", value);
+                _ambientTemperature = value;
+            }
+        }
+        private float _ambientTemperature;
 
 
         /// <summary>
@@ -49,11 +67,15 @@ namespace Blizzard.Temperature
         private ComputeBuffer _outputBuffer;
 
 
-        public TemperatureService(IWorldGrid<TemperatureCell> grid, IDenseGrid<TemperatureCell> window, ComputeShader heatDiffusionShader)
+        public TemperatureService(IWorldGrid<TemperatureCell> grid, 
+                                  IDenseGrid<TemperatureCell> window, 
+                                  ComputeShader heatDiffusionShader,
+                                  bool isActive = true)
         {
             Grid = grid;
             _window = window;
             _heatDiffusionShader = heatDiffusionShader;
+            Active = isActive;
             SetupComputeShader();
             SetupHeatmap();
         }
@@ -61,6 +83,13 @@ namespace Blizzard.Temperature
         ~TemperatureService()
         {
             DisposeComputeBuffers();
+        }
+
+        public void FixedTick()
+        {
+            if (!Active) return;
+            DoHeatDiffusionStep(Time.fixedDeltaTime);
+            ComputeHeatmap();
         }
 
         /// <summary>
@@ -108,6 +137,15 @@ namespace Blizzard.Temperature
         }
 
         /// <summary>
+        /// Sets compute shader float value, intended only for testing purposes
+        /// </summary>
+        public void SetComputeFloat(string nameId, float value)
+        {
+            Assert.That(Application.isEditor);
+            _heatDiffusionShader.SetFloat(nameId, value);
+        }
+
+        /// <summary>
         /// Fetches data from main grid into window grid, and copies it to input compute buffer.
         /// </summary>
         private void UpdateActiveSubgrid(Vector2Int offset)
@@ -130,6 +168,9 @@ namespace Blizzard.Temperature
             _heatDiffusionShader.SetInt("width", _window.Width);
             _heatDiffusionShader.SetInt("height", _window.Height);
             _heatDiffusionShader.SetFloat("diffusionFactor", TemperatureConstants.DiffusionFactor);
+
+            _heatDiffusionShader.SetFloat("ambientTemperature", TemperatureConstants.StartingAmbientTemperature);
+            _heatDiffusionShader.SetFloat("ambientFactor", TemperatureConstants.AmbientFactor);
         }
 
         /// <summary>
