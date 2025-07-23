@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 713791fcdd56d7144a63bd4e51b0906d, type: 3}
-  m_Name: Campfire
+  m_Name: B_Campfire
   m_EditorClassIdentifier: 
   obstacleData: {fileID: 11400000, guid: 32caf7ee23bb7314f917c2f10a3b45f8, type: 2}
   displayName: Campfire

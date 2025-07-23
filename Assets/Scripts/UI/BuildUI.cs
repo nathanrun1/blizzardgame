@@ -80,6 +80,7 @@ namespace Blizzard.UI
 
             // Init building preview
             _buildingPreview = _buildingData.obstacleData.obstaclePrefab.CreatePreview();
+            Debug.Log("BUILDING PREVIEW: " + _buildingPreview);
 
             // Init occupied building preview (swapped with building preview when location occupied)
             _occupiedBuildingPreview = Instantiate(_buildingPreview);

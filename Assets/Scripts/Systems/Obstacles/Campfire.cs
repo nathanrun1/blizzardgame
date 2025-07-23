@@ -11,26 +11,29 @@ namespace Blizzard.Obstacles.Concrete
         [SerializeField] Animator _animator;
         [SerializeField] Light2D _light2D;
         [Header("Config")]
-        [SerializeField] int _fuelLevelAmount = 4;
+        [SerializeField] int _fuelLevelAmount = 3;
         /// <summary>
         /// Light intensity by fuel level
         /// </summary>
         [SerializeField] float[] _lightIntensities = { 0f, .5f, .75f, 1 };
         /// <summary>
-        /// Thresholds for each fuel level, corresponding to fuel/maxFuel
+        /// Fuel must be higher than fuel threshold for corresponding level.
+        /// fuelThresholds[i] is threshold for level i + 1.
         /// </summary>
-        [SerializeField] float[] _fuelThresholds = { 0f, .1f, .25f, .6f };
+        [SerializeField] int[] _fuelThresholds = { 0, 25, 60 };
+        [SerializeField] int[] _heatLevels = { 0, 5, 7, 10 };
         /// <summary>
         /// Max fuel that can be added
         /// </summary>
-        [SerializeField] int _maxFuel;
+        [SerializeField] int _maxFuel = 100;
 
         private int _fuel = 0;
 
         private void OnValidate()
         {
-            Assert.IsTrue(_lightIntensities.Length == _fuelLevelAmount, "Light Intensities array size must be equal to fuelLevelAmount!");
+            Assert.IsTrue(_lightIntensities.Length == _fuelLevelAmount + 1, "Light Intensities array size must be equal to fuelLevelAmount + 1!");
             Assert.IsTrue(_fuelThresholds.Length == _fuelLevelAmount, "Fuel thresholds array size must be equal to fuelLevelAmount!");
+            Assert.IsTrue(_heatLevels.Length == _fuelLevelAmount + 1, "Heat Levels array size must be equal to fuelLevelAmount + 1!");
         }
 
         private void Start()
@@ -42,15 +45,13 @@ namespace Blizzard.Obstacles.Concrete
         private void SetFuel(int fuel)
         {
             _fuel = Mathf.Min(fuel, _maxFuel);
-            int level = _fuelThresholds.Length - 1;
-            while (level > 0)
+            int level = _fuelThresholds.Length;
+
+            for (; level > 0; level--)
             {
-                if (((float)_fuel / (float)_maxFuel) >= _fuelThresholds[level])
-                {
-                    // Fuel sufficient for current level
-                    break;
-                }
+                if (_fuel > _fuelThresholds[level - 1]) break; // Sufficient fuel for this level
             }
+
             SetFuelLevel(level);
         }
 
@@ -58,6 +59,7 @@ namespace Blizzard.Obstacles.Concrete
         {
             _animator.SetInteger("FuelLevel", level);
             _light2D.intensity = _lightIntensities[level];
+            SetHeat(_heatLevels[level]);
             // TODO: other relevant shit like heat probably
         }
     }

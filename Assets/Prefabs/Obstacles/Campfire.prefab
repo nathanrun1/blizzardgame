@@ -93,11 +93,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2779274468379762220}
+  - component: {fileID: 6553422288155621748}
   - component: {fileID: 245448152275529829}
   - component: {fileID: 3989951527430796683}
   - component: {fileID: 3645967852482406556}
   - component: {fileID: 1949217591942385515}
-  - component: {fileID: 6553422288155621748}
   m_Layer: 0
   m_Name: Campfire
   m_TagString: Untagged
@@ -121,6 +121,29 @@ Transform:
   - {fileID: 3325820456693583968}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6553422288155621748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7478012713066497398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fb3e56c07aa0e34c9212e13cb3f6432, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 1949217591942385515}
+  _light2D: {fileID: 1220903769132503672}
+  _fuelLevelAmount: 3
+  _lightIntensities:
+  - 0
+  - 0.5
+  - 0.75
+  - 1
+  _fuelThresholds: 00000000190000003c000000
+  _heatLevels: 0000000005000000070000000a000000
+  _maxFuel: 100
 --- !u!212 &245448152275529829
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -271,28 +294,3 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6553422288155621748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7478012713066497398}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fb3e56c07aa0e34c9212e13cb3f6432, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _animator: {fileID: 1949217591942385515}
-  _light2D: {fileID: 1220903769132503672}
-  _lightIntensities:
-  - 0
-  - 0.5
-  - 0.75
-  - 1
-  _fuelThresholds:
-  - 0
-  - 0.1
-  - 0.25
-  - 0.6
-  _maxFuel: 0

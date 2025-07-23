@@ -1,9 +1,13 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using Blizzard.Inventory;
 using Sirenix.OdinInspector;
 using Blizzard.UI;
 using Blizzard.Temperature;
+using Unity.VisualScripting;
+using System.Linq;
 
 public class DebugManager : MonoBehaviour
 {
@@ -27,6 +31,8 @@ public class DebugManager : MonoBehaviour
         _uiService.CloseUI(id);
     }
 
+    [FoldoutGroup("Inventory")]
+    [SerializeField] ItemAmountPair[] _startingItems;
     [FoldoutGroup("Inventory")]
     [Button]
     private void InventoryAddItem(ItemData item, int amount, bool fill = true)
@@ -72,6 +78,8 @@ public class DebugManager : MonoBehaviour
         {
             InitUI(uiId);
         }
+
+        _inventoryService.TryAddItems(_startingItems.ToList());
     }
 
     private void Update()
