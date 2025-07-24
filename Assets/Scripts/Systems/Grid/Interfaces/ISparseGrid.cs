@@ -13,5 +13,15 @@ namespace Blizzard.Grid
         /// Default value of a cell
         /// </summary>
         public T DefaultCell { get; set; }
+
+        /// <summary>
+        /// Valid grid positions, i.e. grid positions containing non-default values
+        /// </summary>
+        public IEnumerable<Vector2Int> ValidPositions { get; }
+
+        /// <summary>
+        /// All values stored in the sparse grid
+        /// </summary>
+        public IEnumerable<T> Values { get; }
     }
 }

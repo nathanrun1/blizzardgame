@@ -11,6 +11,10 @@ namespace Blizzard.Grid
     {
         public T DefaultCell { get; set; }
 
+        public IEnumerable<Vector2Int> ValidPositions { get => _hashmap.Keys; }
+
+        public IEnumerable<T> Values { get => _hashmap.Values;  }
+
         private Dictionary<Vector2Int, T> _hashmap = new Dictionary<Vector2Int, T>();
 
 

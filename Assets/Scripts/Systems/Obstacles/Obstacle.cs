@@ -5,6 +5,11 @@ using UnityEngine;
 
 namespace Blizzard.Obstacles
 {
+    [Flags] public enum ObstacleFlags
+    {
+        PlayerBuilt = 1 << 0
+    }
+
     /// <summary>
     /// An object that occupies a grid space in the obstacle grid
     /// </summary>
@@ -19,9 +24,12 @@ namespace Blizzard.Obstacles
         public float Heat { get; protected set; } = TemperatureConstants.DefaultHeatValue;
         public float Insulation { get; protected set; } = TemperatureConstants.DefaultInsulationValue;
 
+        public ObstacleFlags ObstacleFlags { get; protected set; } = 0;
 
-        public virtual void Init(float startingHeat, float startingInsulation)
+
+        public virtual void Init(float startingHeat, float startingInsulation, ObstacleFlags obstacleFlags = 0)
         {
+            ObstacleFlags = obstacleFlags;
             Heat = startingHeat;
             Insulation = startingInsulation;
         }

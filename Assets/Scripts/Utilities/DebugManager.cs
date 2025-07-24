@@ -73,14 +73,27 @@ public class DebugManager : MonoBehaviour
     [FoldoutGroup("Obstacles")]
     [SerializeField] ObstaclePlacement[] _initialObstacles;
     [FoldoutGroup("Obstacles")]
+    [Button]
     private void PlaceObstacle(ObstaclePlacement placement) 
     {
         _obstacleGridService.PlaceObstacleAt(placement.position, placement.obstacle);
     }
     [FoldoutGroup("Obstacles")]
+    [Button]
     private void RemoveObstacleAt(Vector2Int position)
     {
         _obstacleGridService.TryRemoveObstacleAt(position);
+    }
+    [FoldoutGroup("Obstacles")]
+    [Button]
+    private void PrintLocationsOfObstaclesWithFlag(ObstacleFlags flags)
+    {
+        string str = "OBSTACLE POSITIONS:\n";
+        foreach (Obstacle o in _obstacleGridService.GetAllObstaclesWithFlags(flags))
+        {
+            str += o.name + " at " + o.transform.position + '\n';
+        }
+        Debug.Log(str);
     }
 
     

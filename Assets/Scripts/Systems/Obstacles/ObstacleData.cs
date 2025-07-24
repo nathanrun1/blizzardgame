@@ -22,6 +22,10 @@ namespace Blizzard.Obstacles
         /// Initial insulation value
         /// </summary>
         public float startingInsulation = TemperatureConstants.DefaultInsulationValue;
+        /// <summary>
+        /// Obstacle flags
+        /// </summary>
+        public ObstacleFlags obstacleFlags = 0;
 
         [Inject] DiContainer _diContainer;
 
@@ -34,7 +38,7 @@ namespace Blizzard.Obstacles
             Assert.That(obstaclePrefab != null, "obstaclePrefab not provided!");
 
             Obstacle obstacle = _diContainer.InstantiatePrefabForComponent<Obstacle>(obstaclePrefab);
-            obstacle.Init(startingHeat, startingInsulation);
+            obstacle.Init(startingHeat, startingInsulation, obstacleFlags);
             obstacle.transform.position = position;
 
             return obstacle;

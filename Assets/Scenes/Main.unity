@@ -2628,6 +2628,9 @@ MonoBehaviour:
   _startingItems:
   - item: {fileID: 11400000, guid: b47f3e859c8e6ee4d8d89cb19f24b749, type: 2}
     amount: 1
+  _initialObstacles:
+  - obstacle: {fileID: 11400000, guid: 676533bf72b4b5d44b7bb4a628fb0f11, type: 2}
+    position: {x: 5, y: 5}
   _temperatureOverride: 0
   _diffusionFactor: 0.3
   _ambientFactor: 0.0005
