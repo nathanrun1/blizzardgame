@@ -38,7 +38,7 @@ namespace Blizzard.Obstacles
             Assert.That(obstaclePrefab != null, "obstaclePrefab not provided!");
 
             Obstacle obstacle = _diContainer.InstantiatePrefabForComponent<Obstacle>(obstaclePrefab);
-            obstacle.Init(startingHeat, startingInsulation, obstacleFlags);
+            obstacle.Init(this);
             obstacle.transform.position = position;
 
             return obstacle;

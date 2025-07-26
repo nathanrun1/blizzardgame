@@ -133,6 +133,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb3e56c07aa0e34c9212e13cb3f6432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _startingHealth: 100
+  _spriteRenderers:
+  - {fileID: 245448152275529829}
   _animator: {fileID: 1949217591942385515}
   _light2D: {fileID: 1220903769132503672}
   _fuelLevelAmount: 3

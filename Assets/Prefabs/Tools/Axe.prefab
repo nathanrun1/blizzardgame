@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 6879483275020322711}
   - component: {fileID: 8513478414259617197}
   - component: {fileID: 3796163057922437850}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: AxeHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -237,7 +237,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1754843825567687854
 Transform:
   m_ObjectHideFlags: 0
@@ -318,7 +318,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5560449277183513578}
   - component: {fileID: -3016606283695672373}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Axe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -362,4 +362,4 @@ MonoBehaviour:
   _axeSwing: {fileID: 7917537252080039970}
   _baseSwingCooldown: 0.5
   _animDuration: 0.15
-  _visualizeHitbox: 0
+  _visualizeHitbox: 1

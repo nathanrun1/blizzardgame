@@ -15,19 +15,13 @@ namespace Blizzard.Obstacles
     /// <summary>
     /// An obstacle that is harvestable by a tool, providing resources when harvested (destroyed)
     /// </summary>
-    public class Harvestable : Obstacle
+    public class Harvestable : Damageable
     {
-        /// <summary>
-        /// Health remaining, harvestable is destroyed (harvested) when health reaches 0
-        /// </summary>
-        public float Health { get; private set; }
+        [Header("Harvestable properties")]
         /// <summary>
         /// Type of tool(s) that can harvest this harvestable, interpreted as bit field.
         /// </summary>
         [SerializeField] public ToolType ToolTypes;
-
-
-        [SerializeField] int _startingHealth = 100;
         /// <summary>
         /// Resources given to the player when harvested
         /// </summary>
@@ -37,23 +31,16 @@ namespace Blizzard.Obstacles
         [Inject] private EnvPrefabService _envPrefabService;
         [Inject] private PlayerService _playerService;
 
-        public override void Init(float startingHeat, float startingInsulation)
+        protected override void OnDamage(int damage)
         {
-            this.Health = _startingHealth;
-            base.Init(startingHeat, startingInsulation);
+            if (Health > 0) StartCoroutine(DamageAnim());
+            base.OnDamage(damage);
         }
 
-        [Button]
-        public virtual void Damage(int damage)
+        protected override void OnDeath()
         {
-            Health -= damage;
-            Debug.Log("Taking " + damage + " damage, health is now " + Health);
-            if (Health > 0) StartCoroutine(DamageAnim());
-            if (Health <= 0)
-            {
-                Health = 0;
-                Harvest();
-            }
+            Harvest();
+            base.OnDeath();
         }
 
         /// <summary>

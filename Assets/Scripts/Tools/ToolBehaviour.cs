@@ -41,7 +41,7 @@ namespace Blizzard.Player
             int damageToApply = damage == -1 ? _baseDamage : damage;
 
             Debug.Log($"Hit a {harvestable.name}! Applying damage: " + damageToApply);
-            harvestable.Damage(damageToApply);
+            harvestable.Damage(damageToApply, out _);
         }
     }
 }

@@ -129,8 +129,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 628b2b12723116b47bb0ddefae4f4d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ToolTypes: 1
   _startingHealth: 100
+  ToolTypes: 1
   _resources:
   - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
     amount: 5
@@ -168,5 +168,5 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.0031827092}
-  m_Radius: 0.1366604
+  m_Offset: {x: -0.0144479275, y: 0.0031827092}
+  m_Radius: 0.4111712

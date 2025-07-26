@@ -5,12 +5,12 @@ using Sirenix.OdinInspector;
 
 namespace Blizzard.Obstacles.Concrete
 {
-    public class Campfire : Obstacle
+    public class Campfire : Structure
     {
         [Header("References")]
         [SerializeField] Animator _animator;
         [SerializeField] Light2D _light2D;
-        [Header("Config")]
+        [Header("Campfire Config")]
         [SerializeField] int _fuelLevelAmount = 3;
         /// <summary>
         /// Light intensity by fuel level

@@ -43,8 +43,6 @@ namespace Blizzard.Environment
 
         private void OnTriggerEnter2D(Collider2D collider)
         {
-            Debug.Log("Detected collision!");
-            Debug.Log("Player tag?: " + collider.CompareTag("Player"));
             if (!isActive || !collider.gameObject.CompareTag("Player")) return; // Ensure GameObject has "Player" tag and that drop is active
             Assert.That(_drop.item != null, "Test item data is not set!");
 

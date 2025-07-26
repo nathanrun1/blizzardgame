@@ -120,7 +120,7 @@ namespace Blizzard
             Vector2 bottomLeft = _axeHitbox.transform.position - halfX - halfY;
             Vector2 topRight = _axeHitbox.transform.position + halfX + halfY;
             
-            Collider2D[] hitList = Physics2D.OverlapAreaAll(bottomLeft, topRight, layerMask: (int)CollisionLayer.Destroyable);
+            Collider2D[] hitList = Physics2D.OverlapAreaAll(bottomLeft, topRight, layerMask: (int)CollisionAssistant.Hittable);
 
             if (_visualizeHitbox) StartCoroutine(VisualizeAxeHitbox(bottomLeft, topRight));
 

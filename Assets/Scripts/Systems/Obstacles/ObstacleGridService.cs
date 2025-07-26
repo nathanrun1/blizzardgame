@@ -96,6 +96,7 @@ namespace Blizzard.Obstacles
             if (Grid.TryGetValue(gridPosition, out _))
             {
                 Grid.ResetAt(gridPosition);
+                UpdateTemperatureSimData(gridPosition, null);
             }
         }
 

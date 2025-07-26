@@ -16,7 +16,9 @@ namespace Blizzard.Player
         public PlayerMovement PlayerMovement;
         public PlayerTemperature PlayerTemperature;
 
-        public ToolBehaviour equippedTool { get; private set; }
+        public ToolBehaviour EquippedTool { get; private set; }
+
+        public Vector2 PlayerPosition { get => PlayerCtrl.transform.position; }
 
         /// <summary>
         /// To invoke on initializationc
@@ -35,6 +37,12 @@ namespace Blizzard.Player
         {
             _initialize.Invoke();
             _initialize = null;
+        }
+
+        public void DamagePlayer(int damage)
+        {
+            // TODO: implement
+            Debug.Log("Inflicted " + damage + " damage to player!");
         }
 
         /// <summary>
@@ -62,7 +70,7 @@ namespace Blizzard.Player
             UnequipTool();
 
             // Instantiate tool prefab, parent to player transform
-            equippedTool = _diContainer.InstantiatePrefabForComponent<ToolBehaviour>(toolItemData.toolPrefab, this.PlayerCtrl.toolParent.transform);
+            EquippedTool = _diContainer.InstantiatePrefabForComponent<ToolBehaviour>(toolItemData.toolPrefab, this.PlayerCtrl.toolParent.transform);
         }
 
         /// <summary>
@@ -70,11 +78,11 @@ namespace Blizzard.Player
         /// </summary>
         public void UnequipTool()
         {
-            Debug.Log("Equipped tool: " + equippedTool);
-            if (equippedTool != null)
+            Debug.Log("Equipped tool: " + EquippedTool);
+            if (EquippedTool != null)
             {
                 Debug.Log("Tool exists");
-                MonoBehaviour.Destroy(equippedTool.gameObject); // TODO: obj pooling
+                MonoBehaviour.Destroy(EquippedTool.gameObject); // TODO: obj pooling
             }
         }
 

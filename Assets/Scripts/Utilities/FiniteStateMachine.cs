@@ -1,11 +1,11 @@
-namespace Blizzard.Utilities
+namespace Blizzard.Utilities.StateMachine
 {
     public interface IState
     {
         /// <summary>
         /// Enter this state
         /// </summary>
-        public void Enter();
+        public void Enter(IStateContext stateContext);
         /// <summary>
         /// Call state's update function, to be invoked once per frame
         /// </summary>
@@ -16,9 +16,22 @@ namespace Blizzard.Utilities
         public void Exit();
     }
 
+    public interface IStateContext 
+    {
+        public StateMachine stateMachine { get; set; }
+    }
+
     public class StateMachine
     {
         public IState currentState { get; private set; }
+
+        private IStateContext _stateContext;
+
+        public StateMachine(IStateContext stateContext)
+        {
+            _stateContext = stateContext;
+            stateContext.stateMachine = this;
+        }
 
         public void ChangeState(IState newState)
         {
@@ -26,7 +39,7 @@ namespace Blizzard.Utilities
                 currentState.Exit();
 
             currentState = newState;
-            currentState.Enter();
+            currentState.Enter(_stateContext);
         }
 
         public void Update()

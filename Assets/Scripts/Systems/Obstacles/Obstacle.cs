@@ -27,11 +27,11 @@ namespace Blizzard.Obstacles
         public ObstacleFlags ObstacleFlags { get; protected set; } = 0;
 
 
-        public virtual void Init(float startingHeat, float startingInsulation, ObstacleFlags obstacleFlags = 0)
+        public virtual void Init(ObstacleData obstacleData)
         {
-            ObstacleFlags = obstacleFlags;
-            Heat = startingHeat;
-            Insulation = startingInsulation;
+            ObstacleFlags = obstacleData.obstacleFlags;
+            Heat = obstacleData.startingHeat;
+            Insulation = obstacleData.startingInsulation;
         }
 
         /// <summary>
