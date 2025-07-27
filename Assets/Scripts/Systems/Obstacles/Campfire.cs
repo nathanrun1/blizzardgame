@@ -38,7 +38,7 @@ namespace Blizzard.Obstacles.Concrete
 
         private void Start()
         {
-            SetFuel(0);
+            SetFuel(50);
         }
 
         [Button]

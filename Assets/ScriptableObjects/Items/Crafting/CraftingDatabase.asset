@@ -29,3 +29,13 @@ MonoBehaviour:
       cost:
       - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
         amount: 5
+    - result: {fileID: 11400000, guid: d2244ecbe68e5e54bab162f9cbe9abaa, type: 2}
+      resultAmount: 1
+      cost:
+      - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
+        amount: 1
+    - result: {fileID: 11400000, guid: 0a5e94612a1d6cf49a8b2c603f121206, type: 2}
+      resultAmount: 1
+      cost:
+      - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
+        amount: 2

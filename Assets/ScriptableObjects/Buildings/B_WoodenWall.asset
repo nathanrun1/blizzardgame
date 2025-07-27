@@ -10,8 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 713791fcdd56d7144a63bd4e51b0906d, type: 3}
-  m_Name: Square
+  m_Name: B_WoodenWall
   m_EditorClassIdentifier: 
   obstacleData: {fileID: 11400000, guid: 95ce1c35275b998409ac1a6923f2be15, type: 2}
-  displayName: Square
-  cost: {fileID: 11400000, guid: 8a38c802b0412ee429af2b5417140e1e, type: 2}
+  displayName: Wooden Wall

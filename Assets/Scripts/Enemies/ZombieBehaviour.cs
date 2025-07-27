@@ -99,15 +99,18 @@ namespace Blizzard.NPC.Enemies
             protected bool TryGetDamageableTarget()
             {
                 Obstacle randObstacle = _stateContext.obstacleGridService.GetRandomObstacleWithFlags(ObstacleFlags.PlayerBuilt);
+                if (randObstacle == null) return false;
+                Debug.Log("found obstacle: " + randObstacle.name);
 
                 // Check for a closer player built obstacle in line of sight
                 RaycastHit2D raycast = Physics2D.Raycast(_stateContext.gameObject.transform.position,
                                                          randObstacle.transform.position - _stateContext.gameObject.transform.position,
                                                          Mathf.Infinity,
                                                          (int)CollisionAssistant.Visible);
-                if (raycast.collider.gameObject != randObstacle.gameObject)
+                if (raycast.collider != null && raycast.collider.gameObject != randObstacle.gameObject)
                 {
                     Obstacle hit = raycast.collider.gameObject.GetComponent<Obstacle>();
+                    if (hit != null) Debug.Log("closer obstacle?: " + hit.gameObject.name);
                     if (hit != null && (hit.ObstacleFlags & ObstacleFlags.PlayerBuilt) == ObstacleFlags.PlayerBuilt)
                     {
                         // A closer target, pick this one instead
@@ -115,12 +118,8 @@ namespace Blizzard.NPC.Enemies
                     }
                 }
 
-                if (randObstacle != null)
-                {
-                    _stateContext.targetObstacle = randObstacle as Damageable; // PlayerBuilt obstacles must be damageable
-                    return true;
-                }
-                return false;
+                _stateContext.targetObstacle = randObstacle as Damageable;
+                return true;
             }
         }
 
@@ -186,6 +185,7 @@ namespace Blizzard.NPC.Enemies
             public override void Update()
             {
                 _clock += Time.fixedDeltaTime;
+                _stateContext.rigidBody.linearVelocity = Vector2.zero;
                 if (_clock > _stateContext.behaviourConfig.attackDelay)
                 {
                     _clock -= _stateContext.behaviourConfig.attackDelay;
@@ -244,6 +244,7 @@ namespace Blizzard.NPC.Enemies
             public override void Update()
             {
                 _clock += Time.fixedDeltaTime;
+                _stateContext.rigidBody.linearVelocity = Vector2.zero;
                 if (_clock > _stateContext.behaviourConfig.attackDelay)
                 {
                     _clock -= _stateContext.behaviourConfig.attackDelay;

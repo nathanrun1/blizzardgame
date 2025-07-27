@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b8f1fb34849b5e45b4e137e433e4dc0, type: 3}
-  m_Name: Axe
+  m_Script: {fileID: 11500000, guid: ed17f808c229b5343a8a067b291055d3, type: 3}
+  m_Name: I_WoodenWall
   m_EditorClassIdentifier: 
-  id: 1
-  displayName: Axe
-  icon: {fileID: 7075770675005161047, guid: bad68de7bd263ff45925cfa8a763fe4a, type: 3}
-  stackSize: 1
+  id: 4
+  displayName: Wooden Wall
+  icon: {fileID: -6597554750485183708, guid: d028e941b7f054c499d9f6493444c4d9, type: 3}
+  stackSize: 10
   itemGainColor:
     serializedVersion: 2
     rgba: 4294967295
-  toolPrefab: {fileID: -3016606283695672373, guid: 57d97c79e6dd7c64bb9a0d1f328a9960, type: 3}
+  buildingData: {fileID: 11400000, guid: 8c04b014488f84d4fa3568e1d07aa472, type: 2}

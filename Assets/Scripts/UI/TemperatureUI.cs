@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Zenject;
 using TMPro;
@@ -22,8 +23,8 @@ namespace Blizzard.UI
 
         private void FixedUpdate()
         {
-            _bodyTemperature.text = "Body: " + _playerService.PlayerTemperature.BodyTemperature.ToString() + '°';
-            _areaTemperature.text = "Area: " + _temperatureService.GetTemperatureAtWorldPos(_playerService.PlayerCtrl.transform.position).ToString() + '°';
+            _bodyTemperature.text = "Body: " + Math.Round(_playerService.PlayerTemperature.BodyTemperature, 2).ToString() + '°';
+            _areaTemperature.text = "Area: " + Math.Round(_temperatureService.GetTemperatureAtWorldPos(_playerService.PlayerCtrl.transform.position), 2).ToString() + '°';
         }
     }
 }

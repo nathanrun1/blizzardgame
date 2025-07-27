@@ -35,6 +35,9 @@ namespace Blizzard
             }
 
             BindInput();
+
+            _axeStationary.SetActive(true);
+            _axeSwing.SetActive(false);
         }
 
         private void Update()

@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2779274468379762220}
+  - component: {fileID: 4374139578210925026}
   - component: {fileID: 245448152275529829}
-  - component: {fileID: 5606261413696615922}
   - component: {fileID: 3989951527430796683}
   - component: {fileID: 3645967852482406556}
-  m_Layer: 0
-  m_Name: Square
+  m_Layer: 6
+  m_Name: WoodenWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,6 +35,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4374139578210925026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7478012713066497398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ad275492cadfdc499f9d6fdbe5f4970, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startingHealth: 500
+  _spriteRenderers:
+  - {fileID: 245448152275529829}
 --- !u!212 &245448152275529829
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -79,7 +94,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: -6597554750485183708, guid: d028e941b7f054c499d9f6493444c4d9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -90,20 +105,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &5606261413696615922
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7478012713066497398}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dafb1539242aba0418c43cd0dbb56e92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _startingInsulation: 0.9
-  _startingHeat: -10
 --- !u!61 &3989951527430796683
 BoxCollider2D:
   m_ObjectHideFlags: 0
