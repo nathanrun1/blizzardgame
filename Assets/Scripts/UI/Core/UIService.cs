@@ -40,8 +40,6 @@ namespace Blizzard.UI
         /// Initializes UI prefab of given id.
         /// First instantiates it, then parents it to the appropriate canvas, then calls the Setup() method with provided args.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="args"></param>
         public void InitUI(int id, object args = null)
         {
             UIData uiData;

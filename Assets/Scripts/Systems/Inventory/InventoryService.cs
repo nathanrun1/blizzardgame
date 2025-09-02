@@ -99,7 +99,7 @@ namespace Blizzard.Inventory
 
         /// <summary>
         /// Initializes and adds as many items from the given list of ItemAmountPairs as possible.
-        /// Post: Given list represents all items that couldn't be added due to player inventory being full.
+        /// Post: Given list now holds remaining items that couldn't be added due to player inventory being full.
         /// </summary>
         /// <param name="items">Items to add, modified during invocation to contain items that couldn't be added</param>
         public void TryAddItems(List<ItemAmountPair> items)

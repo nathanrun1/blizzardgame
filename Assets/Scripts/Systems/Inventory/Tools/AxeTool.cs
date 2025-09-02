@@ -43,6 +43,8 @@ namespace Blizzard
         private void Update()
         {
             if (_cooldown > 0) _cooldown -= Time.deltaTime;
+
+            Debug.Log("Input?: " + _inputService.inputActions.Player.Fire.IsPressed());
         }
 
         private void OnDestroy()
@@ -62,6 +64,7 @@ namespace Blizzard
 
         private void OnInputFire(InputAction.CallbackContext ctx)
         {
+            Debug.Log("Axe input detected");
             if (!_inputService.IsPointerOverUIElement() && _cooldown <= 0) OnSwing();
         }
 
@@ -77,10 +80,9 @@ namespace Blizzard
             foreach (Collider2D obj in hitObjects)
             {
                 // Get 'Harvestable' component of object, or ignore if doesn't exist
-                Harvestable harvestable = obj.GetComponent<Harvestable>();
-                if (harvestable != null)
+
+                if (obj.TryGetComponent<Harvestable>(out Harvestable harvestable))
                 {
-                    // Target is a harvestable
                     Harvest(harvestable, CalculateDamage());
                 }
 
@@ -154,8 +156,6 @@ namespace Blizzard
             _axeStationary.SetActive(false);
             _axeSwing.SetActive(true);
 
-            float animDuration = 0.15f;
-
             Vector3 swingStartPos = new Vector3(0.35f, 0.35f, 0f);
             Vector3 swingEndPos = new Vector3(-0.25f, 0.35f, 0f);
 
@@ -167,8 +167,8 @@ namespace Blizzard
 
 
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(_axeSwing.transform.DOLocalRotateQuaternion(swingEndRot, animDuration));
-            sequence.Join(_axeSwing.transform.DOLocalMove(swingEndPos, animDuration));
+            sequence.Append(_axeSwing.transform.DOLocalRotateQuaternion(swingEndRot, _animDuration));
+            sequence.Join(_axeSwing.transform.DOLocalMove(swingEndPos, _animDuration));
 
             sequence.OnComplete(() =>
             {

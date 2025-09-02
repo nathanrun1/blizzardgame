@@ -48,5 +48,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c21f7448de189a6449961b26e35d210c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _updateDelay: 0.2
+  _updateDelay: 0.05
   _occupiedLocationColor: {r: 0.9433962, g: 0.17503259, b: 0.17503259, a: 1}

@@ -5,6 +5,9 @@ using UnityEngine.EventSystems;
 
 namespace Blizzard
 {
+    /// <summary>
+    /// Player input and input-related helper methods
+    /// </summary>
     public class InputService
     {
         public PlayerInputActions inputActions;

@@ -1,6 +1,7 @@
 using Blizzard.Environment;
 using Blizzard.Inventory;
 using Blizzard.Player;
+using Blizzard.UI;
 using Blizzard.Utilities;
 using DG.Tweening;
 using Sirenix.OdinInspector;
@@ -30,6 +31,7 @@ namespace Blizzard.Obstacles
         [Inject] private InventoryService _inventoryService;
         [Inject] private EnvPrefabService _envPrefabService;
         [Inject] private PlayerService _playerService;
+        [Inject] private UIService _uiService;
 
         protected override void OnDamage(int damage)
         {
@@ -51,7 +53,8 @@ namespace Blizzard.Obstacles
             List<ItemAmountPair> items = new(_resources);
             Debug.Log($"Harvested! Adding {items.Count} different items to inv!");
             Debug.Log(_inventoryService);
-            _inventoryService.TryAddItems(items);
+
+            _inventoryService.TryAddItemsWithAnim(_uiService, transform.position, items);
 
             if (!items.IsNullOrEmpty())
             {
@@ -65,7 +68,7 @@ namespace Blizzard.Obstacles
                     dropObj.Setup(item);
                 }
             }
-
+             
             HarvestAnim(() => Destroy());
         }
 

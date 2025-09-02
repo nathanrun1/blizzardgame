@@ -134,6 +134,8 @@ MonoBehaviour:
   _resources:
   - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
     amount: 5
+  - item: {fileID: 11400000, guid: 5dfeb5bbc8c7c534f99ebeb2af227776, type: 2}
+    amount: 1
 --- !u!58 &6708988086812396866
 CircleCollider2D:
   m_ObjectHideFlags: 0

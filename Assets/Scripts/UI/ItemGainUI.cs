@@ -22,6 +22,11 @@ namespace Blizzard.UI
             /// World position to display the UI at
             /// </summary>
             public Vector3 worldPosition;
+
+            /// <summary>
+            /// Invoked when animation is completed
+            /// </summary>
+            public Action OnAnimComplete;
         }
 
         [Header("GameObject References")]
@@ -51,7 +56,7 @@ namespace Blizzard.UI
             if (itemGainArgs.amount == 0) Close(); // Only display non-zero amount
 
             transform.localPosition = GetUILocalPos(itemGainArgs.worldPosition);
-            GainItemAnim(itemGainArgs.item, itemGainArgs.amount);
+            GainItemAnim(itemGainArgs.item, itemGainArgs.amount, itemGainArgs.OnAnimComplete);
         }
 
         /// <summary>
@@ -72,7 +77,7 @@ namespace Blizzard.UI
             return localPos;
         }
 
-        public void GainItemAnim(ItemData item, int amount)
+        public void GainItemAnim(ItemData item, int amount, Action onComplete)
         {
             if (amount > 0)
             {
@@ -91,6 +96,7 @@ namespace Blizzard.UI
                 //seq.Join(_icon.DOColor(new Color(initialCountColor.r, initialCountColor.g, initialCountColor.b, 0), ANIM_LENGTH));
                 seq.OnComplete(() =>
                 {
+                    onComplete?.Invoke();
                     Close();
                 });
                 seq.Play();
@@ -113,6 +119,7 @@ namespace Blizzard.UI
                 //seq.Join(_icon.DOColor(new Color(initialCountColor.r, initialCountColor.g, initialCountColor.b, 0), ANIM_LENGTH));
                 seq.OnComplete(() =>
                 {
+                    onComplete?.Invoke();
                     Close();
                 });
                 seq.Play();

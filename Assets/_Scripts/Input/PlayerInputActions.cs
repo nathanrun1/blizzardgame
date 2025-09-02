@@ -115,7 +115,7 @@ namespace Blizzard
                     ""name"": ""Fire"",
                     ""type"": ""Button"",
                     ""id"": ""5474b621-3ae2-4c38-ab5a-c73d41bf91c0"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -142,7 +142,7 @@ namespace Blizzard
                     ""name"": ""NumberKey"",
                     ""type"": ""Value"",
                     ""id"": ""44c89f71-a490-410e-bd15-3b6235c68306"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -365,6 +365,17 @@ namespace Blizzard
                 },
                 {
                     ""name"": """",
+                    ""id"": ""01b02aa7-6c32-44e8-8431-6ab274702a7e"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""886e731e-7071-4ae4-95c0-e61739dad6fd"",
                     ""path"": ""<Touchscreen>/primaryTouch/tap"",
                     ""interactions"": """",
@@ -523,7 +534,7 @@ namespace Blizzard
                     ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""DropItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
