@@ -17,9 +17,9 @@ namespace Blizzard.Obstacles
     {
         public event Action OnDestroy;
         /// <summary>
-        /// Invoked whenever heat sim data has been updated.
+        /// Invoked whenever temperature sim data has been updated.
         /// </summary>
-        public event Action HeatDataUpdated;
+        public event Action TemperatureDataUpdated;
 
         public float Heat { get; protected set; } = TemperatureConstants.DefaultHeatValue;
         public float Insulation { get; protected set; } = TemperatureConstants.DefaultInsulationValue;
@@ -41,7 +41,7 @@ namespace Blizzard.Obstacles
         {
             Assert.That(0 <= insulation && insulation <= 1);
             this.Insulation = insulation;
-            HeatDataUpdated?.Invoke();
+            TemperatureDataUpdated?.Invoke();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Blizzard.Obstacles
         protected void SetHeat(float heat)
         {
             this.Heat = heat;
-            HeatDataUpdated?.Invoke();
+            TemperatureDataUpdated?.Invoke();
         }
 
         /// <summary>

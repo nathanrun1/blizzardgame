@@ -1,8 +1,8 @@
 using UnityEngine;
+using UnityEngine.Assertions;
 using Blizzard.Obstacles;
 using Blizzard.Temperature;
 using System;
-using ModestTree;
 using Zenject;
 
 namespace Blizzard.Obstacles
@@ -26,6 +26,10 @@ namespace Blizzard.Obstacles
         /// Obstacle flags
         /// </summary>
         public ObstacleFlags obstacleFlags = 0;
+        /// <summary>
+        /// Which obstacle grid layer this obstacle is placed on
+        /// </summary>
+        public ObstacleLayer obstacleLayer;
 
         [Inject] DiContainer _diContainer;
 
@@ -35,7 +39,7 @@ namespace Blizzard.Obstacles
         /// <param name="position">Global position to instantiate obstacle at</param>
         public virtual Obstacle CreateObstacle(Vector3 position)
         {
-            Assert.That(obstaclePrefab != null, "obstaclePrefab not provided!");
+            Assert.IsTrue(obstaclePrefab != null, "obstaclePrefab not provided!");
 
             Obstacle obstacle = _diContainer.InstantiatePrefabForComponent<Obstacle>(obstaclePrefab);
             obstacle.Init(this);

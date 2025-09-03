@@ -97,15 +97,21 @@ namespace Blizzard.UI
 
         private void OnInputBuild(InputAction.CallbackContext _)
         {
-            Vector2Int mouseGridPosition = _obstacleGridService.Grid.WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            if (InputAssistant.IsPointerOverUIElement()) return;
+
+            Vector2Int mouseGridPosition = _obstacleGridService.Grids[0].WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
             if (_obstacleGridService.IsOccupied(mouseGridPosition)) return; // Location occupied
 
             // Sanity check: Ensure item corresponding to building is the correct item
             BuildingItemData buildItem = _inventoryService.inventorySlots[_buildItemSlotIndex].item as BuildingItemData;
             Assert.That(buildItem != null && buildItem.buildingData == _buildingData, "Given inventory slot does not contain matching item to building!");
 
-            // Remove one of the building from inventory
-            _inventoryService.TryRemoveItemAt(_buildItemSlotIndex, 1);
+            // Remove one of the building from inventory, ensure item removed successfully
+            if (_inventoryService.TryRemoveItemAt(_buildItemSlotIndex, 1) != 1)
+            {
+                Debug.LogError("Build item not successfully removed from inventory! Cancelling build.");
+                return;
+            }
 
             Debug.Log($"Placing at {mouseGridPosition}");
             _obstacleGridService.PlaceObstacleAt(mouseGridPosition, _buildingData.obstacleData);
@@ -124,7 +130,7 @@ namespace Blizzard.UI
         private void UpdatePreview()
         {
             Debug.Log("updating preview");
-            Vector2Int mouseGridPosition = _obstacleGridService.Grid.WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            Vector2Int mouseGridPosition = _obstacleGridService.Grids[0].WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
             GameObject preview;
             if (_obstacleGridService.IsOccupied(mouseGridPosition))
@@ -140,7 +146,7 @@ namespace Blizzard.UI
                 _buildingPreview.SetActive(true);
             }
 
-            preview.transform.position = _obstacleGridService.Grid.CellToWorldPosCenter(mouseGridPosition);
+            preview.transform.position = _obstacleGridService.Grids[0].CellToWorldPosCenter(mouseGridPosition);
         }
     }
 }

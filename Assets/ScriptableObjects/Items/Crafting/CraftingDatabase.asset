@@ -39,3 +39,8 @@ MonoBehaviour:
       cost:
       - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
         amount: 2
+    - result: {fileID: 11400000, guid: c23287e61aa4e764db47c8d408cbb4b0, type: 2}
+      resultAmount: 1
+      cost:
+      - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
+        amount: 1

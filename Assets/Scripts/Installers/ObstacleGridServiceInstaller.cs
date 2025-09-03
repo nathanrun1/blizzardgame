@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using Blizzard.Grid;
@@ -12,10 +14,17 @@ namespace Blizzard.Obstacles
 
         public override void InstallBindings()
         {
+            // Create one grid per obstacle layer
+            Dictionary<ObstacleLayer, ISparseWorldGrid<Obstacle>> grids = new();
+            foreach (ObstacleLayer layer in Enum.GetValues(typeof(ObstacleLayer)))
+            {
+                grids.Add(layer, new HashWorldGrid<Obstacle>(CELL_SIDE_LENGTH, CELL_SIDE_LENGTH));
+            }
+
             Container.Bind<ObstacleGridService>()
                 .FromNew()
                 .AsSingle()
-                .WithArguments(new HashWorldGrid<Obstacle>(CELL_SIDE_LENGTH, CELL_SIDE_LENGTH), _obstaclesParent);
+                .WithArguments(grids, _obstaclesParent);
         }
     }
 }
