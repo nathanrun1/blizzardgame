@@ -18,6 +18,9 @@ namespace Blizzard
         [SerializeField] float _baseSwingCooldown = 0.5f;
         [Header("Style Config")]
         [SerializeField] float _animDuration = 0.15f;
+        [SerializeField] float _swingAnimOffset = 0.35f;
+        [SerializeField] float _swingAnimStartLocalX = 0.35f;
+        [SerializeField] float _swingAnimEndLocalX = -0.25f;
         [Header("Testing")]
         [SerializeField] bool _visualizeHitbox = false;
 
@@ -156,8 +159,8 @@ namespace Blizzard
             _axeStationary.SetActive(false);
             _axeSwing.SetActive(true);
 
-            Vector3 swingStartPos = new Vector3(0.35f, 0.35f, 0f);
-            Vector3 swingEndPos = new Vector3(-0.25f, 0.35f, 0f);
+            Vector3 swingStartPos = new Vector3(_swingAnimStartLocalX, _swingAnimOffset, 0f);
+            Vector3 swingEndPos = new Vector3(_swingAnimEndLocalX, _swingAnimOffset, 0f);
 
             Quaternion swingStartRot = Quaternion.Euler(new Vector3(0, 0, 0));
             Quaternion swingEndRot = Quaternion.Euler(new Vector3(0, 0, 90));

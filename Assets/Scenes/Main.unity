@@ -1388,6 +1388,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fd0d09136ef0b0447b85c38f1654de48, type: 2}
   - {fileID: 11400000, guid: c23287e61aa4e764db47c8d408cbb4b0, type: 2}
   - {fileID: 11400000, guid: 8d2bbd59fa7b6b642b8d0246a781f0dd, type: 2}
+  - {fileID: 11400000, guid: 143031de987ad274e97c79399a46dba3, type: 2}
 --- !u!1 &821977788
 GameObject:
   m_ObjectHideFlags: 0
@@ -2665,6 +2666,8 @@ MonoBehaviour:
   _startupUI: 0100000002000000
   _startingItems:
   - item: {fileID: 11400000, guid: b47f3e859c8e6ee4d8d89cb19f24b749, type: 2}
+    amount: 1
+  - item: {fileID: 11400000, guid: 143031de987ad274e97c79399a46dba3, type: 2}
     amount: 1
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 676533bf72b4b5d44b7bb4a628fb0f11, type: 2}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 42958566434741610}
   - component: {fileID: 543251865065590397}
   m_Layer: 0
-  m_Name: AxeSprite_Stationary
+  m_Name: Stationary
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 2884644984697585786}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.9238796, w: -0.38268325}
-  m_LocalPosition: {x: 0.272, y: -0.01, z: 0}
+  m_LocalPosition: {x: 0.234, y: -0.086, z: 0}
   m_LocalScale: {x: 0.478077, y: 0.49698406, z: 0.73}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7075770675005161047, guid: bad68de7bd263ff45925cfa8a763fe4a, type: 3}
+  m_Sprite: {fileID: -8377792427724042989, guid: ebae8a6fb17d6a24c8d0fe4b24dba85a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 8513478414259617197}
   - component: {fileID: 3796163057922437850}
   m_Layer: 0
-  m_Name: AxeHitbox
+  m_Name: Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -232,7 +232,7 @@ GameObject:
   - component: {fileID: 1754843825567687854}
   - component: {fileID: 4774741237084046606}
   m_Layer: 0
-  m_Name: AxeSprite_Swing
+  m_Name: Swing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -247,7 +247,7 @@ Transform:
   m_GameObject: {fileID: 7917537252080039970}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.212, y: 0.35, z: 0}
+  m_LocalPosition: {x: 0.212, y: 0.199, z: 0}
   m_LocalScale: {x: 0.47807696, y: 0.49698403, z: 0.73}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -297,7 +297,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7075770675005161047, guid: bad68de7bd263ff45925cfa8a763fe4a, type: 3}
+  m_Sprite: {fileID: -8377792427724042989, guid: ebae8a6fb17d6a24c8d0fe4b24dba85a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -319,7 +319,7 @@ GameObject:
   - component: {fileID: 5560449277183513578}
   - component: {fileID: -3016606283695672373}
   m_Layer: 0
-  m_Name: Axe
+  m_Name: Pickaxe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -355,11 +355,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86e12a441e1190e4cb7d017bf7e932a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseDamage: 25
-  _toolType: 1
+  _baseDamage: 40
+  _toolType: -1
   _axeHitbox: {fileID: 6435766062384087879}
   _axeStationary: {fileID: 2884644984697585786}
   _axeSwing: {fileID: 7917537252080039970}
-  _baseSwingCooldown: 0.5
-  _animDuration: 0.15
+  _baseSwingCooldown: 0.6
+  _animDuration: 0.25
+  _swingAnimOffset: 0.3
+  _swingAnimStartLocalX: 0.35
+  _swingAnimEndLocalX: -0.3
   _visualizeHitbox: 0
