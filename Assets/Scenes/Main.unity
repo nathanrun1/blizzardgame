@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.9685534, g: 0.9685534, b: 0.9685534, a: 1}
+  m_AmbientSkyColor: {r: 1, g: 1, b: 1, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 0.57
@@ -1389,6 +1389,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c23287e61aa4e764db47c8d408cbb4b0, type: 2}
   - {fileID: 11400000, guid: 8d2bbd59fa7b6b642b8d0246a781f0dd, type: 2}
   - {fileID: 11400000, guid: 143031de987ad274e97c79399a46dba3, type: 2}
+  - {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}
+  - {fileID: 11400000, guid: e571c11d345b61e4a820b01b07e9624a, type: 2}
+  - {fileID: 11400000, guid: e392c1bffe605eb459745b3d9ee481af, type: 2}
+  - {fileID: 11400000, guid: c7049c190d5729c4eafeea359f5193f5, type: 2}
+  - {fileID: 11400000, guid: 643576cc368137a47b60c8a5e5568ec1, type: 2}
 --- !u!1 &821977788
 GameObject:
   m_ObjectHideFlags: 0
@@ -2670,11 +2675,11 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 143031de987ad274e97c79399a46dba3, type: 2}
     amount: 1
   _initialObstacles:
-  - obstacle: {fileID: 11400000, guid: 676533bf72b4b5d44b7bb4a628fb0f11, type: 2}
-    position: {x: 5, y: 5}
-  - obstacle: {fileID: 11400000, guid: 676533bf72b4b5d44b7bb4a628fb0f11, type: 2}
+  - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}
+    position: {x: 0, y: 5}
+  - obstacle: {fileID: 11400000, guid: e571c11d345b61e4a820b01b07e9624a, type: 2}
     position: {x: 5, y: 4}
-  - obstacle: {fileID: 11400000, guid: 676533bf72b4b5d44b7bb4a628fb0f11, type: 2}
+  - obstacle: {fileID: 11400000, guid: e392c1bffe605eb459745b3d9ee481af, type: 2}
     position: {x: 5, y: 3}
   - obstacle: {fileID: 11400000, guid: 676533bf72b4b5d44b7bb4a628fb0f11, type: 2}
     position: {x: 5, y: 2}
