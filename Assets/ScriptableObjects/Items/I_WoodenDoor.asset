@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed17f808c229b5343a8a067b291055d3, type: 3}
+  m_Script: {fileID: 11500000, guid: 32ad2e618ae935343ba026abde1a7421, type: 3}
   m_Name: I_WoodenDoor
   m_EditorClassIdentifier: 
-  id: 5
+  id: 6
   displayName: Wooden Door
-  icon: {fileID: 1870350834782661888, guid: 8c510744de9d7144782a076079858829, type: 3}
-  stackSize: 3
+  icon: {fileID: -7543998948565880746, guid: b61ad6ff143a2ea4389a1b3209a336eb, type: 3}
+  stackSize: 10
   itemGainColor:
     serializedVersion: 2
     rgba: 4294967295

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Blizzard.Inventory;
 using Blizzard.Inventory.Crafting;
+using Blizzard.Player;
+using Blizzard.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +33,8 @@ namespace Blizzard.UI
 
         [Inject] InventoryService _inventoryService;
         [Inject] UIService _uiService;
+        [Inject] EnvPrefabService _envPrefabService;
+        [Inject] PlayerService _playerService;
 
         private List<Button> _activeRecipeButtons = new List<Button>();
 
@@ -99,6 +103,12 @@ namespace Blizzard.UI
                 int amountAdded = _inventoryService.TryAddItem(recipe.result, recipe.resultAmount, fill: true);
 
                 _uiService.ItemGain(recipe.result, amountAdded, default); // TODO: somehow get player position (playerservice?)
+
+                if (amountAdded < recipe.resultAmount)
+                {
+                    // Drop item on ground, not successfully added to inventory
+                    InventoryServiceExtensions.DropItem(_envPrefabService, _playerService, recipe.result, recipe.resultAmount - amountAdded);
+                }
             }
         }
     }

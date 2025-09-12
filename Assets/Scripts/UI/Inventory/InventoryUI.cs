@@ -85,10 +85,13 @@ namespace Blizzard.UI
         {
             foreach (InventorySlot slot in _inventoryService.inventorySlots)
             {
+                int slotIndex = _uiSlots.Count;
+
                 InventorySlotCtrl uiSlot = Instantiate(_inventorySlotPrefab, _inventorySlotParent);
                 uiSlot.transform.SetAsLastSibling();
                 uiSlot.Setup(slot.item, slot.amount);
                 uiSlot.SetSelected(false); // Slots are by default not selected
+                uiSlot.slotButton.onClick.AddListener(() => SetSelectedSlot(slotIndex)); // Select this slot on click
 
                 _uiSlots.Add(uiSlot);
             }
@@ -98,7 +101,7 @@ namespace Blizzard.UI
         }
 
         /// <summary>
-        /// Refresh displayed contents of specified slot
+        /// Refresh displayed contents of specified slot, re-syncing it with the inventory
         /// </summary>
         /// <param name="index">Index of slot to refresh</param>
         private void RefreshSlot(int index)
@@ -138,12 +141,10 @@ namespace Blizzard.UI
         {
             if (selection == _selectedSlotIndex) return; // Already selected
 
-            Assert.That(0 <= selection && selection < _uiSlots.Count, $"Given zselection ({selection}) is out of range! Slot count: ${_uiSlots.Count}");
+            Assert.That(0 <= selection && selection < _uiSlots.Count, $"Given selection ({selection}) is out of range! Slot count: ${_uiSlots.Count}");
 
             _uiSlots[_selectedSlotIndex].SetSelected(false);
             _uiSlots[selection].SetSelected(true);
-
-            // TODO: Logic for on item selection (e.g. tool is equipped, building is ready to build)
 
             _selectedSlotIndex = selection;
             _inventoryService.EquipItem(selection);
@@ -159,13 +160,7 @@ namespace Blizzard.UI
 
             if (amountRemoved == 0) return; // Items wasn't successfully removed, do not drop
 
-            ItemDrop dropObj = _envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
-
-            Vector2 plrFacingDirection = _playerService.GetFacingDirection();
-            dropObj.transform.position = _playerService.PlayerCtrl.transform.position + 
-                                        new Vector3(plrFacingDirection.x, plrFacingDirection.y, 0) * _itemDropDistance;
-
-            dropObj.Setup(new ItemAmountPair { item = itemToDrop, amount = amountRemoved }); // (amountRemoved should be one, failsafe regardless)
+            InventoryServiceExtensions.DropItem(_envPrefabService, _playerService, itemToDrop, amountRemoved);
         }
     }
 }

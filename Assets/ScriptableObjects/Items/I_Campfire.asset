@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed17f808c229b5343a8a067b291055d3, type: 3}
+  m_Script: {fileID: 11500000, guid: 32ad2e618ae935343ba026abde1a7421, type: 3}
   m_Name: I_Campfire
   m_EditorClassIdentifier: 
   id: 3
   displayName: Campfire
-  icon: {fileID: -2643336151989318035, guid: 10c67f55e9878ef4bb04eef314da0eab, type: 3}
-  stackSize: 1
+  icon: {fileID: 21300000, guid: 728546ed594244ae7ad08dd351592fd9, type: 3}
+  stackSize: 3
   itemGainColor:
     serializedVersion: 2
     rgba: 4294967295

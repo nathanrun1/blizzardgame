@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b8f1fb34849b5e45b4e137e433e4dc0, type: 3}
+  m_Script: {fileID: 11500000, guid: d39c627de11042d4ab7fec3fa0e1ff8e, type: 3}
   m_Name: I_Pickaxe
   m_EditorClassIdentifier: 
-  id: 6
+  id: 4
   displayName: Pickaxe
   icon: {fileID: -8377792427724042989, guid: ebae8a6fb17d6a24c8d0fe4b24dba85a, type: 3}
   stackSize: 1

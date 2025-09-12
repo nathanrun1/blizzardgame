@@ -100,7 +100,7 @@ namespace Blizzard.UI
             if (InputAssistant.IsPointerOverUIElement()) return;
 
             Vector2Int mouseGridPosition = _obstacleGridService.Grids[0].WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            if (_obstacleGridService.IsOccupied(mouseGridPosition)) return; // Location occupied
+            if (_obstacleGridService.IsOccupied(mouseGridPosition, _buildingData.obstacleData.obstacleLayer)) return; // Location occupied
 
             // Sanity check: Ensure item corresponding to building is the correct item
             BuildingItemData buildItem = _inventoryService.inventorySlots[_buildItemSlotIndex].item as BuildingItemData;
@@ -133,7 +133,7 @@ namespace Blizzard.UI
             Vector2Int mouseGridPosition = _obstacleGridService.Grids[0].WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
             GameObject preview;
-            if (_obstacleGridService.IsOccupied(mouseGridPosition))
+            if (_obstacleGridService.IsOccupied(mouseGridPosition, _buildingData.obstacleData.obstacleLayer))
             {
                 preview = _occupiedBuildingPreview;
                 _occupiedBuildingPreview.SetActive(true);

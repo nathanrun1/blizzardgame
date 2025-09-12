@@ -60,15 +60,16 @@ namespace Blizzard.Obstacles
         /// </summary>
         public void PlaceObstacleAt(Vector2Int gridPosition, ObstacleData obstacleData)
         {
-            if (IsOccupied(gridPosition))
+            if (IsOccupied(gridPosition, obstacleData.obstacleLayer))
             {
-                throw new ArgumentException($"Grid position {gridPosition} occupied!");
+                throw new ArgumentException($"Grid position {gridPosition} occupied on layer {obstacleData.obstacleLayer}!");
             }
 
             Vector3 obstaclePosition = Grids[obstacleData.obstacleLayer].CellToWorldPosCenter(gridPosition);
 
             Obstacle obstacle = obstacleData.CreateObstacle(obstaclePosition);
 
+            // Set sorting order of obstacle based on layer
             foreach (Renderer renderer in obstacle.GetComponentsInChildren<Renderer>(obstacle))
             {
                 renderer.sortingOrder = ObstacleConstants.ObstacleLayerSortingLayers[obstacleData.obstacleLayer];

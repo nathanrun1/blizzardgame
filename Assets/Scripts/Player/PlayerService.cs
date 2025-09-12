@@ -78,7 +78,7 @@ namespace Blizzard.Player
         /// </summary>
         public void UnequipTool()
         {
-            Debug.Log("Equipped tool: " + EquippedTool);
+            Debug.Log("Unequipping currently equipped tool: " + EquippedTool);
             if (EquippedTool != null)
             {
                 Debug.Log("Tool exists");
