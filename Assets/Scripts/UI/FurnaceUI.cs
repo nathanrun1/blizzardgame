@@ -14,12 +14,16 @@ namespace Blizzard.UI
         [SerializeField] CraftingDatabase _smeltingDatabase;
 
         // -- Smelting --
-        [SerializeField] InventorySlotCtrl _ingredientSlot;
-        [SerializeField] InventorySlotCtrl _resultSlot;
-        [SerializeField] InventorySlotCtrl _fuelSlot;
+        [SerializeField] private InventorySlotCtrl _ingredientSlot;
+        [SerializeField] private InventorySlotCtrl _resultSlot;
+        [SerializeField] private InventorySlotCtrl _fuelSlot;
 
         [Inject] InventoryService _inventoryService;
         [Inject] UIService _uiService;
+
+        private ItemAmountPair _storedIngredient;
+        private ItemAmountPair _storedResult;
+        private ItemAmountPair _storedFuel;
 
         public override void Setup(object args)
         {

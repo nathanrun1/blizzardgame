@@ -2669,11 +2669,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc23bd6e43f8bf2479f22d739388508e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startupUI: 0100000002000000
+  _startupUI: 010000000200000004000000
   _startingItems:
-  - item: {fileID: 0}
+  - item: {fileID: 11400000, guid: b47f3e859c8e6ee4d8d89cb19f24b749, type: 2}
     amount: 1
-  - item: {fileID: 0}
+  - item: {fileID: 11400000, guid: 143031de987ad274e97c79399a46dba3, type: 2}
     amount: 1
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8128e8049e55fe8449890840d1c555ee, type: 3}
   m_Name: FurnaceUI
   m_EditorClassIdentifier: 
-  id: 5
+  id: 4
   stringId: furnace
-  uiPrefab: {fileID: 3784186900395658795, guid: 019529d51609c0b47a4257cf4808a599, type: 3}
+  uiPrefab: {fileID: 2997507088184284385, guid: b58a9149b04515f46a2d8b65832d29fe, type: 3}
   isSingle: 1
   destroyOnClose: 0

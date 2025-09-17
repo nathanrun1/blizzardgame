@@ -103,7 +103,7 @@ namespace Blizzard.UI
             if (_obstacleGridService.IsOccupied(mouseGridPosition, _buildingData.obstacleData.obstacleLayer)) return; // Location occupied
 
             // Sanity check: Ensure item corresponding to building is the correct item
-            BuildingItemData buildItem = _inventoryService.inventorySlots[_buildItemSlotIndex].item as BuildingItemData;
+            BuildingItemData buildItem = _inventoryService.inventorySlots[_buildItemSlotIndex].Item as BuildingItemData;
             Assert.That(buildItem != null && buildItem.buildingData == _buildingData, "Given inventory slot does not contain matching item to building!");
 
             // Remove one of the building from inventory, ensure item removed successfully

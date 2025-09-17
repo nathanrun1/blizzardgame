@@ -8,18 +8,38 @@ using Zenject;
 namespace Blizzard.Inventory
 {
     /// <summary>
-    /// A slot in the player's inventory
+    /// A slot in the player's inventory.
     /// </summary>
     public class InventorySlot
     {
+        public event Action OnUpdate;
+
         /// <summary>
         /// Item contained within the slot, null if slot is empty
         /// </summary>
-        public ItemData item = null;
+        public ItemData Item
+        {
+            get => _item;
+            set
+            {
+                _item = value;
+                OnUpdate?.Invoke();
+            }
+        }
+        private ItemData _item = null;
         /// <summary>
         /// Amount of specified item contained within the slot
         /// </summary>
-        public int amount = 0;
+        public int Amount
+        {
+            get => _amount;
+            set
+            {
+                _amount = value;
+                OnUpdate?.Invoke();
+            }
+        }
+        private int _amount = 0;
     }
 
     /// <summary>
@@ -36,7 +56,7 @@ namespace Blizzard.Inventory
     { 
         public static bool Empty(this InventorySlot slot)
         {
-            return slot.item == null || slot.amount == 0;
+            return slot.Item == null || slot.Amount == 0;
         }
     }
 
@@ -49,7 +69,7 @@ namespace Blizzard.Inventory
         /// <summary>
         /// Event that's invoked when the inventory is modified.
         /// Invoked once per slot modified.
-        /// Args: (index of modified slot: int)
+        /// Args: (index of modified slot in 'inventorySlots': int)
         /// </summary>
         public event Action<int> OnInventoryModified;
 
@@ -76,14 +96,14 @@ namespace Blizzard.Inventory
             {
                 InventorySlot slot = inventorySlots[i];
 
-                if (slot.Empty() || item == slot.item)
+                if (slot.Empty() || item == slot.Item)
                 {
                     // Add max(stacksize - amount in slot, amount left to add)
-                    int amountToAdd = Math.Min(item.stackSize - slot.amount, Math.Max(leftToAdd, 0));
-                    slot.amount += amountToAdd;
+                    int amountToAdd = Math.Min(item.stackSize - slot.Amount, Math.Max(leftToAdd, 0));
+                    slot.Amount += amountToAdd;
                     leftToAdd -= amountToAdd;
 
-                    if (slot.Empty()) slot.item = item;
+                    if (slot.Empty()) slot.Item = item;
 
                     OnInventoryModified?.Invoke(i);
 
@@ -124,9 +144,9 @@ namespace Blizzard.Inventory
         {
             foreach (InventorySlot slot in inventorySlots)
             {
-                if (slot.Empty() || slot.item.Equals(item))
+                if (slot.Empty() || slot.Item.Equals(item))
                 {
-                    int amountCanAdd = Math.Max(item.stackSize - slot.amount, 0);
+                    int amountCanAdd = Math.Max(item.stackSize - slot.Amount, 0);
                     amount -= amountCanAdd;
                     if (amount <= 0) return true;
                 }
@@ -144,7 +164,7 @@ namespace Blizzard.Inventory
             int count = 0;
             foreach (InventorySlot slot in inventorySlots)
             {
-                if (item == slot.item) count += slot.amount;
+                if (item == slot.Item) count += slot.Amount;
             }
             return count;
         }
@@ -164,9 +184,9 @@ namespace Blizzard.Inventory
 
             foreach (InventorySlot slot in inventorySlots)
             {
-                if (!slot.Empty() && itemAmounts.ContainsKey(slot.item.id))
+                if (!slot.Empty() && itemAmounts.ContainsKey(slot.Item.id))
                 {
-                    itemAmounts[slot.item.id] -= slot.amount;
+                    itemAmounts[slot.Item.id] -= slot.Amount;
                 }
             }
 
@@ -198,14 +218,14 @@ namespace Blizzard.Inventory
             {
                 InventorySlot slot = inventorySlots[i];
 
-                if (item == slot.item)
+                if (item == slot.Item)
                 {
                     // Remove min(amount in slot, amount left to remove)
-                    int amountToRemove = Math.Min(slot.amount, leftToRemove);
+                    int amountToRemove = Math.Min(slot.Amount, leftToRemove);
                     Debug.Log($"Removing {amountToRemove}x {item.displayName}");
 
-                    slot.amount -= amountToRemove;
-                    if (slot.amount == 0) slot.item = null;
+                    slot.Amount -= amountToRemove;
+                    if (slot.Amount == 0) slot.Item = null;
 
                     OnInventoryModified?.Invoke(i);
 
@@ -232,13 +252,13 @@ namespace Blizzard.Inventory
 
             InventorySlot slot = inventorySlots[slotIndex];
 
-            if (slot.item == null) return 0; // No items to remove
-            if (!drain && slot.amount < amount) return 0; // Not enough to remove
+            if (slot.Item == null) return 0; // No items to remove
+            if (!drain && slot.Amount < amount) return 0; // Not enough to remove
 
-            int amountToRemove = Math.Min(slot.amount, amount);
-            slot.amount -= amountToRemove;
+            int amountToRemove = Math.Min(slot.Amount, amount);
+            slot.Amount -= amountToRemove;
 
-            if (slot.amount == 0) slot.item = null;
+            if (slot.Amount == 0) slot.Item = null;
 
             OnInventoryModified?.Invoke(slotIndex);
 
@@ -265,10 +285,10 @@ namespace Blizzard.Inventory
             for (int i = 0; i < inventorySlots.Count; ++i)
             {
                 InventorySlot slot = inventorySlots[i];
-                if (slot.Empty() || !itemAmounts.ContainsKey(slot.item.id)) continue;
+                if (slot.Empty() || !itemAmounts.ContainsKey(slot.Item.id)) continue;
 
-                int amountToRemove = Math.Min(slot.amount, itemAmounts[slot.item.id]);
-                itemAmounts[slot.item.id] -= amountToRemove;
+                int amountToRemove = Math.Min(slot.Amount, itemAmounts[slot.Item.id]);
+                itemAmounts[slot.Item.id] -= amountToRemove;
 
                 // Remember to remove this much from this slot
                 toRemove[i] += amountToRemove; 
@@ -284,12 +304,12 @@ namespace Blizzard.Inventory
             for (int i = 0; i < inventorySlots.Count; ++i)
             {
                 InventorySlot slot = inventorySlots[i];
-                slot.amount -= toRemove[i];
-                if (slot.amount == 0) slot.item = null;
+                slot.Amount -= toRemove[i];
+                if (slot.Amount == 0) slot.Item = null;
 
                 OnInventoryModified?.Invoke(i);
 
-                Assert.That(slot.amount >= 0, "Removed more of an item than there was in inventory! Likely an implementation error.");
+                Assert.That(slot.Amount >= 0, "Removed more of an item than there was in inventory! Likely an implementation error.");
             }
 
             return true;
@@ -304,7 +324,7 @@ namespace Blizzard.Inventory
 
             UnequipItem();
 
-            equippedItem = inventorySlots[slotIndex].item;
+            equippedItem = inventorySlots[slotIndex].Item;
             if (equippedItem != null) equippedItem.Equip(new EquipData { slotIndex = slotIndex});
         }
 

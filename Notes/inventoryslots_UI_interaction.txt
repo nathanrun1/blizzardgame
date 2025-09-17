@@ -1,0 +1,17 @@
+inventoryslots support UI interactions that move items between slots
+
+events:
+
+MoveOut: Request to move item out. If approved, runs MoveIn on other slot. If that's approved, do necessary data changes.
+
+MoveIn: Request to move item in. If slot not empty, request movein on origin slot with arg that indicates its a swap. If approved, do necessary data changes.
+
+MoveOut provides destination slot and amount moved.
+
+MoveIn provides origin slot and amount moved, and whether or not its a swap (i.e. if movein had been sent from this slot to that slot already).
+
+E.g. within inventory, inventory checks if UI slot is also in inventory, if so checks index and does it internally.
+
+E.g. btwn furnace and inventory, inventory -> furnace. Furnace receives it, checks if item matches what can go in slot (if u want), and then approves if its a valid source, i.e. from inventory with sanity check. 
+
+MoveIn and MoveOut are delegates, since they need a return value to continue within the implementation.

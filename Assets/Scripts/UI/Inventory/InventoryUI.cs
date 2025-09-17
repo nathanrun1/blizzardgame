@@ -89,7 +89,7 @@ namespace Blizzard.UI
 
                 InventorySlotCtrl uiSlot = Instantiate(_inventorySlotPrefab, _inventorySlotParent);
                 uiSlot.transform.SetAsLastSibling();
-                uiSlot.Setup(slot.item, slot.amount);
+                uiSlot.LinkedSetup(slot);
                 uiSlot.SetSelected(false); // Slots are by default not selected
                 uiSlot.slotButton.onClick.AddListener(() => SetSelectedSlot(slotIndex)); // Select this slot on click
 
@@ -108,8 +108,9 @@ namespace Blizzard.UI
         {
             Assert.That(0 <= index && index < _uiSlots.Count, $"Given index ({index}) out of range! Slot count: {_uiSlots.Count}");
 
-            _uiSlots[index].Setup(_inventoryService.inventorySlots[index].item,
-                                  _inventoryService.inventorySlots[index].amount);
+            // (re-setup now redundant since slot is just linked)
+            //_uiSlots[index].Setup(_inventoryService.inventorySlots[index].Item,
+            //                      _inventoryService.inventorySlots[index].Amount);
 
             if (_selectedSlotIndex == index)
             {
@@ -129,7 +130,7 @@ namespace Blizzard.UI
             for (int i = 0; i < _uiSlots.Count; ++i)
             {
                 InventorySlot correspondingSlot = _inventoryService.inventorySlots[i];
-                _uiSlots[i].Setup(correspondingSlot.item, correspondingSlot.amount);
+                _uiSlots[i].Setup(correspondingSlot.Item, correspondingSlot.Amount);
             }
         }
 
@@ -152,7 +153,7 @@ namespace Blizzard.UI
 
         private void DropSelectedItem()
         {
-            ItemData itemToDrop = _inventoryService.inventorySlots[_selectedSlotIndex].item;
+            ItemData itemToDrop = _inventoryService.inventorySlots[_selectedSlotIndex].Item;
             if (itemToDrop == null) return; // No item to drop from selected slot
 
             // Attempt drop

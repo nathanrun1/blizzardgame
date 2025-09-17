@@ -65,7 +65,7 @@ public class DebugManager : MonoBehaviour
         foreach (InventorySlot slot in _inventoryService.inventorySlots)
         {
             if (slot.Empty()) str += "[EMPTY]\n";
-            else str += $"[{slot.amount}x {slot.item.displayName}]\n";
+            else str += $"[{slot.Amount}x {slot.Item.displayName}]\n";
         }
         Debug.Log(str);
     }
