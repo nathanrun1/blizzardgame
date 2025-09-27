@@ -28,10 +28,32 @@ namespace Blizzard.UI
         /// </summary>
         private Dictionary<int, UIBase> _inactiveUI = new Dictionary<int, UIBase>();
 
+
+        /// <summary>
+        /// The transform of a GameObject that is always at the foreground of the UI Canvas. 
+        /// Useful as a parent to UI elements that should be rendered on top of everything.
+        /// </summary>
+        public Transform CanvasTop
+        {
+            get
+            {
+                // Ensure always at foreground when retrieved
+                _canvasTop.SetAsLastSibling();
+                return _canvasTop;
+            }
+        }
+        [SerializeField] private Transform _canvasTop;
+
+
         public UIService(UIDatabase uiDatabase, RectTransform uiParent)
         {
             Debug.Log("DI Container: " + _diContainer);
             this._uiParent = uiParent;
+
+            // Initialize CanvasTop
+            _canvasTop = new GameObject("CanvasTop").transform;
+            _canvasTop.SetParent(_uiParent);
+            _canvasTop.SetAsLastSibling();
 
             InitDictionaries(uiDatabase);
         }
@@ -40,7 +62,8 @@ namespace Blizzard.UI
         /// Initializes UI prefab of given id.
         /// First instantiates it, then parents it to the appropriate canvas, then calls the Setup() method with provided args.
         /// </summary>
-        public void InitUI(int id, object args = null)
+        /// <returns>Reference to instantiated instance of the UI prefab</returns>
+        public UIBase InitUI(int id, object args = null)
         {
             UIData uiData;
             if (_intDict.ContainsKey(id)) uiData = _intDict[id];
@@ -49,14 +72,15 @@ namespace Blizzard.UI
                 throw new KeyNotFoundException("No UI prefab exists with this id: " + id);
             }
 
-            InitUI(uiData, args);
+            return InitUI(uiData, args);
         }
 
         /// <summary>
         /// Initializes UI prefab of given string id.
         /// First instantiates it, then parents it to the appropriate canvas, then calls the Setup() method with provided args.
         /// </summary>
-        public void InitUI(string stringId, object args = null)
+        /// <returns>Reference to instantiated instance of the UI prefab</returns>
+        public UIBase InitUI(string stringId, object args = null)
         {
             UIData uiData;
             if (_strDict.ContainsKey(stringId)) uiData = _strDict[stringId];
@@ -65,7 +89,7 @@ namespace Blizzard.UI
                 throw new KeyNotFoundException("No UI prefab exists with this id: " + stringId);
             }
 
-            InitUI(uiData, args);
+            return InitUI(uiData, args);
         }
 
         /// <summary>
@@ -93,8 +117,32 @@ namespace Blizzard.UI
             CloseUI(id);
         }
 
+        /// <summary>
+        /// Fetches a reference to a singleton UI instance. Returns it if it exists.
+        /// </summary>
+        public UIBase GetSingletonUI(int id)
+        {
+            if (!_activeUI.ContainsKey(id))
+            {
+                Debug.LogError($"Attempted to get singleton instance of UI (id {id}), but not open or isSingle set to false");
+                return null;
+            }
 
-        private void InitUI(UIData uiData, object args) 
+            UIBase uiObj = _activeUI[id];
+            return uiObj;
+        }
+
+        /// <summary>
+        /// Fetches a reference to a singleton UI instance. Returns it if it exists.
+        /// </summary>
+        public UIBase GetSingletonUI(string stringId)
+        {
+            int id = _strDict[stringId].id;
+            return GetSingletonUI(id);
+        }
+
+
+        private UIBase InitUI(UIData uiData, object args)
         {
             UIBase uiObj;
             if (!_inactiveUI.TryGetValue(uiData.id, out uiObj)) // Prioritize inactive pool before instantiating
@@ -132,8 +180,9 @@ namespace Blizzard.UI
             {
                 _activeUI.Add(uiData.id, uiObj); // Track active UI instance only if single
             }
-        }
 
+            return uiObj;
+        }
 
         private void InitDictionaries(UIDatabase uiDatabase)
         {

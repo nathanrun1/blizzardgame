@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Blizzard.Inventory;
 using Blizzard.Inventory.Crafting;
@@ -10,13 +11,19 @@ namespace Blizzard.UI
 {
     public class FurnaceUI : UIBase
     {
+        public struct Args
+        {
+            public InventorySlot ingredientSlot;
+            public InventorySlot resultSlot;
+            public InventorySlot fuelSlot;
+        }
+
         [Header("References")]
         [SerializeField] CraftingDatabase _smeltingDatabase;
-
         // -- Smelting --
-        [SerializeField] private InventorySlotCtrl _ingredientSlot;
-        [SerializeField] private InventorySlotCtrl _resultSlot;
-        [SerializeField] private InventorySlotCtrl _fuelSlot;
+        [SerializeField] private InventorySlotCtrl _ingredientSlotUi;
+        [SerializeField] private InventorySlotCtrl _resultSlotUi;
+        [SerializeField] private InventorySlotCtrl _fuelSlotUi;
 
         [Inject] InventoryService _inventoryService;
         [Inject] UIService _uiService;
@@ -27,9 +34,19 @@ namespace Blizzard.UI
 
         public override void Setup(object args)
         {
-            _ingredientSlot.Setup(null, 0);
-            _resultSlot.Setup(null, 0);
-            _fuelSlot.Setup(null, 0);
+            Args furnaceArgs;
+            try
+            {
+                furnaceArgs = (Args)args;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new ArgumentException("Incorrect argument type given!");
+            }
+
+            _ingredientSlotUi.LinkedSetup(furnaceArgs.ingredientSlot, true, true);
+            _resultSlotUi.LinkedSetup(furnaceArgs.resultSlot, false, true);
+            _fuelSlotUi.LinkedSetup(furnaceArgs.fuelSlot, true, true);
         }
 
         //private void OnCraft(CraftingRecipe recipe)

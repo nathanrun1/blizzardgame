@@ -25,6 +25,7 @@ namespace Blizzard.UI
         [SerializeField] RectTransform _dragParent; // Parent to drag-dedicated icon & count, to move them together
 
         [Inject] private InputService _inputService;
+        [Inject] private UIService _uiService;
 
         public Button slotButton;
 
@@ -58,16 +59,31 @@ namespace Blizzard.UI
 
         private DragState _dragState = new DragState(false, 0);  // Used to manage item dragging
 
+        private void OnDestroy()
+        {
+            // Reset drag state and re-parent drag preview to this object so it is cleaned up.
+            // Otherwise, if still parented to canvasTop, may persist after this slot is destroyed.
+            _dragState = new DragState(false, 0);
+            _dragParent.SetParent(transform);
+        }
 
         // Track the inventory slot that the mouse is hovered over (for dragging interactions)
+        // TODO: potential race conditions here
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (_dragState.isDragging) return; // If dragging, ignore pointer on this slot.
+
+            Debug.Log($"OnPointerEnter: {this}");
             _mouseOverSlot = this;
             _inputService.inputActions.Player.Fire.performed += OnInputFire;
         }
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (_mouseOverSlot == this) _mouseOverSlot = null;
+            if (_mouseOverSlot == this)
+            {
+                Debug.Log($"OnPointerExit: {this}");
+                _mouseOverSlot = null;
+            }
             _inputService.inputActions.Player.Fire.performed -= OnInputFire;
         }
 
@@ -114,7 +130,7 @@ namespace Blizzard.UI
         /// The inventory slot UI will automatically update when the linked slot is updated.
         /// Also allows the ability for moving items between slots through the UI.
         /// </summary>
-        public void LinkedSetup(InventorySlot slot)
+        public void LinkedSetup(InventorySlot slot, bool moveInEnabled=false, bool moveOutEnabled=false)
         {
             if (_linkedSlot != null)
             {
@@ -122,6 +138,10 @@ namespace Blizzard.UI
                 _linkedSlot.OnUpdate -= OnLinkedSlotUpdated;
             }
             Setup(slot.Item, slot.Amount, false);
+
+            _moveInEnabled = moveInEnabled;
+            _moveOutEnabled = moveOutEnabled;
+
             _linkedSlot = slot;
             _linkedSlot.OnUpdate += OnLinkedSlotUpdated;
         }
@@ -194,6 +214,7 @@ namespace Blizzard.UI
         /// <returns>Amount moved out successfully.</returns>
         public int TryMoveItemsOut(InventorySlotCtrl destination, int amount)
         {
+            Debug.Log($"Attempting move out, amount: {amount}");
             if (_linkedSlot == null || destination._linkedSlot == null) return 0; // Missing linked slot. Not allowed.
             if (!_moveOutEnabled) return 0; // This slot does not have moving out enabled. Not allowed.
             if (!destination._moveInEnabled) return 0; // Other slot does not have moving in enabled. Not allowed.
@@ -241,7 +262,6 @@ namespace Blizzard.UI
         {
             if (_linkedSlot != null && _linkedSlot.Amount >= 1 && !_dragState.isDragging)
             {
-                Debug.Log("Starting drag...");
                 // Linked to inventory slot & item in slot, dragging behaviour supported
                 // Start item drag
                 bool shiftPressed = _inputService.inputActions.Player.UIInteract1.IsPressed(); // Full stack if shift drag
@@ -253,10 +273,9 @@ namespace Blizzard.UI
 
         private IEnumerator DragCoroutine()
         {
-            Debug.Log("In drag coroutine");
-
             // Drag preview
             _dragParent.gameObject.SetActive(true);
+            _dragParent.SetParent(_uiService.CanvasTop);
             _itemCountDrag.text = _dragState.amount > 1 ? _dragState.amount.ToString() : "";
 
             // Adjust slot content temporarily (as if item is actually being "picked up")
@@ -282,6 +301,7 @@ namespace Blizzard.UI
             }
             _dragState = new(false, 0); // Reset dragging state (if not already)
             _dragParent.gameObject.SetActive(false);
+            _dragParent.SetParent(transform);
         }
     }
 
