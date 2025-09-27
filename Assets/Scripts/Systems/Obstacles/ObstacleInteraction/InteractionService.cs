@@ -19,18 +19,22 @@ namespace Blizzard.Obstacles
 
         public InteractionService()
         {
+            Debug.Log("InteractionSErvice constructor");
             BindInteractionInputs();
         }
 
         private void BindInteractionInputs()
         {
+            Debug.Log("Bound interaction inputs!");
             _inputService.inputActions.Player.Interact1.performed += OnPrimaryInteractionInput;
             _inputService.inputActions.Player.Interact2.performed += OnSecondaryInteractionInput;
         }
 
         private void OnPrimaryInteractionInput(InputAction.CallbackContext ctx)
         {
+            Debug.Log("[InteractionService] Primary Interaction detected!");
             Collider2D pointerOverCollider = InputAssistant.GetColliderUnderPointer();
+            Debug.Log($"[InteractionService] pointer is over collider:{pointerOverCollider}");
             IInteractable interactable = pointerOverCollider.GetComponent<IInteractable>();
             interactable?.OnPrimaryInteract();
         }

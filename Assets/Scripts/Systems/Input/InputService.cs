@@ -1,6 +1,8 @@
+using Blizzard.Obstacles;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 
 namespace Blizzard
@@ -16,32 +18,28 @@ namespace Blizzard
         {
             inputActions = new PlayerInputActions();
             inputActions.Player.Enable(); // Enabled by default
+            BindInteractionInputs();
         }
 
-        public bool IsPointerOverUIElement()
+        private void BindInteractionInputs()
         {
-            return IsPointerOverUIElement(GetEventSystemRaycastResults());
+            Debug.Log("Bound interaction inputs!");
+            inputActions.Player.Interact1.performed += OnPrimaryInteractionInput;
+            inputActions.Player.Interact2.performed += OnSecondaryInteractionInput;
         }
 
-        private bool IsPointerOverUIElement(List<RaycastResult> eventSystemRaycastResults)
+        private void OnPrimaryInteractionInput(InputAction.CallbackContext ctx)
         {
-            foreach (RaycastResult result in eventSystemRaycastResults)
-            {
-                if (result.gameObject.layer == LayerMask.NameToLayer("UI")) return true;
-            }
+            Collider2D pointerOverCollider = InputAssistant.GetColliderUnderPointer();
+            if (pointerOverCollider == null) return;
 
-            return false;
+            IInteractable interactable = pointerOverCollider.GetComponent<IInteractable>();
+            interactable?.OnPrimaryInteract();
         }
 
-        private List<RaycastResult> GetEventSystemRaycastResults()
+        private void OnSecondaryInteractionInput(InputAction.CallbackContext ctx)
         {
-            PointerEventData eventData = new PointerEventData(EventSystem.current);
-            eventData.position = Input.mousePosition;
-
-            List<RaycastResult> raycastResults = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventData, raycastResults);
-
-            return raycastResults;
+            // TODO
         }
     }
 }

@@ -129,7 +129,6 @@ namespace Blizzard.UI
 
         private void UpdatePreview()
         {
-            Debug.Log("updating preview");
             Vector2Int mouseGridPosition = _obstacleGridService.Grids[0].WorldToCellPos(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
             GameObject preview;

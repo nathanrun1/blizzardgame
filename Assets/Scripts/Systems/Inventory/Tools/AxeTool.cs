@@ -66,7 +66,7 @@ namespace Blizzard
         private void OnInputFire(InputAction.CallbackContext ctx)
         {
             Debug.Log("Axe input detected");
-            if (!_inputService.IsPointerOverUIElement() && _cooldown <= 0) OnSwing();
+            if (!InputAssistant.IsPointerOverUIElement() && _cooldown <= 0) OnSwing();
         }
 
         /// <summary>

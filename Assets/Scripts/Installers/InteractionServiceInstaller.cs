@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
-using Blizzard.Grid;
 
 namespace Blizzard.Obstacles
 {
@@ -11,7 +10,6 @@ namespace Blizzard.Obstacles
         public override void InstallBindings()
         {
             Container.Bind<InteractionService>()
-                .FromNew()
                 .AsSingle();
 
             Debug.Log("Installed Interaction Service");
