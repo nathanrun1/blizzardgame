@@ -29,6 +29,8 @@ namespace Blizzard.Temperature
                 .FromNew()
                 .AsSingle()
                 .WithArguments(mainGrid, new BasicDenseGrid<TemperatureCell>(SIM_WINDOW_WIDTH, SIM_WINDOW_HEIGHT), _heatDiffusionShader, _simulationIsActive);
+
+            Debug.Log("Installed Temperature Service");
         }
     }
 }

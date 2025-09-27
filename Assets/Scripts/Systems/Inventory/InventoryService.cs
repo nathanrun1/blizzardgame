@@ -12,6 +12,9 @@ namespace Blizzard.Inventory
     /// </summary>
     public class InventorySlot
     {
+        /// <summary>
+        /// Invoked when slot's contents are updated
+        /// </summary>
         public event Action OnUpdate;
 
         /// <summary>
@@ -78,6 +81,8 @@ namespace Blizzard.Inventory
             inventorySlots = new List<InventorySlot>();
             for (int i = 0; i < slotAmount; ++i)
             {
+                var slot = new InventorySlot();
+                slot.OnUpdate += () => OnInventoryModified.Invoke(i);
                 inventorySlots.Add(new InventorySlot());
             }
         }
@@ -104,8 +109,6 @@ namespace Blizzard.Inventory
                     leftToAdd -= amountToAdd;
 
                     if (slot.Empty()) slot.Item = item;
-
-                    OnInventoryModified?.Invoke(i);
 
                     Debug.Log($"Added {amountToAdd}x {item.displayName}!");
 
@@ -227,8 +230,6 @@ namespace Blizzard.Inventory
                     slot.Amount -= amountToRemove;
                     if (slot.Amount == 0) slot.Item = null;
 
-                    OnInventoryModified?.Invoke(i);
-
                     leftToRemove -= amountToRemove;
                     if (leftToRemove <= 0) break;
                 }
@@ -259,8 +260,6 @@ namespace Blizzard.Inventory
             slot.Amount -= amountToRemove;
 
             if (slot.Amount == 0) slot.Item = null;
-
-            OnInventoryModified?.Invoke(slotIndex);
 
             return amountToRemove;
         }
@@ -306,8 +305,6 @@ namespace Blizzard.Inventory
                 InventorySlot slot = inventorySlots[i];
                 slot.Amount -= toRemove[i];
                 if (slot.Amount == 0) slot.Item = null;
-
-                OnInventoryModified?.Invoke(i);
 
                 Assert.That(slot.Amount >= 0, "Removed more of an item than there was in inventory! Likely an implementation error.");
             }

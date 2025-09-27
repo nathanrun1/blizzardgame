@@ -25,6 +25,8 @@ namespace Blizzard.Obstacles
                 .FromNew()
                 .AsSingle()
                 .WithArguments(grids, _obstaclesParent);
+
+            Debug.Log("Installed Obstacle Grid Service");
         }
     }
 }

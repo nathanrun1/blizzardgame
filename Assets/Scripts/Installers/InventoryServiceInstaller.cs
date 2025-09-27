@@ -9,11 +9,12 @@ namespace Blizzard.Inventory
 
         public override void InstallBindings()
         {
-            Debug.Log("Installing inventory service...");
             Container.Bind<InventoryService>()
                 .FromNew()
                 .AsSingle()
                 .WithArguments(slotAmount);
+
+            Debug.Log("Installed Inventory Service");
         }
     }
 }

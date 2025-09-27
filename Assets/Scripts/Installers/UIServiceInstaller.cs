@@ -16,6 +16,8 @@ namespace Blizzard.UI
                 .FromNew()
                 .AsSingle()
                 .WithArguments(_uiDatabase, _uiParent);
+
+            Debug.Log("Installed UI Service");
         }
     }
 }

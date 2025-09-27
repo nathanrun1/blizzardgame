@@ -12,11 +12,12 @@ namespace Blizzard.Player
 
         public override void InstallBindings()
         {
-            Debug.Log("Installing player service...");
             Container.BindInterfacesAndSelfTo<PlayerService>()
                 .FromNew()
                 .AsSingle()
                 .WithArguments(_playerPrefab, _environment, _cinemachineCamera);
+
+            Debug.Log("Installed Player Service");
         }
     }
 }

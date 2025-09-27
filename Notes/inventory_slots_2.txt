@@ -1,0 +1,27 @@
+ok what we doin
+
+
+whats the most efficient thing I can do rn to accelerate game completion
+nah lowkey tho... the UI is pretty useful for interactions
+
+
+basically make it so that inventory slots can do shit easily
+
+rn: linking inventory slot to a true slot
+
+what abt shift clicking and stuff? hmmm
+can robably implement it by having some kind of state
+
+but whatever thats QoL fuck that shit, just implement the item transfer for now
+
+ah right theres also like the intermediate stack, like draggin from spots. but whatever bro, thats also QoL
+
+todo:
+
+[ ]: add shift as input (mainly for testing rn but also for later stuff)
+[X]: test item transfer, make it work fully
+[ ]: drag and drop
+
+add shift click drag for whole stack, click drag for one
+UI detect click drag, duplicates the item icon, adjusts slot one based on how much is "left"
+on drop, checks if mouse above slot. If so, attempt move. Afterwards reset the slot.

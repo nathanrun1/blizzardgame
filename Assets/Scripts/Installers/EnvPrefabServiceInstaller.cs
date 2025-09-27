@@ -11,11 +11,12 @@ namespace Blizzard.Utilities
 
         public override void InstallBindings()
         {
-            Debug.Log("Installing environment prefab service...");
             Container.Bind<EnvPrefabService>()
                 .FromNew()
                 .AsSingle()
                 .WithArguments(_environmentDatabase, _environmentParent);
+
+            Debug.Log("Installed EnvPrefab Service");
         }
     }
 }

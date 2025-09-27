@@ -33,6 +33,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "FireSecondary",
+                    "type": "Button",
+                    "id": "e85ffb39-6f51-4b5b-8dc3-21c9c0e7beea",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Interact1",
                     "type": "Button",
                     "id": "c117ec12-7ae6-4536-95d3-72b30197c2e6",
@@ -81,6 +90,15 @@
                     "name": "Build",
                     "type": "Button",
                     "id": "36c33a7c-4acb-410d-91a5-e4a5bae5858a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UIInteract1",
+                    "type": "Button",
+                    "id": "6d9d5f57-75ec-4796-b9ab-b32d0215582d",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -321,6 +339,39 @@
                 },
                 {
                     "name": "",
+                    "id": "31f1641d-11cf-4022-b1b8-b30596c6e7e3",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "FireSecondary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e4a69036-4c84-437b-ae40-dd7bfd38515c",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "FireSecondary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e8834f54-5fd8-4716-92d9-c54aceb68924",
+                    "path": "<XRController>/{SecondaryAction}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "FireSecondary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "80a085d6-21c6-4675-9718-9f3e5dd884be",
                     "path": "<Keyboard>/e",
                     "interactions": "",
@@ -481,6 +532,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Build",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f5e284f4-8107-41ed-a0f5-18349161b7b6",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "UIInteract1",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

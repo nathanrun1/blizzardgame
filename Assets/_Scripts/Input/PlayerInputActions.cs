@@ -121,6 +121,15 @@ namespace Blizzard
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""FireSecondary"",
+                    ""type"": ""Button"",
+                    ""id"": ""e85ffb39-6f51-4b5b-8dc3-21c9c0e7beea"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Interact1"",
                     ""type"": ""Button"",
                     ""id"": ""c117ec12-7ae6-4536-95d3-72b30197c2e6"",
@@ -169,6 +178,15 @@ namespace Blizzard
                     ""name"": ""Build"",
                     ""type"": ""Button"",
                     ""id"": ""36c33a7c-4acb-410d-91a5-e4a5bae5858a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UIInteract1"",
+                    ""type"": ""Button"",
+                    ""id"": ""6d9d5f57-75ec-4796-b9ab-b32d0215582d"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -409,6 +427,39 @@ namespace Blizzard
                 },
                 {
                     ""name"": """",
+                    ""id"": ""31f1641d-11cf-4022-b1b8-b30596c6e7e3"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""FireSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e4a69036-4c84-437b-ae40-dd7bfd38515c"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""FireSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e8834f54-5fd8-4716-92d9-c54aceb68924"",
+                    ""path"": ""<XRController>/{SecondaryAction}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""FireSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""80a085d6-21c6-4675-9718-9f3e5dd884be"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
@@ -569,6 +620,17 @@ namespace Blizzard
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Build"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f5e284f4-8107-41ed-a0f5-18349161b7b6"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""UIInteract1"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1159,12 +1221,14 @@ namespace Blizzard
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
             m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
             m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+            m_Player_FireSecondary = m_Player.FindAction("FireSecondary", throwIfNotFound: true);
             m_Player_Interact1 = m_Player.FindAction("Interact1", throwIfNotFound: true);
             m_Player_Interact2 = m_Player.FindAction("Interact2", throwIfNotFound: true);
             m_Player_NumberKey = m_Player.FindAction("NumberKey", throwIfNotFound: true);
             m_Player_DropItem = m_Player.FindAction("DropItem", throwIfNotFound: true);
             m_Player_Space = m_Player.FindAction("Space", throwIfNotFound: true);
             m_Player_Build = m_Player.FindAction("Build", throwIfNotFound: true);
+            m_Player_UIInteract1 = m_Player.FindAction("UIInteract1", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1261,12 +1325,14 @@ namespace Blizzard
         private readonly InputAction m_Player_Move;
         private readonly InputAction m_Player_Look;
         private readonly InputAction m_Player_Fire;
+        private readonly InputAction m_Player_FireSecondary;
         private readonly InputAction m_Player_Interact1;
         private readonly InputAction m_Player_Interact2;
         private readonly InputAction m_Player_NumberKey;
         private readonly InputAction m_Player_DropItem;
         private readonly InputAction m_Player_Space;
         private readonly InputAction m_Player_Build;
+        private readonly InputAction m_Player_UIInteract1;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
         /// </summary>
@@ -1291,6 +1357,10 @@ namespace Blizzard
             /// </summary>
             public InputAction @Fire => m_Wrapper.m_Player_Fire;
             /// <summary>
+            /// Provides access to the underlying input action "Player/FireSecondary".
+            /// </summary>
+            public InputAction @FireSecondary => m_Wrapper.m_Player_FireSecondary;
+            /// <summary>
             /// Provides access to the underlying input action "Player/Interact1".
             /// </summary>
             public InputAction @Interact1 => m_Wrapper.m_Player_Interact1;
@@ -1314,6 +1384,10 @@ namespace Blizzard
             /// Provides access to the underlying input action "Player/Build".
             /// </summary>
             public InputAction @Build => m_Wrapper.m_Player_Build;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/UIInteract1".
+            /// </summary>
+            public InputAction @UIInteract1 => m_Wrapper.m_Player_UIInteract1;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1349,6 +1423,9 @@ namespace Blizzard
                 @Fire.started += instance.OnFire;
                 @Fire.performed += instance.OnFire;
                 @Fire.canceled += instance.OnFire;
+                @FireSecondary.started += instance.OnFireSecondary;
+                @FireSecondary.performed += instance.OnFireSecondary;
+                @FireSecondary.canceled += instance.OnFireSecondary;
                 @Interact1.started += instance.OnInteract1;
                 @Interact1.performed += instance.OnInteract1;
                 @Interact1.canceled += instance.OnInteract1;
@@ -1367,6 +1444,9 @@ namespace Blizzard
                 @Build.started += instance.OnBuild;
                 @Build.performed += instance.OnBuild;
                 @Build.canceled += instance.OnBuild;
+                @UIInteract1.started += instance.OnUIInteract1;
+                @UIInteract1.performed += instance.OnUIInteract1;
+                @UIInteract1.canceled += instance.OnUIInteract1;
             }
 
             /// <summary>
@@ -1387,6 +1467,9 @@ namespace Blizzard
                 @Fire.started -= instance.OnFire;
                 @Fire.performed -= instance.OnFire;
                 @Fire.canceled -= instance.OnFire;
+                @FireSecondary.started -= instance.OnFireSecondary;
+                @FireSecondary.performed -= instance.OnFireSecondary;
+                @FireSecondary.canceled -= instance.OnFireSecondary;
                 @Interact1.started -= instance.OnInteract1;
                 @Interact1.performed -= instance.OnInteract1;
                 @Interact1.canceled -= instance.OnInteract1;
@@ -1405,6 +1488,9 @@ namespace Blizzard
                 @Build.started -= instance.OnBuild;
                 @Build.performed -= instance.OnBuild;
                 @Build.canceled -= instance.OnBuild;
+                @UIInteract1.started -= instance.OnUIInteract1;
+                @UIInteract1.performed -= instance.OnUIInteract1;
+                @UIInteract1.canceled -= instance.OnUIInteract1;
             }
 
             /// <summary>
@@ -1727,6 +1813,13 @@ namespace Blizzard
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnFire(InputAction.CallbackContext context);
             /// <summary>
+            /// Method invoked when associated input action "FireSecondary" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnFireSecondary(InputAction.CallbackContext context);
+            /// <summary>
             /// Method invoked when associated input action "Interact1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -1768,6 +1861,13 @@ namespace Blizzard
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnBuild(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "UIInteract1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnUIInteract1(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

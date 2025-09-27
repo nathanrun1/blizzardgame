@@ -46,8 +46,6 @@ namespace Blizzard
         private void Update()
         {
             if (_cooldown > 0) _cooldown -= Time.deltaTime;
-
-            Debug.Log("Input?: " + _inputService.inputActions.Player.Fire.IsPressed());
         }
 
         private void OnDestroy()

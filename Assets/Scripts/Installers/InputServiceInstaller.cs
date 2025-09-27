@@ -10,6 +10,8 @@ namespace Blizzard
         {
             Container.Bind<InputService>()
                 .AsSingle();
+
+            Debug.Log("Installed Input Service");
         }
     }
 }
