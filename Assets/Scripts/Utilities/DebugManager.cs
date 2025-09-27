@@ -9,6 +9,7 @@ using Blizzard.Temperature;
 using Unity.VisualScripting;
 using System.Linq;
 using Blizzard.Obstacles;
+using Blizzard;
 
 public class DebugManager : MonoBehaviour
 {
@@ -106,6 +107,13 @@ public class DebugManager : MonoBehaviour
     [FoldoutGroup("Temperature")]
     [SerializeField] float _ambientTemperature;
 
+    [FoldoutGroup("Input")]
+    [LabelText("TAB to print collider under pointer")]
+    private void PrintColliderUnderPointer()
+    {
+        Debug.Log($"Collider under pointer: {InputAssistant.GetColliderUnderPointer()}");
+    }
+
 
     private void Start()
     {
@@ -129,6 +137,11 @@ public class DebugManager : MonoBehaviour
             _temperatureService.SetComputeFloat("diffusionFactor", _diffusionFactor);
             _temperatureService.SetComputeFloat("ambientFactor", _ambientFactor);
             _temperatureService.AmbientTemperature = _ambientTemperature;
+        }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            // TAB to print collider under pointer
+            PrintColliderUnderPointer();
         }
     }
 }

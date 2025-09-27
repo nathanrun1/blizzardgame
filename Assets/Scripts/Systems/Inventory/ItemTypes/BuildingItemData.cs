@@ -22,6 +22,7 @@ namespace Blizzard.Inventory
 
         public override void Equip(EquipData equipData)
         {
+            Debug.Log($"Equipping {this}");
             _uiService.InitUI("build", new BuildUI.Args
             {
                 buildingData = buildingData,
@@ -31,6 +32,7 @@ namespace Blizzard.Inventory
 
         public override void Unequip()
         {
+            Debug.Log($"Unequipping {this}");
             _uiService.CloseUI("build");
         }
     }

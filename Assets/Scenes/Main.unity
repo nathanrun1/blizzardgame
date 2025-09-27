@@ -420,6 +420,50 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
+--- !u!1 &259134155
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 259134156}
+  - component: {fileID: 259134157}
+  m_Layer: 0
+  m_Name: InteractionServiceInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &259134156
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259134155}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1912497461}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &259134157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259134155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bce47701ca24ee84a970587dea4d92ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &335459000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1395,6 +1439,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e392c1bffe605eb459745b3d9ee481af, type: 2}
   - {fileID: 11400000, guid: c7049c190d5729c4eafeea359f5193f5, type: 2}
   - {fileID: 11400000, guid: 643576cc368137a47b60c8a5e5568ec1, type: 2}
+  - {fileID: 11400000, guid: 11687069685bd354dab749a57e5e029e, type: 2}
+  - {fileID: 11400000, guid: 70d5e986641afcb48a7859411d26e654, type: 2}
+  - {fileID: 11400000, guid: 84187f0e590b26748874eba8c07d6f27, type: 2}
 --- !u!1 &821977788
 GameObject:
   m_ObjectHideFlags: 0
@@ -2669,11 +2716,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc23bd6e43f8bf2479f22d739388508e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startupUI: 010000000200000004000000
+  _startupUI: 0100000002000000
   _startingItems:
   - item: {fileID: 11400000, guid: b47f3e859c8e6ee4d8d89cb19f24b749, type: 2}
     amount: 1
   - item: {fileID: 11400000, guid: 143031de987ad274e97c79399a46dba3, type: 2}
+    amount: 1
+  - item: {fileID: 11400000, guid: 11687069685bd354dab749a57e5e029e, type: 2}
     amount: 1
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}
@@ -3061,6 +3110,7 @@ MonoBehaviour:
   - {fileID: 1952077824}
   - {fileID: 1162311887}
   - {fileID: 475629235}
+  - {fileID: 259134157}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -4482,6 +4532,7 @@ Transform:
   - {fileID: 1952077823}
   - {fileID: 1162311886}
   - {fileID: 475629234}
+  - {fileID: 259134156}
   m_Father: {fileID: 726068483}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1952077822

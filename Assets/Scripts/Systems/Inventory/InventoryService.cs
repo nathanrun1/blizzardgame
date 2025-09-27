@@ -26,6 +26,8 @@ namespace Blizzard.Inventory
             set
             {
                 _item = value;
+                Debug.Log($"Updated item in slot: {_item}");
+                Debug.Log(OnUpdate != null ? OnUpdate.GetInvocationList().Length : "0");
                 OnUpdate?.Invoke();
             }
         }
@@ -39,6 +41,8 @@ namespace Blizzard.Inventory
             set
             {
                 _amount = value;
+                Debug.Log($"Updated amount in slot. {_amount}");
+                Debug.Log(OnUpdate != null ? OnUpdate.GetInvocationList().Length : "0");
                 OnUpdate?.Invoke();
             }
         }
@@ -82,8 +86,12 @@ namespace Blizzard.Inventory
             for (int i = 0; i < slotAmount; ++i)
             {
                 var slot = new InventorySlot();
-                slot.OnUpdate += () => OnInventoryModified.Invoke(i);
-                inventorySlots.Add(new InventorySlot());
+                int j = i; // Make copy of index for the lambda
+                slot.OnUpdate += () =>
+                {
+                    OnInventoryModified?.Invoke(j);
+                };
+                inventorySlots.Add(slot);
             }
         }
 

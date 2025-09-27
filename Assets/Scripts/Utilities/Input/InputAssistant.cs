@@ -38,5 +38,12 @@ namespace Blizzard
 
             return raycastResults;
         }
+
+
+        public static Collider2D GetColliderUnderPointer()
+        {
+            Vector2 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            return Physics2D.OverlapPoint(mouseWorld);
+        }
     }
 }
