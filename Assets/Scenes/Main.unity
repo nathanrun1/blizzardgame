@@ -436,7 +436,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &259134156
 Transform:
   m_ObjectHideFlags: 0
@@ -3110,7 +3110,6 @@ MonoBehaviour:
   - {fileID: 1952077824}
   - {fileID: 1162311887}
   - {fileID: 475629235}
-  - {fileID: 259134157}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
