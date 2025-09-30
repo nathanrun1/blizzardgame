@@ -1,3 +1,4 @@
+using ModestTree;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,8 @@ namespace Blizzard.Grid
         public IEnumerable<Vector2Int> ValidPositions { get => _hashmap.Keys; }
 
         public IEnumerable<T> Values { get => _hashmap.Values;  }
+
+        public int Count => _hashmap.Count;
 
         private Dictionary<Vector2Int, T> _hashmap = new Dictionary<Vector2Int, T>();
 
@@ -52,6 +55,11 @@ namespace Blizzard.Grid
         public void ResetAt(Vector2Int gridPosition)
         {
             _hashmap.Remove(gridPosition);
+        }
+
+        public bool Empty()
+        {
+            return _hashmap.IsEmpty();
         }
 
         public IEnumerator<KeyValuePair<Vector2Int, T>> GetEnumerator()

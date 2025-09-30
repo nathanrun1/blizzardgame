@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Blizzard.Grid;
 
 
 namespace Blizzard.NPC.Enemies
@@ -22,11 +23,19 @@ namespace Blizzard.NPC.Enemies
             public float attackRange;
             public int attackDamage;
             public float attackDelay;
-
             /// <summary>
             /// How close player needs to be to attempt an attack
             /// </summary>
             public float playerAgroRange;
+
+            /// <summary>
+            /// Queries up to this many closest player-built structures to choose from for attack
+            /// </summary>
+            public int targetListSize;
+            /// <summary>
+            /// Max (Manhattan) distance of potential obstacle target when queried in the obstacle quadtree.
+            /// </summary>
+            public int maxTargetDistance;
 
             public float idleUpdateDelay;
 
@@ -98,27 +107,48 @@ namespace Blizzard.NPC.Enemies
             /// <returns>True if target found and assigned, false otherwise</returns>
             protected bool TryGetDamageableTarget()
             {
-                Obstacle randObstacle = _stateContext.obstacleGridService.GetRandomObstacleWithFlags(ObstacleFlags.PlayerBuilt);
-                if (randObstacle == null) return false;
-                Debug.Log("found obstacle: " + randObstacle.name);
+                // YOUAREHERE replacing with new target selection...
 
-                // Check for a closer player built obstacle in line of sight
-                RaycastHit2D raycast = Physics2D.Raycast(_stateContext.gameObject.transform.position,
-                                                         randObstacle.transform.position - _stateContext.gameObject.transform.position,
-                                                         Mathf.Infinity,
-                                                         (int)CollisionAssistant.Visible);
-                if (raycast.collider != null && raycast.collider.gameObject != randObstacle.gameObject)
-                {
-                    Obstacle hit = raycast.collider.gameObject.GetComponent<Obstacle>();
-                    if (hit != null) Debug.Log("closer obstacle?: " + hit.gameObject.name);
-                    if (hit != null && (hit.ObstacleFlags & ObstacleFlags.PlayerBuilt) == ObstacleFlags.PlayerBuilt)
-                    {
-                        // A closer target, pick this one instead
-                        randObstacle = hit;
-                    }
+                //-- Random obstacle & raycast impleemntation --
+                //Obstacle randObstacle = _stateContext.obstacleGridService.GetRandomObstacleWithFlags(ObstacleFlags.PlayerBuilt);
+                //if (randObstacle == null) return false;
+                //Debug.Log("found obstacle: " + randObstacle.name);
+
+                //// Check for a closer player built obstacle in line of sight
+                //RaycastHit2D raycast = Physics2D.Raycast(_stateContext.gameObject.transform.position,
+                //                                         randObstacle.transform.position - _stateContext.gameObject.transform.position,
+                //                                         Mathf.Infinity,
+                //                                         (int)CollisionAssistant.Visible);
+                //if (raycast.collider != null && raycast.collider.gameObject != randObstacle.gameObject)
+                //{
+                //    Obstacle hit = raycast.collider.gameObject.GetComponent<Obstacle>();
+                //    if (hit != null) Debug.Log("closer obstacle?: " + hit.gameObject.name);
+                //    if (hit != null && (hit.ObstacleFlags & ObstacleFlags.PlayerBuilt) == ObstacleFlags.PlayerBuilt)
+                //    {
+                //        // A closer target, pick this one instead
+                //        randObstacle = hit;
+                //    }
+                //}
+
+                //_stateContext.targetObstacle = randObstacle as Damageable;
+
+                // -- Quadtree Query implementation --
+                _stateContext.obstacleGridService.InitQuadTree(ObstacleFlags.PlayerBuilt); // Ensure PlayerBuilt buildings quadtree exists
+                Vector2Int selfGridPos = _stateContext.obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                    .WorldToCellPos(_stateContext.gameObject.transform.position);
+                Debug.Log($"Quadtree available: {_stateContext.obstacleGridService.QuadTrees[ObstacleFlags.PlayerBuilt]}");
+                List<Obstacle> targetOptions = _stateContext.obstacleGridService.QuadTrees[ObstacleFlags.PlayerBuilt].GetKNearestObstacles
+                    (
+                        selfGridPos, 
+                        _stateContext.behaviourConfig.targetListSize, 
+                        _stateContext.behaviourConfig.maxTargetDistance
+                    );
+                if (targetOptions.Count == 0) {
+                    _stateContext.targetObstacle = null;
+                    return false; // No targets available
                 }
-
-                _stateContext.targetObstacle = randObstacle as Damageable;
+                // TEMP: choose closest target. TODO: Change to choose highest value (or one of)
+                _stateContext.targetObstacle = targetOptions[0] as Damageable;
                 return true;
             }
         }

@@ -23,7 +23,7 @@ namespace Blizzard.Obstacles
         /// QuadTrees for querying obstacles with different ObstacleFlags on main obstacle layer.
         /// Must be initialized with InitQuadTree()
         /// </summary>
-        public Dictionary<ObstacleFlags, ObstacleQuadTree> QuadTrees { get; private set; }
+        public Dictionary<ObstacleFlags, ObstacleQuadTree> QuadTrees { get; private set; } = new();
 
         [Inject] private TemperatureService _temperatureService;
 
@@ -87,7 +87,18 @@ namespace Blizzard.Obstacles
 
             Grids[obstacleData.obstacleLayer].SetAt(gridPosition, obstacle);
 
-            if (obstacleData.obstacleLayer == ObstacleConstants.MainObstacleLayer) UpdateTemperatureSimData(gridPosition, obstacle);
+            if (obstacleData.obstacleLayer == ObstacleConstants.MainObstacleLayer)
+            {
+                UpdateTemperatureSimData(gridPosition, obstacle);
+                foreach (ObstacleFlags flagCombo in QuadTrees.Keys)
+                {
+                    if ((flagCombo &obstacleData.obstacleFlags) == flagCombo)
+                    {
+                        // Add obstacle to relevant QuadTree
+                        QuadTrees[flagCombo].Add(gridPosition);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -97,9 +108,6 @@ namespace Blizzard.Obstacles
         {
             if (!TryGetObstacleAt(gridPosition, out Obstacle obstacle, obstacleLayer)) return false;
             obstacle.Destroy();
-            Grids[obstacleLayer].ResetAt(gridPosition);
-
-            if (obstacleLayer == ObstacleConstants.MainObstacleLayer) UpdateTemperatureSimData(gridPosition, null);
 
             return true;
         }
@@ -125,10 +133,21 @@ namespace Blizzard.Obstacles
         /// </summary>
         private void OnObstacleDestroyed(Vector2Int gridPosition, ObstacleLayer obstacleLayer)
         {
-            if (Grids[obstacleLayer].TryGetValue(gridPosition, out _))
+            if (Grids[obstacleLayer].TryGetValue(gridPosition, out Obstacle obstacle))
             {
                 Grids[obstacleLayer].ResetAt(gridPosition);
-                if (obstacleLayer == ObstacleConstants.MainObstacleLayer) UpdateTemperatureSimData(gridPosition, null);
+                if (obstacleLayer == ObstacleConstants.MainObstacleLayer)
+                {
+                    UpdateTemperatureSimData(gridPosition, null);
+                    foreach (ObstacleFlags flagCombo in QuadTrees.Keys)
+                    {
+                        if ((flagCombo & obstacle.ObstacleFlags) == flagCombo)
+                        {
+                            // Add obstacle to relevant QuadTree
+                            QuadTrees[flagCombo].Remove(gridPosition);
+                        }
+                    }
+                }
             }
         }
 

@@ -49,23 +49,20 @@ namespace Blizzard.Obstacles
             public List<QTObstacleData> kNearest;
 
             private int _k;
-            private int _foundCount;
 
             public bool OnVist(QTObstacleData obj)
             {
-                kNearest[_foundCount] = obj;
-                _foundCount++;
+                kNearest.Add(obj);
 
                 // Continue iterating until k found
-                return _foundCount < _k;
+                return kNearest.Count < _k;
             }
 
             public QTreeKNearestVisitor(int k)
             {
-                kNearest = new List<QTObstacleData>(k);
+                kNearest = new();
 
                 _k = k;
-                _foundCount = 0;
             }
         }
 
@@ -79,7 +76,7 @@ namespace Blizzard.Obstacles
         /// Set of coordinates that have been inserted into the underlying quadtree,
         /// yet the associated obstacle has been removed.
         /// </summary>
-        private HashSet<Vector2Int> _invalidPositions;
+        private HashSet<Vector2Int> _invalidPositions = new();
         /// <summary>
         /// Associated obstacle grid, will cross-reference obstacles from within
         /// for queries.
@@ -147,6 +144,9 @@ namespace Blizzard.Obstacles
         /// <returns>List of K nearest obstacles.</returns>
         public List<Obstacle> GetKNearestObstacles(Vector2Int position, int k, int maxDistance)
         {
+            if (!_quadTreeInitialized) Rebuild();
+
+            Debug.Log($"[ObstacleQuadTree] Querying {k} nearest to {position}...");
             var visitor = new QTreeKNearestVisitor(k);
             float2 point = new((float)position.x, (float)position.y);
             _nativeQuadTree.Nearest(point, (float)maxDistance, 
@@ -156,6 +156,7 @@ namespace Blizzard.Obstacles
             int invalidCount = 0;
             foreach (QTObstacleData data in visitor.kNearest)
             {
+                Debug.Log($"[ObstacleQuadTree] Queried obstacle at pos {data.position}. Checking if valid...");
                 if (_invalidPositions.Contains(data.position)) 
                 {
                     invalidCount++;
@@ -178,6 +179,7 @@ namespace Blizzard.Obstacles
                 queryResults.Add(obstacle);
             }
 
+            Debug.Log($"[ObstacleQuadTree] Successfully queried {queryResults.Count} obstacles!");
             return queryResults;
         }
 
@@ -186,6 +188,8 @@ namespace Blizzard.Obstacles
         /// </summary>
         private void Rebuild()
         {
+            Debug.Log("[ObstacleQuadTree] Rebuilding!");
+
             _invalidPositions.Clear();
             if (_obstacleGrid.Empty()) return; // Nothing in grid yet
             Vector2Int firstPos = _obstacleGrid.ValidPositions.First();
@@ -215,7 +219,7 @@ namespace Blizzard.Obstacles
             _quadTreeInitialized = true;
             foreach (var (position, obstacle) in _obstacleGrid)
             {
-                if ((obstacle.ObstacleFlags & _obstacleFlags) == obstacle.ObstacleFlags)
+                if ((obstacle.ObstacleFlags & _obstacleFlags) == _obstacleFlags)
                 {
                     // Filter met, add to quadtree
                     Add(position);
