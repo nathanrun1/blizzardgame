@@ -24,5 +24,24 @@ namespace Blizzard.Obstacles
         /// Default obstacle layer, also the one used for temperature calculations
         /// </summary>
         public const ObstacleLayer MainObstacleLayer = ObstacleLayer.Main;
+
+        // -- Obstacle QuadTrees --
+        /// <summary>
+        /// Maximum allowed portion of queried invalid positions when querying K nearest
+        /// in an ObstacleQuadTree
+        /// </summary>
+        public const float QTmaxAllowedInvalidInQuery = 0.25f;
+        /// <summary>
+        /// Default maximum depth of ObstacleQuadTree
+        /// </summary>
+        public const int QTmaxDepth = 12;
+        /// <summary>
+        /// Default maximum objects per node of ObstacleQuadTree
+        /// </summary>
+        public const int QTobjectsPerNode = 16;
+        /// <summary>
+        /// Additional portion of space to add to bounds on QT Rebuild.
+        /// </summary>
+        public const float QTBoundsPadding = 0.25f;
     }
 }

@@ -23,5 +23,16 @@ namespace Blizzard.Grid
         /// All values stored in the sparse grid
         /// </summary>
         public IEnumerable<T> Values { get; }
+
+        /// <summary>
+        /// Amount of elements stored in the sparse grid
+        /// </summary>
+        public int Count { get; }
+
+        /// <summary>
+        /// Whether the sparse grid is empty
+        /// </summary>
+        /// <returns></returns>
+        public bool Empty();
     }
 }
