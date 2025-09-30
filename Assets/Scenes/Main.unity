@@ -1487,6 +1487,52 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _obstaclesParent: {fileID: 1172169690}
+--- !u!1 &846239564
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 846239565}
+  - component: {fileID: 846239566}
+  m_Layer: 0
+  m_Name: ConfigInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &846239565
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846239564}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1912497461}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &846239566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846239564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bea2c44e89b88af4293cc7771f0f9d78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _craftingDatabase: {fileID: 11400000, guid: 6ccbfd302f8e60d46af8d79ffe871c99, type: 2}
+  _smeltingDatabase: {fileID: 11400000, guid: a62f9a0638785284c8939311104434a4, type: 2}
 --- !u!1 &925979586
 GameObject:
   m_ObjectHideFlags: 0
@@ -2724,6 +2770,8 @@ MonoBehaviour:
     amount: 1
   - item: {fileID: 11400000, guid: 11687069685bd354dab749a57e5e029e, type: 2}
     amount: 1
+  - item: {fileID: 11400000, guid: 643576cc368137a47b60c8a5e5568ec1, type: 2}
+    amount: 3
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}
     position: {x: 0, y: 5}
@@ -3110,6 +3158,7 @@ MonoBehaviour:
   - {fileID: 1952077824}
   - {fileID: 1162311887}
   - {fileID: 475629235}
+  - {fileID: 846239566}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -4532,6 +4581,7 @@ Transform:
   - {fileID: 1162311886}
   - {fileID: 475629234}
   - {fileID: 259134156}
+  - {fileID: 846239565}
   m_Father: {fileID: 726068483}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1952077822

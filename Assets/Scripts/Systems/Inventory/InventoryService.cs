@@ -4,6 +4,7 @@ using UnityEngine;
 using ModestTree;
 using Blizzard.UI;
 using Zenject;
+using Unity.VisualScripting;
 
 namespace Blizzard.Inventory
 {
@@ -47,6 +48,21 @@ namespace Blizzard.Inventory
             }
         }
         private int _amount = 0;
+
+        /// <summary>
+        /// Sets slot item without triggering OnUpdate event
+        /// </summary>
+        public void SetItemQuiet(ItemData item)
+        {
+            _item = item;
+        }
+        /// <summary>
+        /// Sets slot item without triggering OnUpdate event
+        /// </summary>
+        public void SetAmountQuiet(int amount)
+        {
+            _amount = amount;
+        }
     }
 
     /// <summary>
@@ -61,9 +77,64 @@ namespace Blizzard.Inventory
 
     public static class InventorySlotExtensions 
     { 
+        /// <summary>
+        /// Whether the slot is empty
+        /// </summary>
         public static bool Empty(this InventorySlot slot)
         {
             return slot.Item == null || slot.Amount == 0;
+        }
+
+        /// <summary>
+        /// Checks if given item could be added to this slot.
+        /// Can't add if stack is full, or current item is of different type.
+        /// </summary>
+        public static bool CanAdd(this InventorySlot slot, ItemData item, int amount)
+        {
+            return slot.Item == null ? amount <= item.stackSize
+                : (slot.Amount + amount) <= item.stackSize && item == slot.Item;
+        }
+        /// <summary>
+        /// Attempts to add given item to slot. Fails if stack is full, or item is of different type.
+        /// </summary>
+        /// <returns>Whether item was successfully added</returns>
+        public static bool Add(this InventorySlot slot, ItemData item, int amount, bool quiet = false)
+        {
+            if (!slot.CanAdd(item, amount)) return false;
+
+            if (slot.Item == null)
+            {
+                slot.SetItemQuiet(item); // Only trigger event once
+                if (quiet) slot.SetAmountQuiet(amount);
+                else slot.Amount = amount;
+            } 
+            else
+            {
+                if (quiet) slot.SetAmountQuiet(slot.Amount + amount);
+                else slot.Amount += amount;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Attempts to remove given amount from slot.
+        /// </summary>
+        /// <param name="drain">Whether to remove as much as possible rather than all or none.</param>
+        /// <returns>Amount successfully removed</returns>
+        public static int Remove(this InventorySlot slot, int amount, bool drain = true, bool quiet = false)
+        {
+            if (amount <= 0 || slot.Amount <= 0 || (drain == false && slot.Amount < amount)) return 0;
+
+            int canRemove = Math.Min(amount, slot.Amount);
+            if (canRemove == slot.Amount)
+            {
+                // Entire slot is cleared
+                slot.SetItemQuiet(null);
+            }
+            if (quiet) slot.SetAmountQuiet(slot.Amount - amount);
+            else slot.Amount -= amount;
+
+            return canRemove;
         }
     }
 

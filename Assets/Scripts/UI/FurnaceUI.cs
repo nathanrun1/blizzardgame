@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Blizzard.Inventory;
 using Blizzard.Inventory.Crafting;
+using Blizzard.Obstacles.Concrete;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,10 +14,18 @@ namespace Blizzard.UI
     {
         public struct Args
         {
+            // Item slots from linked furnace
             public InventorySlot ingredientSlot;
             public InventorySlot resultSlot;
             public InventorySlot fuelSlot;
+
+            /// <summary>
+            /// State of linked furnace
+            /// </summary>
+            public Furnace.State furnaceState;
         }
+
+        private Furnace.State _linkedFurnaceState = null;
 
         [Header("References")]
         [SerializeField] CraftingDatabase _smeltingDatabase;
@@ -27,10 +36,6 @@ namespace Blizzard.UI
 
         [Inject] InventoryService _inventoryService;
         [Inject] UIService _uiService;
-
-        private ItemAmountPair _storedIngredient;
-        private ItemAmountPair _storedResult;
-        private ItemAmountPair _storedFuel;
 
         public override void Setup(object args)
         {
@@ -47,6 +52,7 @@ namespace Blizzard.UI
             _ingredientSlotUi.LinkedSetup(furnaceArgs.ingredientSlot, true, true);
             _resultSlotUi.LinkedSetup(furnaceArgs.resultSlot, false, true);
             _fuelSlotUi.LinkedSetup(furnaceArgs.fuelSlot, true, true);
+            _linkedFurnaceState = furnaceArgs.furnaceState;
         }
 
         //private void OnCraft(CraftingRecipe recipe)

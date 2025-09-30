@@ -39,7 +39,7 @@ namespace Blizzard.Obstacles
         /// </summary>
         protected void SetInsulation(float insulation)
         {
-            Assert.That(0 <= insulation && insulation <= 1);
+            Assert.That(0 <= insulation && insulation <= 1, "Insulation value must be between 0 and 1!");
             this.Insulation = insulation;
             TemperatureDataUpdated?.Invoke();
         }

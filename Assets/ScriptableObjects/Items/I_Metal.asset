@@ -15,7 +15,7 @@ MonoBehaviour:
   id: 2
   displayName: Metal
   icon: {fileID: 1204795706071082416, guid: 1ae7d475dc9150942a31aaa7f7894e74, type: 3}
-  stackSize: 5
+  stackSize: 10
   itemGainColor:
     serializedVersion: 2
     rgba: 4294967295
