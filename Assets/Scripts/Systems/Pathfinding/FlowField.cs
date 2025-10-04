@@ -8,7 +8,9 @@ using NUnit.Framework;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Blizzard.Pathfinding
 {
@@ -117,9 +119,24 @@ namespace Blizzard.Pathfinding
         /// </summary>
         private Vector2Int _curMinBound;
         /// <summary>
+        /// Whether flow field is currently valid. If not, will direct all navigators to their current location.
+        /// </summary>
+        private bool _flowFieldValid = false;
+
+        /// <summary>
         /// Flattened flowfield input data (i.e. weights of each grid position)
         /// </summary>
         private NativeArray<float> _inField;
+
+        /// <summary>
+        /// Flattened travel costs input data (i.e. travel cost of each grid position)
+        /// </summary>
+        private NativeArray<float> _travelCosts;
+
+        /// <summary>
+        /// Lock for flow field construction
+        /// </summary>
+        private readonly object _ffBuildLock = new object();
 
 
         private ObstacleGridService _obstacleGridService;
@@ -137,44 +154,70 @@ namespace Blizzard.Pathfinding
         /// <param name="max">Inclusive maximum bound</param>
         public void BuildFlowField(Vector2Int min, Vector2Int max)
         {
-            int width = (max.x - min.x) + 1; // Add 1 because bounds are inclusive
-            int height = (max.y - min.y) + 1; // ^^
-            Debug.Log($"Rebuilding flow field of size {width} * {height}!");
-
-            if (_nativeFlowField == null || _nativeFlowField.Width != width || _nativeFlowField.Height != height)
+            lock (_ffBuildLock)
             {
-                // Correct the flow field's dimensions
-                _nativeFlowField = new NativeFlowField(width, height);
+                int width = (max.x - min.x) + 1; // Add 1 because bounds are inclusive
+                int height = (max.y - min.y) + 1; // ^^
+                Debug.Log($"Rebuilding flow field of size {width} * {height}!");
+
+                if (_nativeFlowField == null || _nativeFlowField.Width != width || _nativeFlowField.Height != height)
+                {
+                    // Correct the flow field's dimensions (or initialize if not already)
+                    _nativeFlowField = new NativeFlowField(width, height, useTravelCosts: true);
+                }
+
+                // Default initialize to float.MinValue (i.e. "Walkable")
+                float[] _inFieldArr = Enumerable.Repeat(float.MinValue, width * height).ToArray();
+                float[] _travelCostsArr = Enumerable.Repeat(0f, width * height).ToArray();
+
+                List<Vector2Int> inRange = _obstacleGridService.GetQuadtree((ObstacleFlags)0)
+                        .GetValidPositionsInRange(min, max);
+                //Debug.Log($"Obstacles in range: {inRange.Count}");
+                bool rangeContainsPlayerBuilt = false;
+                foreach (Vector2Int pos in inRange)
+                {
+                    Obstacle obstacle = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                        .GetAt(pos);
+                    Assert.IsNotNull(obstacle, "Failed to construct flow field, queried a null obstacle!");
+
+                    // Check if player built
+                    bool isPlayerBuilt = (ObstacleFlags.PlayerBuilt & obstacle.ObstacleFlags) == ObstacleFlags.PlayerBuilt;
+                    if (!rangeContainsPlayerBuilt && isPlayerBuilt) rangeContainsPlayerBuilt = true;
+
+                    // TODO: improve weight calculation based on obstacle
+
+                    float weight = isPlayerBuilt ? 0f : float.MinValue; // Set no weight if not player built
+                    float travelCost = (obstacle as Damageable).Health / 10f; // TEMP: set travel cost to health/10, though this should depend on enemy's dps
+                    _inFieldArr[Flatten(pos, min, width)] = weight; // TEMP: Set to default target value (0)
+                    _travelCostsArr[Flatten(pos, min, height)] = travelCost;
+
+                    Debug.Log($"Adding obstacle at position {pos} with weight {weight}");
+                }
+
+                if (_inField.IsCreated) _inField.Dispose(); // Free existing data (persistent allocation)
+                if (_travelCosts.IsCreated) _travelCosts.Dispose(); // ^^
+
+                // Only set data if there is a player built obstacle
+                if (rangeContainsPlayerBuilt)
+                {
+                    _inField = new NativeArray<float>(_inFieldArr, Allocator.Persistent);
+                    _travelCosts = new NativeArray<float>(_travelCostsArr, Allocator.Persistent);
+                    AsyncGPUReadbackRequest rq = _nativeFlowField.Bake(_inField, _travelCosts, new BakeOptions
+                    {
+                        Iterations = 100,
+                        IterationsPerFrame = 0,
+                        DiagonalMovement = true,
+                        ComputeQueueType = UnityEngine.Rendering.ComputeQueueType.Background
+                    });
+                    rq.WaitForCompletion();
+                    _flowFieldValid = true;
+                    _curMinBound = min;
+                }
+                else
+                {
+                    _flowFieldValid = false;
+                }
             }
-
-            // Default initialize to float.MinValue (i.e. "Walkable")
-            float[] _inFieldArr = Enumerable.Repeat(float.MinValue, width * height).ToArray();
-
-            List<Vector2Int> inRange = _obstacleGridService.GetQuadtree((ObstacleFlags)0)
-                    .GetValidPositionsInRange(min, max);
-            //Debug.Log($"Obstacles in range: {inRange.Count}");
-            foreach (Vector2Int pos in inRange)
-            {
-                Obstacle obstacle = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
-                    .GetAt(pos);
-                Assert.IsNotNull(obstacle, "Failed to construct flow field, queried a null obstacle!");
-
-                // TODO: improve weight calculation based on obstacle
-                Debug.Log($"Adding obstacle at position {pos}");
-                _inFieldArr[Flatten(pos, min, width)] = 0; // TEMP: Set to default target value (0)
-            }
-
-            if (_inField.IsCreated) _inField.Dispose(); // Free existing data (persistent allocation)
-            _inField = new NativeArray<float>(_inFieldArr, Allocator.Persistent);
-
-            _nativeFlowField.Bake(_inField, new BakeOptions
-            {
-                Iterations = 100,
-                IterationsPerFrame = 0,
-                DiagonalMovement = true,
-                ComputeQueueType = UnityEngine.Rendering.ComputeQueueType.Background
-            });
-            _curMinBound = min;
         }
 
         /// <summary>
@@ -184,6 +227,8 @@ namespace Blizzard.Pathfinding
         /// <param name="pos">Current grid position of navigator</param>
         public Vector2Int GetNextPos(Vector2Int pos)
         {
+            if (!_flowFieldValid) return pos; // Not valid, return same pos.
+
             int cellIndex = Flatten(pos, _curMinBound, _nativeFlowField.Width);
             int nextIndex = _nativeFlowField.NextIndices[cellIndex];
             return Unflatten(nextIndex, _curMinBound, _nativeFlowField.Width);

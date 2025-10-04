@@ -10,10 +10,11 @@
       }
     },
     "com.kingstone426.nativeflowfield": {
-      "version": "file:NativeFlowField",
+      "version": "https://github.com/nathanrun1/NativeFlowField.git",
       "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "5e44e1cb1ad8d2af7dc19be68a3a3112ed0c5b6c"
     },
     "com.unity.2d.animation": {
       "version": "10.1.4",
@@ -328,8 +329,8 @@
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.collections": "2.4.2",
-        "com.unity.burst": "1.7.2"
+        "com.unity.burst": "1.7.2",
+        "com.unity.collections": "2.4.2"
       },
       "url": "https://packages.unity.com"
     },
