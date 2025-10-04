@@ -28,7 +28,7 @@ namespace Blizzard.Utilities
             {
                 return _intIdDict[id];
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             {
                 throw new KeyNotFoundException("No environment prefab exists with id: " + id);
             }
@@ -40,7 +40,7 @@ namespace Blizzard.Utilities
             {
                 return _stringIdDict[stringId];
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             {
                 throw new KeyNotFoundException("No environment prefab exists with string id: " + stringId);
             }

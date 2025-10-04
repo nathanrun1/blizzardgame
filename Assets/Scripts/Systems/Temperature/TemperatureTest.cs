@@ -16,7 +16,7 @@ namespace Blizzard.Temperature
         [Header("Simulation Params")]
         [SerializeField] private int _windowWidth = 16;
         [SerializeField] private int _windowHeight = 16;
-        [SerializeField, Range(0.5f, 20f)] private float _timeScale = 1.0f;
+        // [SerializeField, Range(0.5f, 20f)] private float _timeScale = 1.0f;
 
         [Header("Real time modifications (SPACEBAR to apply them at selected square)")]
         [SerializeField] private float setTemperature = 10.0f;

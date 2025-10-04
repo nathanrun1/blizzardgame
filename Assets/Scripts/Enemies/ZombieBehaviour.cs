@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Blizzard.Grid;
+using Blizzard.Pathfinding;
 
 
 namespace Blizzard.NPC.Enemies
@@ -56,6 +57,7 @@ namespace Blizzard.NPC.Enemies
 
             public ObstacleGridService obstacleGridService;
             public PlayerService playerService;
+            public PathfindingService pathfindingService;
 
             public GameObject gameObject;
             public Rigidbody2D rigidBody;
@@ -90,6 +92,7 @@ namespace Blizzard.NPC.Enemies
             /// <returns>Whether player can be targeted</returns>
             protected bool TryGetPlayerTarget()
             {
+                return false; // TEMP: disabling player targeting
                 Vector2 plrDirection = _stateContext.playerService.PlayerPosition - (Vector2)_stateContext.gameObject.transform.position;
                 if (plrDirection.sqrMagnitude > _stateContext.behaviourConfig.playerAgroRangeSqr) return false; // Player is too far away
 
@@ -169,13 +172,16 @@ namespace Blizzard.NPC.Enemies
                     {
                         Debug.Log("player targeting!");
                         _stateContext.stateMachine.ChangeState(new NavPlayerState());
+                        return;
                     }
 
-                    if (TryGetDamageableTarget())
-                    {
-                        Debug.Log("obstacle identified, navigating!: " + _stateContext.targetObstacle.name);
-                        _stateContext.stateMachine.ChangeState(new NavObstacleState());
-                    }
+                    // No player target, navigate to obstacle.
+                    _stateContext.stateMachine.ChangeState(new NavObstacleState());
+                    //if (TryGetDamageableTarget())
+                    //{
+                    //    Debug.Log("obstacle identified, navigating!: " + _stateContext.targetObstacle.name);
+                    //    _stateContext.stateMachine.ChangeState(new NavObstacleState());
+                    //}
                 }
             }
         }
@@ -237,7 +243,7 @@ namespace Blizzard.NPC.Enemies
 
         private class NavObstacleState : ZombieState
         {
-            Vector2 _movementVector;
+            Vector2Int _nextGridPos;
             float _clock = 0;
 
             public override void Update()
@@ -249,14 +255,51 @@ namespace Blizzard.NPC.Enemies
                     if (TryGetPlayerTarget()) _stateContext.stateMachine.ChangeState(new NavPlayerState()); // Prioritize player as target
                 }
 
-                if (_stateContext.targetObstacle == null || _stateContext.targetObstacle.gameObject == null) _stateContext.stateMachine.ChangeState(new IdleState()); // Target no longer exists
+                // if (_stateContext.targetObstacle == null || _stateContext.targetObstacle.gameObject == null) _stateContext.stateMachine.ChangeState(new IdleState()); // Target no longer exists
 
-                _movementVector = _stateContext.targetObstacle.transform.position - _stateContext.gameObject.transform.position;
-                _stateContext.rigidBody.MovePosition(_stateContext.rigidBody.position + _movementVector.normalized * _stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime);
-                if (_movementVector.sqrMagnitude <= _stateContext.behaviourConfig.attackRangeSqr)
+                //_movementVector = _stateContext.targetObstacle.transform.position - _stateContext.gameObject.transform.position;
+                //_stateContext.rigidBody.MovePosition(_stateContext.rigidBody.position + _movementVector.normalized * _stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime);
+                //if (_movementVector.sqrMagnitude <= _stateContext.behaviourConfig.attackRangeSqr)
+                //{
+                //    Debug.Log("Close enough to target obstacle, attacking!");
+                //    _stateContext.stateMachine.ChangeState(new AttackObstacleState());
+                //}
+
+                //Debug.Log(_stateContext);
+                //Debug.Log(_stateContext.pathfindingService);
+                //Debug.Log(_stateContext.gameObject);
+                //Debug.Log(_stateContext.gameObject.transform);
+
+                Vector2Int thisGridPos = _stateContext.obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                    .WorldToCellPos(_stateContext.gameObject.transform.position);
+                _nextGridPos = _stateContext.pathfindingService.GetNextTargetGridPosition(
+                    thisGridPos, out Obstacle targetObstacle);
+
+                if (targetObstacle != null)
                 {
+                    // If next position is obstacle, obstacle is "next on the path", thus we attack it.
+                    _stateContext.targetObstacle = targetObstacle as Damageable;
                     Debug.Log("Close enough to target obstacle, attacking!");
                     _stateContext.stateMachine.ChangeState(new AttackObstacleState());
+                    return;
+                }
+
+                // Next position is not an obstacle, keep moving (if we need to)
+                if (_nextGridPos != thisGridPos)
+                {
+                    // Only navigate if not already at next destination
+                    Vector2 nextPos = _stateContext.obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                        .CellToWorldPosCenter(_nextGridPos);
+
+                    Vector2 movementVector = nextPos - (Vector2)_stateContext.gameObject.transform.position;
+                    _stateContext.rigidBody.MovePosition(_stateContext.rigidBody.position
+                        + _stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime * movementVector.normalized);
+                }
+                else
+                {
+                    // Ensure no movement
+                    _stateContext.rigidBody.linearVelocity = new(0, 0);
+                    _stateContext.rigidBody.angularVelocity = 0f;
                 }
             }
         }
@@ -285,7 +328,7 @@ namespace Blizzard.NPC.Enemies
             private void AttackTarget()
             {
                 Damageable target = _stateContext.targetObstacle as Damageable;
-                if (target.gameObject == null || (target.transform.position - _stateContext.gameObject.transform.position).sqrMagnitude > _stateContext.behaviourConfig.attackRangeSqr)
+                if (target == null || target.gameObject == null || (target.transform.position - _stateContext.gameObject.transform.position).sqrMagnitude > _stateContext.behaviourConfig.attackRangeSqr)
                 {
                     // Target no longer exists or out of attack range, return to idle
                     _stateContext.stateMachine.ChangeState(new IdleState());
@@ -304,6 +347,7 @@ namespace Blizzard.NPC.Enemies
 
         [Inject] ObstacleGridService _obstacleGridService;
         [Inject] PlayerService _playerService;
+        [Inject] PathfindingService _pathfindingService;
 
         private void Awake()
         {
@@ -313,6 +357,7 @@ namespace Blizzard.NPC.Enemies
             {
                 obstacleGridService = _obstacleGridService,
                 playerService = _playerService,
+                pathfindingService = _pathfindingService,
                 gameObject = gameObject,
                 rigidBody = GetComponent<Rigidbody2D>(),
                 targetObstacle = null,

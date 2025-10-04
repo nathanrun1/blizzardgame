@@ -8,6 +8,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using Blizzard.Grid;
 using System.Linq;
+using Sirenix.OdinInspector.Editor.Validation;
 
 namespace Blizzard.Obstacles
 {
@@ -16,6 +17,8 @@ namespace Blizzard.Obstacles
     /// </summary>
     public class ObstacleQuadTree
     {
+
+        #region QT Structs
         /// <summary>
         /// Represents a stored obstacle in a NativeQuadTree
         /// </summary>
@@ -44,7 +47,7 @@ namespace Blizzard.Obstacles
         /// <summary>
         /// QuadTree Nearest Visitor that provides the K nearest obstacles
         /// </summary>
-        private struct QTreeKNearestVisitor : IQuadtreeNearestVisitor<QTObstacleData>
+        private struct QTKNearestVisitor : IQuadtreeNearestVisitor<QTObstacleData>
         {
             public List<QTObstacleData> kNearest;
 
@@ -58,13 +61,52 @@ namespace Blizzard.Obstacles
                 return kNearest.Count < _k;
             }
 
-            public QTreeKNearestVisitor(int k)
+            public QTKNearestVisitor(int k)
             {
                 kNearest = new();
 
                 _k = k;
             }
         }
+
+        private struct QTRangeVisitor : IQuadtreeRangeVisitor<QTObstacleData>
+        {
+            public List<QTObstacleData> results;
+
+            private Vector2Int _min;
+            private Vector2Int _max;
+
+            public bool OnVisit(QTObstacleData obj, AABB2D _, AABB2D __)
+            {
+                // Ensure position is within range
+                Debug.Log($"Range Query: visiting object at pos {obj.position}");
+                Debug.Log($"Range is {_min} to {_max}");
+                Debug.Log(_min.x <= obj.position.x);
+                Debug.Log(_min.y <= obj.position.y);
+                Debug.Log(_max.x >= obj.position.x);
+                Debug.Log(_max.y >= obj.position.y);
+                if (_min.x <= obj.position.x && _min.y <= obj.position.y && 
+                    _max.x >= obj.position.x && _max.y >= obj.position.y)
+                {
+                    results.Add(obj);
+                }
+                else
+                {
+                    Debug.Log("obj out of range!");
+                }
+
+                return true;
+            }
+
+            public QTRangeVisitor(Vector2Int min, Vector2Int max)
+            {
+                _min = min;
+                _max = max;
+
+                results = new();
+            }
+        }
+        #endregion QT Structs
 
 
         /// <summary>
@@ -105,6 +147,7 @@ namespace Blizzard.Obstacles
         /// </summary>
         public void Add(Vector2Int obstaclePosition)
         {
+            Debug.Log($"Adding {obstaclePosition} to quad tree (flags: {_obstacleFlags})");
             if (!_quadTreeInitialized) Rebuild();
             if (!_nativeQuadTree.Bounds.Contains(new float2(obstaclePosition.x, obstaclePosition.y)))
                 Rebuild(); // New point not contained within quadtree, must rebuild.
@@ -147,7 +190,7 @@ namespace Blizzard.Obstacles
             if (!_quadTreeInitialized) Rebuild();
 
             Debug.Log($"[ObstacleQuadTree] Querying {k} nearest to {position}...");
-            var visitor = new QTreeKNearestVisitor(k);
+            var visitor = new QTKNearestVisitor(k);
             float2 point = new((float)position.x, (float)position.y);
             _nativeQuadTree.Nearest(point, (float)maxDistance, 
                                     ref visitor, default(QTManhattanDistanceProvider));
@@ -181,6 +224,58 @@ namespace Blizzard.Obstacles
 
             Debug.Log($"[ObstacleQuadTree] Successfully queried {queryResults.Count} obstacles!");
             return queryResults;
+        }
+
+        /// <summary>
+        /// Retrieves all obstacles within a given range.
+        /// </summary>
+        /// <param name="min">Inclusive minimum of range</param>
+        /// <param name="max">Inclusive maximum of range</param>
+        /// <returns>List of queried obstacles within the given range</returns>
+        public List<Obstacle> GetObstaclesInRange(Vector2Int min, Vector2Int max)
+        {
+            List<Obstacle> results = new();
+
+            List<Vector2Int> validPositions = GetValidPositionsInRange(min, max);
+            foreach (Vector2Int pos in validPositions)
+            {
+                Obstacle obstacle = _obstacleGrid.GetAt(pos);
+                Assert.IsTrue(obstacle != null, "QTObstacleData not marked invalid, yet obstacle" +
+                    "doesn't exist in grid!");
+                results.Add(obstacle);
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// Retrieves all valid obstacle positions within a given range.
+        /// </summary>
+        /// <param name="min">Inclusive minimum of range</param>
+        /// <param name="max">Inclusive maximum of range</param>
+        /// <returns>List of queried obstacle positions that are valid within the given range</returns>
+        public List<Vector2Int> GetValidPositionsInRange(Vector2Int min, Vector2Int max)
+        {
+            if (!_quadTreeInitialized) Rebuild();
+
+            var visitor = new QTRangeVisitor(min, max);
+
+            // Add 0.5f padding to range so that it includes points on the edge (since they are integer coords)
+            float2 flMin = new((float)min.x - 0.5f, (float)min.y - 0.5f);
+            float2 flMax = new((float)max.x + 0.5f, (float)max.y + 0.5f);
+            AABB2D range = new(flMin, flMax);
+
+            _nativeQuadTree.Range(range, ref visitor);
+
+            List<Vector2Int> results = new();
+            Debug.Log($"Range query ({flMin}, {flMax}) yielded {results.Count} results.");
+            foreach (QTObstacleData data in visitor.results)
+            {
+                if (_invalidPositions.Contains(data.position)) continue; // Position is invalid
+                results.Add(data.position);
+            }
+
+            return results;
         }
 
         /// <summary>

@@ -21,8 +21,6 @@ namespace Blizzard.UI
         [Header("References")]
         [SerializeField] InventorySlotCtrl _inventorySlotPrefab;
         [SerializeField] Transform _inventorySlotParent;
-        [Header("Config")]
-        [SerializeField] float _itemDropDistance = 1;
 
         [Inject] InventoryService _inventoryService;
         [Inject] PlayerService _playerService;

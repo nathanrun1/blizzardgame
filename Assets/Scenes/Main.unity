@@ -119,6 +119,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &21940092
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 21940093}
+  - component: {fileID: 21940094}
+  m_Layer: 0
+  m_Name: PathfindingServiceInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &21940093
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 21940092}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1912497461}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &21940094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 21940092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f876b5c32c67e40903dcf9b9769e88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &64185214 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2331118492141501394, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
@@ -3159,6 +3203,7 @@ MonoBehaviour:
   - {fileID: 1162311887}
   - {fileID: 475629235}
   - {fileID: 846239566}
+  - {fileID: 21940094}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -4184,7 +4229,6 @@ MonoBehaviour:
   _heatDiffusionShader: {fileID: 7200000, guid: a11d0ca6951a4094c8bdea351165f0c7, type: 3}
   _windowWidth: 16
   _windowHeight: 16
-  _timeScale: 1
   setTemperature: 10
   setInsulation: 0
   setSourceHeat: 0
@@ -4582,6 +4626,7 @@ Transform:
   - {fileID: 1952077823}
   - {fileID: 1162311886}
   - {fileID: 475629234}
+  - {fileID: 21940093}
   - {fileID: 259134156}
   - {fileID: 846239565}
   m_Father: {fileID: 726068483}

@@ -15,6 +15,13 @@ namespace Blizzard.Obstacles
     public class ObstacleGridService
     {
         /// <summary>
+        /// Invoked when an obstacle is added or removed from some location.
+        /// Args: (Affected grid position, Affected Obstacle Layer)
+        /// </summary>
+        public event Action<Vector2Int, ObstacleLayer> OnObstacleAddedOrRemoved;
+
+
+        /// <summary>
         /// Grids (organized by obstacle layer) containing obstacle instances mapped by their grid positions in a world grid
         /// </summary>
         public Dictionary<ObstacleLayer, ISparseWorldGrid<Obstacle>> Grids;
@@ -92,13 +99,16 @@ namespace Blizzard.Obstacles
                 UpdateTemperatureSimData(gridPosition, obstacle);
                 foreach (ObstacleFlags flagCombo in QuadTrees.Keys)
                 {
-                    if ((flagCombo &obstacleData.obstacleFlags) == flagCombo)
+                    Debug.Log($"Checking flag combo {flagCombo} against obstacle's {obstacleData.obstacleFlags}");
+                    if ((flagCombo & obstacleData.obstacleFlags) == flagCombo)
                     {
                         // Add obstacle to relevant QuadTree
                         QuadTrees[flagCombo].Add(gridPosition);
                     }
                 }
             }
+
+            OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleData.obstacleLayer);
         }
 
         /// <summary>
@@ -125,6 +135,16 @@ namespace Blizzard.Obstacles
             QuadTrees.Add(obstacleFlags, quadTree);
         }
 
+        /// <summary>
+        /// Retrieves ObstacleQuadTree with the given obstacleFlags as filter.
+        /// Initializes it if it doesn't already exist.
+        /// </summary>
+        public ObstacleQuadTree GetQuadtree(ObstacleFlags obstacleFlags)
+        {
+            InitQuadTree(obstacleFlags);
+            return QuadTrees[obstacleFlags];
+        }
+
 
 
         /// <summary>
@@ -149,6 +169,8 @@ namespace Blizzard.Obstacles
                     }
                 }
             }
+
+            OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleLayer);
         }
 
         /// <summary>

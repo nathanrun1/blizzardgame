@@ -48,7 +48,7 @@ namespace Blizzard.UI
             {
                 itemGainArgs = (Args)args;
             }
-            catch (InvalidCastException e)
+            catch (InvalidCastException)
             {
                 throw new ArgumentException("Incorrect argument type given!");
             }
