@@ -58,6 +58,7 @@ namespace Blizzard.Obstacles
         /// </summary>
         public void Destroy()
         {
+            Debug.Log("Obstacle destroyed!");
             OnDestroy?.Invoke();
             Destroy(this.gameObject);
         }

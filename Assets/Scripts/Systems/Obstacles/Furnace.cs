@@ -50,10 +50,8 @@ namespace Blizzard.Obstacles.Concrete
 
 
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
-
             _ingredient.OnUpdate += OnFurnaceSlotUpdate;
             _result.OnUpdate += OnFurnaceSlotUpdate;
             _fuel.OnUpdate += OnFurnaceSlotUpdate;

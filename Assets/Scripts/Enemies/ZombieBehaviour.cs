@@ -24,6 +24,7 @@ namespace Blizzard.NPC.Enemies
             public float attackRange;
             public int attackDamage;
             public float attackDelay;
+
             /// <summary>
             /// How close player needs to be to attempt an attack
             /// </summary>
@@ -33,6 +34,7 @@ namespace Blizzard.NPC.Enemies
             /// Queries up to this many closest player-built structures to choose from for attack
             /// </summary>
             public int targetListSize;
+
             /// <summary>
             /// Max (Manhattan) distance of potential obstacle target when queried in the obstacle quadtree.
             /// </summary>
@@ -68,6 +70,7 @@ namespace Blizzard.NPC.Enemies
         }
 
         #region States
+
         // -- STATES --
 
         /// <summary>
@@ -75,14 +78,16 @@ namespace Blizzard.NPC.Enemies
         /// </summary>
         private abstract class ZombieState : IState
         {
-            protected ZombieContext _stateContext;
+            protected ZombieContext stateContext;
 
-            public virtual void Enter(IStateContext stateContext)
+            public virtual void Enter(IStateContext ctx)
             {
-                _stateContext = stateContext as ZombieContext;
+                this.stateContext = ctx as ZombieContext;
             }
 
-            public virtual void Exit() { }
+            public virtual void Exit()
+            {
+            }
 
             public abstract void Update();
 
@@ -92,97 +97,71 @@ namespace Blizzard.NPC.Enemies
             /// <returns>Whether player can be targeted</returns>
             protected bool TryGetPlayerTarget()
             {
-                return false; // TEMP: disabling player targeting
-                Vector2 plrDirection = _stateContext.playerService.PlayerPosition - (Vector2)_stateContext.gameObject.transform.position;
-                if (plrDirection.sqrMagnitude > _stateContext.behaviourConfig.playerAgroRangeSqr) return false; // Player is too far away
+                Vector2 plrDirection = stateContext.playerService.PlayerPosition -
+                                       (Vector2)stateContext.gameObject.transform.position;
+                if (plrDirection.sqrMagnitude > stateContext.behaviourConfig.playerAgroRangeSqr)
+                    return false; // Player is too far away
 
-                RaycastHit2D raycast = Physics2D.Raycast(_stateContext.gameObject.transform.position, plrDirection, _stateContext.behaviourConfig.playerAgroRange, (int)CollisionAssistant.Visible);
+                RaycastHit2D raycast = Physics2D.Raycast(stateContext.gameObject.transform.position, plrDirection,
+                    stateContext.behaviourConfig.playerAgroRange, (int)CollisionAssistant.Visible);
 
-                Debug.Log(raycast.collider);
-                if (raycast.collider != null && raycast.collider.gameObject.CompareTag("Player")) return true; // Player is visible and in range!
+                // Debug.Log(raycast.collider);
+                if (raycast.collider && raycast.collider.gameObject.CompareTag("Player"))
+                    return true; // Player is visible and in range!
                 else return false;
             }
 
             /// <summary>
-            /// Attempts to pick a damageable obstacle as a target. If successful, assigns target obstacle
+            /// Attempts to pick the closest damageable obstacle as a target. If successful, assigns target obstacle
             /// in the state context.
             /// </summary>
             /// <returns>True if target found and assigned, false otherwise</returns>
             protected bool TryGetDamageableTarget()
             {
-                // YOUAREHERE replacing with new target selection...
-
-                //-- Random obstacle & raycast impleemntation --
-                //Obstacle randObstacle = _stateContext.obstacleGridService.GetRandomObstacleWithFlags(ObstacleFlags.PlayerBuilt);
-                //if (randObstacle == null) return false;
-                //Debug.Log("found obstacle: " + randObstacle.name);
-
-                //// Check for a closer player built obstacle in line of sight
-                //RaycastHit2D raycast = Physics2D.Raycast(_stateContext.gameObject.transform.position,
-                //                                         randObstacle.transform.position - _stateContext.gameObject.transform.position,
-                //                                         Mathf.Infinity,
-                //                                         (int)CollisionAssistant.Visible);
-                //if (raycast.collider != null && raycast.collider.gameObject != randObstacle.gameObject)
-                //{
-                //    Obstacle hit = raycast.collider.gameObject.GetComponent<Obstacle>();
-                //    if (hit != null) Debug.Log("closer obstacle?: " + hit.gameObject.name);
-                //    if (hit != null && (hit.ObstacleFlags & ObstacleFlags.PlayerBuilt) == ObstacleFlags.PlayerBuilt)
-                //    {
-                //        // A closer target, pick this one instead
-                //        randObstacle = hit;
-                //    }
-                //}
-
-                //_stateContext.targetObstacle = randObstacle as Damageable;
-
-                // -- Quadtree Query implementation --
-                _stateContext.obstacleGridService.InitQuadTree(ObstacleFlags.PlayerBuilt); // Ensure PlayerBuilt buildings quadtree exists
-                Vector2Int selfGridPos = _stateContext.obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
-                    .WorldToCellPos(_stateContext.gameObject.transform.position);
-                Debug.Log($"Quadtree available: {_stateContext.obstacleGridService.QuadTrees[ObstacleFlags.PlayerBuilt]}");
-                List<Obstacle> targetOptions = _stateContext.obstacleGridService.QuadTrees[ObstacleFlags.PlayerBuilt].GetKNearestObstacles
+                stateContext.obstacleGridService.InitQuadTree(ObstacleFlags
+                    .PlayerBuilt); // Ensure PlayerBuilt buildings quadtree exists
+                Vector2Int selfGridPos = stateContext.obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                    .WorldToCellPos(stateContext.gameObject.transform.position);
+                // Debug.Log($"Quadtree available: {stateContext.obstacleGridService.QuadTrees[ObstacleFlags.PlayerBuilt]}");
+                List<Obstacle> targetOptions = stateContext.obstacleGridService.QuadTrees[ObstacleFlags.PlayerBuilt]
+                    .GetKNearestObstacles
                     (
-                        selfGridPos, 
-                        _stateContext.behaviourConfig.targetListSize, 
-                        _stateContext.behaviourConfig.maxTargetDistance
+                        selfGridPos,
+                        stateContext.behaviourConfig.targetListSize,
+                        stateContext.behaviourConfig.maxTargetDistance
                     );
-                if (targetOptions.Count == 0) {
-                    _stateContext.targetObstacle = null;
+                if (targetOptions.Count == 0)
+                {
+                    stateContext.targetObstacle = null;
                     return false; // No targets available
                 }
-                // TEMP: choose closest target. TODO: Change to choose highest value (or one of)
-                _stateContext.targetObstacle = targetOptions[0] as Damageable;
+
+                // Choose closest target
+                stateContext.targetObstacle = targetOptions[0] as Damageable;
                 return true;
             }
         }
 
         private class IdleState : ZombieState
         {
-            float _clock = 0;
+            private float _clock = 0;
 
+            // ReSharper disable Unity.PerformanceAnalysis
             public override void Update()
             {
                 _clock += Time.fixedDeltaTime;
-                if (_clock > _stateContext.behaviourConfig.idleUpdateDelay)
+                if (_clock <= stateContext.behaviourConfig.idleUpdateDelay) return;
+
+                _clock -= stateContext.behaviourConfig.idleUpdateDelay;
+
+                if (TryGetPlayerTarget())
                 {
-                    _clock -= _stateContext.behaviourConfig.idleUpdateDelay;
-                    Debug.Log("In idle state, checking for targets...");
-
-                    if (TryGetPlayerTarget())
-                    {
-                        Debug.Log("player targeting!");
-                        _stateContext.stateMachine.ChangeState(new NavPlayerState());
-                        return;
-                    }
-
-                    // No player target, navigate to obstacle.
-                    _stateContext.stateMachine.ChangeState(new NavObstacleState());
-                    //if (TryGetDamageableTarget())
-                    //{
-                    //    Debug.Log("obstacle identified, navigating!: " + _stateContext.targetObstacle.name);
-                    //    _stateContext.stateMachine.ChangeState(new NavObstacleState());
-                    //}
+                    stateContext.stateMachine.ChangeState(new NavPlayerState());
+                    return;
                 }
+
+                // No player target, navigate to obstacle.
+                stateContext.stateMachine.ChangeState(new NavObstacleState());
             }
         }
 
@@ -194,22 +173,23 @@ namespace Blizzard.NPC.Enemies
             public override void Update()
             {
                 _clock += Time.fixedDeltaTime;
-                if (_clock > _stateContext.behaviourConfig.idleUpdateDelay)
+                if (_clock > stateContext.behaviourConfig.idleUpdateDelay)
                 {
-                    _clock -= _stateContext.behaviourConfig.idleUpdateDelay;
+                    _clock -= stateContext.behaviourConfig.idleUpdateDelay;
                     if (!TryGetPlayerTarget())
                     {
                         // Can no longer target player, return to idle
-                        _stateContext.stateMachine.ChangeState(new IdleState());
+                        stateContext.stateMachine.ChangeState(new IdleState());
                     }
                 }
-                // TODO: verify player visibility
-                _movementVector = _stateContext.playerService.PlayerPosition - (Vector2)_stateContext.gameObject.transform.position;
-                _stateContext.rigidBody.MovePosition(_stateContext.rigidBody.position + _movementVector.normalized * _stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime);
-                if (_movementVector.sqrMagnitude <= _stateContext.behaviourConfig.attackRangeSqr)
+
+                _movementVector = stateContext.playerService.PlayerPosition -
+                                  (Vector2)stateContext.gameObject.transform.position;
+                stateContext.rigidBody.MovePosition(stateContext.rigidBody.position + _movementVector.normalized *
+                    (stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime));
+                if (_movementVector.sqrMagnitude <= stateContext.behaviourConfig.attackRangeSqr)
                 {
-                    Debug.Log("Close enough to player, attacking!");
-                    _stateContext.stateMachine.ChangeState(new AttackPlayerState());
+                    stateContext.stateMachine.ChangeState(new AttackPlayerState());
                 }
             }
         }
@@ -221,85 +201,112 @@ namespace Blizzard.NPC.Enemies
             public override void Update()
             {
                 _clock += Time.fixedDeltaTime;
-                _stateContext.rigidBody.linearVelocity = Vector2.zero;
-                if (_clock > _stateContext.behaviourConfig.attackDelay)
+                stateContext.rigidBody.linearVelocity = Vector2.zero;
+                if (_clock > stateContext.behaviourConfig.attackDelay)
                 {
-                    _clock -= _stateContext.behaviourConfig.attackDelay;
+                    _clock -= stateContext.behaviourConfig.attackDelay;
                     AttackPlayer();
                 }
             }
 
             private void AttackPlayer()
             {
-                if ((_stateContext.playerService.PlayerPosition - (Vector2)_stateContext.gameObject.transform.position).sqrMagnitude > _stateContext.behaviourConfig.attackRangeSqr)
+                if ((stateContext.playerService.PlayerPosition - (Vector2)stateContext.gameObject.transform.position)
+                    .sqrMagnitude > stateContext.behaviourConfig.attackRangeSqr)
                 {
                     // Out of attack range, back to navigation
-                    _stateContext.stateMachine.ChangeState(new NavPlayerState());
+                    stateContext.stateMachine.ChangeState(new NavPlayerState());
                 }
 
-                _stateContext.playerService.DamagePlayer(_stateContext.behaviourConfig.attackDamage);
+                stateContext.playerService.DamagePlayer(stateContext.behaviourConfig.attackDamage);
             }
         }
 
         private class NavObstacleState : ZombieState
         {
-            Vector2Int _nextGridPos;
-            float _clock = 0;
-
+            private Vector2Int _curGridPos;
+            private Vector2Int _nextGridPos;
+            private float _clock = 0;
+            
             public override void Update()
             {
                 _clock += Time.fixedDeltaTime;
-                if (_clock > _stateContext.behaviourConfig.idleUpdateDelay)
+                if (_clock > stateContext.behaviourConfig.idleUpdateDelay)
                 {
-                    _clock -= _stateContext.behaviourConfig.idleUpdateDelay;
-                    if (TryGetPlayerTarget()) _stateContext.stateMachine.ChangeState(new NavPlayerState()); // Prioritize player as target
+                    // Reset clock with slight random offset to avoid synchronizing with other enemies.
+                    _clock -= stateContext.behaviourConfig.idleUpdateDelay + UnityEngine.Random.Range(-0.5f, 0.5f);
+                    if (TryGetPlayerTarget())
+                        stateContext.stateMachine.ChangeState(new NavPlayerState()); // Prioritize player as target
+                    
+                    if (_nextGridPos == _curGridPos)
+                    {
+                        // Try getting new target
+                        GetNextTarget();
+                    }
                 }
-
-                // if (_stateContext.targetObstacle == null || _stateContext.targetObstacle.gameObject == null) _stateContext.stateMachine.ChangeState(new IdleState()); // Target no longer exists
-
-                //_movementVector = _stateContext.targetObstacle.transform.position - _stateContext.gameObject.transform.position;
-                //_stateContext.rigidBody.MovePosition(_stateContext.rigidBody.position + _movementVector.normalized * _stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime);
-                //if (_movementVector.sqrMagnitude <= _stateContext.behaviourConfig.attackRangeSqr)
-                //{
-                //    Debug.Log("Close enough to target obstacle, attacking!");
-                //    _stateContext.stateMachine.ChangeState(new AttackObstacleState());
-                //}
-
-                //Debug.Log(_stateContext);
-                //Debug.Log(_stateContext.pathfindingService);
-                //Debug.Log(_stateContext.gameObject);
-                //Debug.Log(_stateContext.gameObject.transform);
-
-                Vector2Int thisGridPos = _stateContext.obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
-                    .WorldToCellPos(_stateContext.gameObject.transform.position);
-                _nextGridPos = _stateContext.pathfindingService.GetNextTargetGridPosition(
-                    thisGridPos, out Obstacle targetObstacle);
-
-                if (targetObstacle != null)
+                
+                Vector2Int curGridPosCheck = stateContext.obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                    .WorldToCellPos(stateContext.gameObject.transform.position);
+                if (curGridPosCheck != _curGridPos)
                 {
-                    // If next position is obstacle, obstacle is "next on the path", thus we attack it.
-                    _stateContext.targetObstacle = targetObstacle as Damageable;
-                    Debug.Log("Close enough to target obstacle, attacking!");
-                    _stateContext.stateMachine.ChangeState(new AttackObstacleState());
+                    _curGridPos = curGridPosCheck;
+                    GetNextTarget();
+                }
+                
+                if (_nextGridPos == _curGridPos)
+                {
+                    // Already at target position, ensure no movement.
+                    stateContext.rigidBody.linearVelocity = Vector2.zero;
+                    stateContext.rigidBody.angularVelocity = 0f;
                     return;
                 }
-
+               
                 // Next position is not an obstacle, keep moving (if we need to)
-                if (_nextGridPos != thisGridPos)
-                {
-                    // Only navigate if not already at next destination
-                    Vector2 nextPos = _stateContext.obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
-                        .CellToWorldPosCenter(_nextGridPos);
+                // Only navigate if not already at next destination
+                Vector2 nextPos = stateContext.obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                    .CellToWorldPosCenter(_nextGridPos); 
+                
+                Vector2 movementVector = nextPos - (Vector2)stateContext.rigidBody.position;
+                stateContext.rigidBody.MovePosition(stateContext.rigidBody.position
+                                                    + stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime *
+                                                    movementVector.normalized);
+            }
 
-                    Vector2 movementVector = nextPos - (Vector2)_stateContext.gameObject.transform.position;
-                    _stateContext.rigidBody.MovePosition(_stateContext.rigidBody.position
-                        + _stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime * movementVector.normalized);
-                }
-                else
+            
+            /// <summary>
+            /// Retrieves next target position based on current grid position. 
+            /// </summary>
+            private void GetNextTarget()
+            {
+                if (!stateContext.pathfindingService.TryGetNextTargetGridPosition(_curGridPos, out _nextGridPos,
+                        out Obstacle targetObstacle))
                 {
-                    // Ensure no movement
-                    _stateContext.rigidBody.linearVelocity = new(0, 0);
-                    _stateContext.rigidBody.angularVelocity = 0f;
+                    // Debug.Log("No next target position!");
+                    // Not in flow field, move directory towards closest player-built obstacle instead
+                    if (!TryGetDamageableTarget())
+                    {
+                        // No damageable obstacles at all, just navigate to the player.
+                        stateContext.stateMachine.ChangeState(new NavPlayerState());
+                        return;
+                    }
+
+                    Vector2 movementVector = stateContext.targetObstacle.transform.position
+                                             - stateContext.gameObject.transform.position;
+                    stateContext.rigidBody.MovePosition(stateContext.rigidBody.position
+                                                        + stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime *
+                                                        movementVector.normalized);
+                    // TODO: handle when stuck
+                }
+                
+                // Debug.Log($"Next position is {_nextGridPos}");
+                
+                // Check if next position is obstacle
+                if (targetObstacle)
+                {
+                    // Next position is obstacle, obstacle is "next on the path", thus we attack it.
+                    stateContext.targetObstacle = targetObstacle as Damageable;
+                    // Debug.Log("Close enough to target obstacle, attacking!");
+                    stateContext.stateMachine.ChangeState(new AttackObstacleState());
                 }
             }
         }
@@ -308,40 +315,44 @@ namespace Blizzard.NPC.Enemies
         {
             float _clock = 0;
 
-            public override void Enter(IStateContext stateContext)
+            public override void Enter(IStateContext ctx)
             {
-                base.Enter(stateContext);
-                Assert.IsTrue(_stateContext.targetObstacle as Damageable != null); // Sanity check, target must be damageable
+                base.Enter(ctx);
+                Assert.IsTrue(
+                    base.stateContext.targetObstacle as Damageable); // Sanity check, target must be damageable
             }
 
             public override void Update()
             {
                 _clock += Time.fixedDeltaTime;
-                _stateContext.rigidBody.linearVelocity = Vector2.zero;
-                if (_clock > _stateContext.behaviourConfig.attackDelay)
-                {
-                    _clock -= _stateContext.behaviourConfig.attackDelay;
-                    AttackTarget();
-                }
+                stateContext.rigidBody.linearVelocity = Vector2.zero;
+                stateContext.rigidBody.angularVelocity = 0f;
+                
+                if (_clock <= stateContext.behaviourConfig.attackDelay) return;
+                _clock -= stateContext.behaviourConfig.attackDelay;
+                AttackTarget();
             }
 
             private void AttackTarget()
             {
-                Damageable target = _stateContext.targetObstacle as Damageable;
-                if (target == null || target.gameObject == null || (target.transform.position - _stateContext.gameObject.transform.position).sqrMagnitude > _stateContext.behaviourConfig.attackRangeSqr)
+                Damageable target = stateContext.targetObstacle as Damageable;
+                if (!target || !target.gameObject)
                 {
-                    // Target no longer exists or out of attack range, return to idle
-                    _stateContext.stateMachine.ChangeState(new IdleState());
+                    // Target no longer exists, return to idle
+                    stateContext.stateMachine.ChangeState(new IdleState());
                 }
 
-                target.Damage(_stateContext.behaviourConfig.attackDamage, out bool destroyed);
-                if (destroyed) _stateContext.stateMachine.ChangeState(new IdleState()); // Target obstacle destroyed, return to idle
+                target.Damage(stateContext.behaviourConfig.attackDamage, DamageFlags.Enemy,
+                    stateContext.gameObject.transform.position, out bool destroyed);
+                if (destroyed)
+                    stateContext.stateMachine.ChangeState(new IdleState()); // Target obstacle destroyed, return to idle
             }
         }
+
         #endregion
 
-        [Header("Zombie Config")]
-        [SerializeField] BehaviourConfig _behaviour;
+        [Header("Zombie Config")] [SerializeField]
+        private BehaviourConfig _behaviour;
 
         private StateMachine _stateMachine;
 

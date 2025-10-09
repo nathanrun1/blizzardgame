@@ -11,27 +11,19 @@ namespace Blizzard.Obstacles
         [Header("Structure References")]
         [SerializeField] SpriteRenderer[] _spriteRenderers;
 
-        private Color[] _spriteRendererColors;
-
-        protected virtual void Awake()
+        protected override void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition)
         {
-            // Preserve original colors
-            _spriteRendererColors = new Color[_spriteRenderers.Length];
-            for (int i = 0; i < _spriteRenderers.Length; ++i)
+            if (Health > 0)
             {
-                _spriteRendererColors[i] = _spriteRenderers[i].color;
+                if (damageFlags.HasFlag(DamageFlags.Enemy)) 
+                    StartCoroutine(FXAssistant.TintSequenceCoroutine(_spriteRenderers, Color.red));
+                StartCoroutine(FXAssistant.DamageAnim(transform, sourcePosition));
             }
         }
 
-        protected override void OnDamage(int damage)
+        protected override void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition)
         {
-            base.OnDamage(damage);
-            if (Health > 0) StartCoroutine(FXAssistant.TintSequenceCoroutine(_spriteRenderers, Color.red));
-        }
-
-        protected override void OnDeath()
-        {
-            base.OnDeath();
+            base.OnDeath(damageFlags, sourcePosition);
             Destroy();
         }
     }

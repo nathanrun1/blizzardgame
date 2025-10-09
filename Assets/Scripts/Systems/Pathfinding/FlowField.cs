@@ -119,12 +119,12 @@ namespace Blizzard.Pathfinding
         /// </summary>
         private Vector2Int _curMinBound;
         /// <summary>
-        /// Whether flow field is currently valid. If not, will direct all navigators to their current location.
+        /// Current maximum bound of native flow field
         /// </summary>
-        private bool _flowFieldValid = false;
+        private Vector2Int _curMaxBound;
 
         /// <summary>
-        /// Flattened flowfield input data (i.e. weights of each grid position)
+        /// Flattened flow field input data (i.e. weights of each grid position)
         /// </summary>
         private NativeArray<float> _inField;
 
@@ -139,7 +139,7 @@ namespace Blizzard.Pathfinding
         private readonly object _ffBuildLock = new object();
 
 
-        private ObstacleGridService _obstacleGridService;
+        private readonly ObstacleGridService _obstacleGridService;
 
         public FlowField(ObstacleGridService obstacleGridService)
         {
@@ -158,7 +158,7 @@ namespace Blizzard.Pathfinding
             {
                 int width = (max.x - min.x) + 1; // Add 1 because bounds are inclusive
                 int height = (max.y - min.y) + 1; // ^^
-                Debug.Log($"Rebuilding flow field of size {width} * {height}!");
+                // Debug.Log($"Rebuilding flow field of size {width} * {height}!");
 
                 if (_nativeFlowField == null || _nativeFlowField.Width != width || _nativeFlowField.Height != height)
                 {
@@ -167,13 +167,12 @@ namespace Blizzard.Pathfinding
                 }
 
                 // Default initialize to float.MinValue (i.e. "Walkable")
-                float[] _inFieldArr = Enumerable.Repeat(float.MinValue, width * height).ToArray();
-                float[] _travelCostsArr = Enumerable.Repeat(0f, width * height).ToArray();
+                var inFieldArr = Enumerable.Repeat(float.MinValue, width * height).ToArray();
+                var travelCostsArr = Enumerable.Repeat(0f, width * height).ToArray();
 
                 List<Vector2Int> inRange = _obstacleGridService.GetQuadtree((ObstacleFlags)0)
                         .GetValidPositionsInRange(min, max);
                 //Debug.Log($"Obstacles in range: {inRange.Count}");
-                bool rangeContainsPlayerBuilt = false;
                 foreach (Vector2Int pos in inRange)
                 {
                     Obstacle obstacle = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
@@ -182,56 +181,54 @@ namespace Blizzard.Pathfinding
 
                     // Check if player built
                     bool isPlayerBuilt = (ObstacleFlags.PlayerBuilt & obstacle.ObstacleFlags) == ObstacleFlags.PlayerBuilt;
-                    if (!rangeContainsPlayerBuilt && isPlayerBuilt) rangeContainsPlayerBuilt = true;
 
                     // TODO: improve weight calculation based on obstacle
-
                     float weight = isPlayerBuilt ? 0f : float.MinValue; // Set no weight if not player built
-                    float travelCost = (obstacle as Damageable).Health / 10f; // TEMP: set travel cost to health/10, though this should depend on enemy's dps
-                    _inFieldArr[Flatten(pos, min, width)] = weight; // TEMP: Set to default target value (0)
-                    _travelCostsArr[Flatten(pos, min, height)] = travelCost;
+                    float travelCost = (obstacle as Damageable) ? ((obstacle as Damageable)!).Health / 10f : 0f; // TEMP: set travel cost to health/10, though this should depend on enemy's dps
+                    
+                    inFieldArr[Flatten(pos, min, width)] = weight; // TEMP: Set to default target value (0)
+                    travelCostsArr[Flatten(pos, min, height)] = travelCost;
 
-                    Debug.Log($"Adding obstacle at position {pos} with weight {weight}");
+                    Debug.Log($"Adding obstacle at position {pos} with weight {weight}, travel cost {travelCost}");
                 }
 
                 if (_inField.IsCreated) _inField.Dispose(); // Free existing data (persistent allocation)
                 if (_travelCosts.IsCreated) _travelCosts.Dispose(); // ^^
 
-                // Only set data if there is a player built obstacle
-                if (rangeContainsPlayerBuilt)
+                _inField = new NativeArray<float>(inFieldArr, Allocator.Persistent);
+                _travelCosts = new NativeArray<float>(travelCostsArr, Allocator.Persistent);
+                AsyncGPUReadbackRequest rq = _nativeFlowField.Bake(_inField, _travelCosts, new BakeOptions
                 {
-                    _inField = new NativeArray<float>(_inFieldArr, Allocator.Persistent);
-                    _travelCosts = new NativeArray<float>(_travelCostsArr, Allocator.Persistent);
-                    AsyncGPUReadbackRequest rq = _nativeFlowField.Bake(_inField, _travelCosts, new BakeOptions
-                    {
-                        Iterations = 100,
-                        IterationsPerFrame = 0,
-                        DiagonalMovement = true,
-                        ComputeQueueType = UnityEngine.Rendering.ComputeQueueType.Background
-                    });
-                    rq.WaitForCompletion();
-                    _flowFieldValid = true;
-                    _curMinBound = min;
-                }
-                else
-                {
-                    _flowFieldValid = false;
-                }
+                    Iterations = 100,
+                    IterationsPerFrame = 0,
+                    DiagonalMovement = true,
+                    ComputeQueueType = UnityEngine.Rendering.ComputeQueueType.Background
+                });
+                rq.WaitForCompletion();
+                _curMinBound = min;
+                _curMaxBound = max;
             }
         }
 
         /// <summary>
-        /// Retrieves the next grid position to travel to based on the given
-        /// current grid position
+        /// Attempts to retrieve the next grid position to travel to based on the given
+        /// current grid position. Successfully does so if given position is within flow field.
         /// </summary>
         /// <param name="pos">Current grid position of navigator</param>
-        public Vector2Int GetNextPos(Vector2Int pos)
+        /// <param name="nextPos">Next destination grid position for navigator</param>
+        /// <returns>Whether next position successfully retrieved</returns>
+        public bool TryGetNextPos(Vector2Int pos, out Vector2Int nextPos)
         {
-            if (!_flowFieldValid) return pos; // Not valid, return same pos.
-
+            if (pos.x < _curMinBound.x || pos.y < _curMinBound.y || pos.x > _curMaxBound.x || pos.y > _curMaxBound.y)
+            {
+                // Out of range
+                nextPos = default;
+                return false;
+            }
             int cellIndex = Flatten(pos, _curMinBound, _nativeFlowField.Width);
             int nextIndex = _nativeFlowField.NextIndices[cellIndex];
-            return Unflatten(nextIndex, _curMinBound, _nativeFlowField.Width);
+            nextPos = Unflatten(nextIndex, _curMinBound, _nativeFlowField.Width);
+            return true;
         }
 
         /// <summary>
@@ -243,6 +240,7 @@ namespace Blizzard.Pathfinding
         /// <returns>Flattened index</returns>
         private int Flatten(Vector2Int position, Vector2Int minBounds, int width)
         {
+            // Debug.Log($"Flattening position {position} to {(position.x - minBounds.x) + (position.y - minBounds.y) * width}");
             return (position.x - minBounds.x) +
                 (position.y - minBounds.y) * width;
         }
@@ -256,6 +254,7 @@ namespace Blizzard.Pathfinding
         /// <returns>Corresponding 2D position</returns>
         private Vector2Int Unflatten(int index, Vector2Int minBounds, int width)
         {
+            // Debug.Log($"Unflattening index {index} to {new Vector2Int((index % width) + minBounds.x, (index / width) + minBounds.y)}");
             return new Vector2Int((index % width) + minBounds.x, (index / width) + minBounds.y);
         }
     }

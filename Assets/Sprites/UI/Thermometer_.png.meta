@@ -159,7 +159,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Thermometer__0: -2065982949444403740
+      Thermometer__1: -4933632030785429458
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

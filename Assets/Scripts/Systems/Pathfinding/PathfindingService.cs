@@ -8,6 +8,7 @@ using Blizzard.Temperature;
 using Zenject;
 using FlowFieldAI;
 using Blizzard.Obstacles;
+using Unity.Cinemachine;
 
 namespace Blizzard.Pathfinding
 {
@@ -35,13 +36,20 @@ namespace Blizzard.Pathfinding
         /// </summary>
         /// <param name="navigatorPos">Position of navigator</param>
         /// <param name="targetObstacle">Obstacle located at target position, if any</param>
+        /// /// <param name="nextTargetPos">Next target position for navigator</param>
         /// <returns>Position to navigate to</returns>
-        public Vector2 GetNextTargetPosition(Vector2 navigatorPos, out Obstacle targetObstacle)
+        public bool TryGetNextTargetPosition(Vector2 navigatorPos, out Vector2 nextTargetPos, out Obstacle targetObstacle)
         {
             Vector2Int gridPosition = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
-                .WorldToCellPos(navigatorPos);
-            Vector2Int nextGridPosition = GetNextTargetGridPosition(gridPosition, out targetObstacle);
-            return nextGridPosition;
+                .WorldToCellPos(navigatorPos); 
+            if (!TryGetNextTargetGridPosition(gridPosition, out Vector2Int nextGridPosition, out targetObstacle))
+            {
+                nextTargetPos = default;
+                targetObstacle = null;
+                return false;
+            }
+            nextTargetPos = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer].CellToWorldPosCenter(gridPosition);
+            return true;
         }
 
         /// <summary>
@@ -49,12 +57,20 @@ namespace Blizzard.Pathfinding
         /// </summary>
         /// <param name="navigatorGridPos">Position of navigator</param>
         /// <param name="targetObstacle">Obstacle located at target position, if any</param>
+        /// <param name="nextTargetGridPos">Next target position for navigator</param>
         /// <returns>Position to navigate to</returns>
-        public Vector2Int GetNextTargetGridPosition(Vector2Int navigatorGridPos, out Obstacle targetObstacle)
+        public bool TryGetNextTargetGridPosition(Vector2Int navigatorGridPos, out Vector2Int nextTargetGridPos,
+            out Obstacle targetObstacle)
         {
-            Vector2Int nextGridPosition = _flowField.GetNextPos(navigatorGridPos);
-            _obstacleGridService.TryGetObstacleAt(nextGridPosition, out targetObstacle);
-            return nextGridPosition;
+            if (!_flowField.TryGetNextPos(navigatorGridPos, out nextTargetGridPos))
+            {
+                targetObstacle = null;
+                nextTargetGridPos = default;
+                return false;
+            }
+            _obstacleGridService.TryGetObstacleAt(nextTargetGridPos, out targetObstacle);
+            // Debug.Log($"Next pos is {nextTargetGridPos}, this pos is {navigatorGridPos} obstacle?: {targetObstacle}");
+            return true;
         }
 
 
@@ -80,18 +96,7 @@ namespace Blizzard.Pathfinding
         //    //   of x or y distance from source to target.
         //    // This ensures flow field 
         //    int halfSideLength = Math.Max(Math.Abs(source.x - target.x), Math.Abs(source.y - target.y));
-        //}
-
-
-        /// <summary>
-        /// Performs A* pathfinding from given start to end points.
-        /// Operates over the main obstacle layer.
-        /// </summary>
-        /// <returns>List of coordinates cooresponding to retrieved path</returns>
-        //private List<Vector2Int> AStar(Vector2Int start, Vector2Int end)
-        //{
-
-        //}
+        //}\
     }
 }
 

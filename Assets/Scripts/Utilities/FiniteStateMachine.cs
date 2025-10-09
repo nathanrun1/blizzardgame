@@ -5,7 +5,7 @@ namespace Blizzard.Utilities.StateMachine
         /// <summary>
         /// Enter this state
         /// </summary>
-        public void Enter(IStateContext stateContext);
+        public void Enter(IStateContext ctx);
         /// <summary>
         /// Call state's update function, to be invoked once per frame
         /// </summary>

@@ -18,10 +18,10 @@ namespace Blizzard.Obstacles
     /// </summary>
     public class Harvestable : Damageable
     {
-        [Header("Harvestable properties")]
         /// <summary>
         /// Type of tool(s) that can harvest this harvestable, interpreted as bit field.
         /// </summary>
+        [Header("Harvestable properties")]
         [SerializeField] public ToolType ToolTypes;
         /// <summary>
         /// Resources given to the player when harvested
@@ -33,16 +33,15 @@ namespace Blizzard.Obstacles
         [Inject] private PlayerService _playerService;
         [Inject] private UIService _uiService;
 
-        protected override void OnDamage(int damage)
+        protected override void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition)
         {
-            if (Health > 0) StartCoroutine(DamageAnim());
-            base.OnDamage(damage);
+            if (Health > 0) StartCoroutine(FXAssistant.DamageAnim(transform, sourcePosition,
+                () => Health <= 0));
         }
 
-        protected override void OnDeath()
+        protected override void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition)
         {
-            Harvest();
-            base.OnDeath();
+            if (damageFlags.HasFlag(DamageFlags.Player)) Harvest();
         }
 
         /// <summary>
@@ -51,8 +50,6 @@ namespace Blizzard.Obstacles
         private void Harvest()
         {
             List<ItemAmountPair> items = new(_resources);
-            Debug.Log($"Harvested! Adding {items.Count} different items to inv!");
-            Debug.Log(_inventoryService);
 
             _inventoryService.TryAddItemsWithAnim(_uiService, transform.position, items);
 
@@ -69,16 +66,17 @@ namespace Blizzard.Obstacles
                 }
             }
              
-            HarvestAnim(() => Destroy());
+            HarvestAnim(Destroy);
         }
 
         /// <summary>
         /// Feedback for the harvestable being damaged by a tool
         /// </summary>
         /// <returns></returns>
-        private IEnumerator DamageAnim()
+        private IEnumerator DamageAnim(Vector3 sourcePosition)
         {
-            Vector3 hitDirection = _playerService.GetFacingDirection();
+            if (Health <= 0) yield break;
+            Vector3 hitDirection = (transform.position - sourcePosition).normalized;
             Vector3 startPos = transform.position;
             Vector3 endPos = startPos + hitDirection * 0.05f;
             Sequence sequence = DOTween.Sequence();

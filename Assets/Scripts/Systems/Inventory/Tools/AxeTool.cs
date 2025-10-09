@@ -82,7 +82,7 @@ namespace Blizzard
             {
                 // Get 'Harvestable' component of object, or ignore if doesn't exist
 
-                if (obj.TryGetComponent<Harvestable>(out Harvestable harvestable))
+                if (obj.TryGetComponent(out Harvestable harvestable))
                 {
                     Harvest(harvestable, CalculateDamage());
                 }

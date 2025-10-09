@@ -73,6 +73,8 @@ namespace Blizzard.Obstacles
         /// </summary>
         public void PlaceObstacleAt(Vector2Int gridPosition, ObstacleData obstacleData)
         {
+            Debug.Log($"Placing obstacle at {gridPosition}, layer: {obstacleData.obstacleLayer}");
+            
             if (IsOccupied(gridPosition, obstacleData.obstacleLayer))
             {
                 throw new ArgumentException($"Grid position {gridPosition} occupied on layer {obstacleData.obstacleLayer}!");
@@ -90,7 +92,7 @@ namespace Blizzard.Obstacles
 
             obstacle.OnDestroy += () => OnObstacleDestroyed(gridPosition, obstacleData.obstacleLayer);
             obstacle.TemperatureDataUpdated += () => UpdateTemperatureSimData(gridPosition, obstacle);
-            if (_obstaclesParent != null) obstacle.transform.parent = _obstaclesParent;
+            if (_obstaclesParent) obstacle.transform.parent = _obstaclesParent;
 
             Grids[obstacleData.obstacleLayer].SetAt(gridPosition, obstacle);
 
@@ -179,7 +181,7 @@ namespace Blizzard.Obstacles
         private void UpdateTemperatureSimData(Vector2Int gridPosition, Obstacle obstacle)
         {
             TemperatureCell newTemperatureCell = _temperatureService.Grid.GetAt(gridPosition);
-            if (obstacle != null)
+            if (obstacle)
             {
                 // Update temperature data using obstacle's heat and insulation values
                 newTemperatureCell.heat = obstacle.Heat;

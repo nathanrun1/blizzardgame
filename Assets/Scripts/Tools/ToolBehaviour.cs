@@ -20,10 +20,10 @@ namespace Blizzard.Player
     /// </summary>
     public abstract class ToolBehaviour : MonoBehaviour
     {
-        [Header("Tool Config")]
         /// <summary>
         /// Base damage that this tool does to harvestables
         /// </summary>
+        [Header("Tool Config")]
         [SerializeField] protected int _baseDamage;
         /// <summary>
         /// Tool type
@@ -40,8 +40,8 @@ namespace Blizzard.Player
 
             int damageToApply = damage == -1 ? _baseDamage : damage;
 
-            Debug.Log($"Hit a {harvestable.name}! Applying damage: " + damageToApply);
-            harvestable.Damage(damageToApply, out _);
+            //Debug.Log($"Hit a {harvestable.name}! Applying damage: " + damageToApply);
+            harvestable.Damage(damageToApply, DamageFlags.Player, transform.position, out _);
         }
     }
 }

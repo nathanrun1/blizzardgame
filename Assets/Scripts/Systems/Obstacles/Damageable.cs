@@ -1,3 +1,4 @@
+using System;
 using Blizzard.Environment;
 using Blizzard.Inventory;
 using Blizzard.Player;
@@ -12,6 +13,16 @@ using Zenject;
 
 namespace Blizzard.Obstacles
 {
+    /// <summary>
+    /// Describes the source of damage
+    /// </summary>
+    [Flags]
+    public enum DamageFlags
+    {
+        Player = 1 << 0,
+        Enemy = 1 << 1
+    }
+    
     /// <summary>
     /// An obstacle that has health
     /// </summary>
@@ -30,24 +41,27 @@ namespace Blizzard.Obstacles
             this.Health = _startingHealth;
             base.Init(obstacleData);
         }
-        
+
         /// <summary>
         /// Inflicts damage
         /// </summary>
-        /// <param name="death">Set to true if health <= 0 after damage, false otherwise</param>
+        /// <param name="damage">Amount of damage to inflict</param>
+        /// <param name="damageFlags">Damage flags associated with damage source</param>
+        /// <param name="sourcePosition">World position of the damage source</param>
+        /// <param name="death">Set to true if health less than or equal to 0 after damage, false otherwise</param>
         [Button]
-        public void Damage(int damage, out bool death)
+        public void Damage(int damage, DamageFlags damageFlags, Vector3 sourcePosition, out bool death)
         {
             Health -= damage;
 
-            Debug.Log("Taking " + damage + " damage, health is now " + Health);
-            OnDamage(damage);
+            // Debug.Log("Taking " + damage + " damage, health is now " + Health);
+            OnDamage(damage, damageFlags, sourcePosition);
 
             if (Health <= 0)
             {
                 Health = 0;
                 death = true;
-                OnDeath();
+                OnDeath(damageFlags, sourcePosition);
             }
             else death = false;
         }
@@ -56,11 +70,16 @@ namespace Blizzard.Obstacles
         /// Invoked when damaged
         /// </summary>
         /// <param name="damage">Damage inflicted</param>
-        protected virtual void OnDamage(int damage) { }
+        /// <param name="damageFlags">Damage flags associated with damage source</param>
+        /// <param name="sourcePosition">World position of the damage source</param>s
+        protected virtual void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition) { }
+
         /// <summary>
         /// Invoked when health reaches 0
         /// </summary>
-        protected virtual void OnDeath() { }
+        /// <param name="damageFlags"></param>
+        /// <param name="sourcePosition"></param>
+        protected virtual void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition) { }
     }
 }
 

@@ -21,7 +21,7 @@ namespace Blizzard.Player
         public Vector2 PlayerPosition { get => PlayerCtrl.transform.position; }
 
         /// <summary>
-        /// To invoke on initializationc
+        /// To invoke on initializations
         /// </summary>
         private Action _initialize;
 
@@ -42,7 +42,7 @@ namespace Blizzard.Player
         public void DamagePlayer(int damage)
         {
             // TODO: implement
-            Debug.Log("Inflicted " + damage + " damage to player!");
+            // Debug.Log("Inflicted " + damage + " damage to player!");
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Blizzard.Player
         /// </summary>
         private void InitPlayer(PlayerCtrl playerPrefab, Transform environment, CinemachineCamera cinemachineCamera)
         {
-            Debug.Log(playerPrefab);
+            // Debug.Log(playerPrefab);
 
             PlayerCtrl = _diContainer.InstantiatePrefabForComponent<PlayerCtrl>(playerPrefab, environment); // Initialize player obj
             PlayerMovement = PlayerCtrl.GetComponent<PlayerMovement>();
