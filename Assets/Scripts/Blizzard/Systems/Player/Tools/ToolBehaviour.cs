@@ -3,7 +3,7 @@ using Blizzard.Obstacles;
 using UnityEngine;
 using Blizzard.Obstacles.Harvestables;
 
-namespace Blizzard.Tools
+namespace Blizzard.Player.Tools
 {
     /// <summary>
     /// Type of tool, determines which tools can harvest which harvestables.

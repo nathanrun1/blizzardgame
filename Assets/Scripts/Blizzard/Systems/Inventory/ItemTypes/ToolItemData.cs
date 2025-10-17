@@ -1,6 +1,6 @@
 using UnityEngine;
 using Blizzard.Player;
-using Blizzard.Tools;
+using Blizzard.Player.Tools;
 using Zenject;
 
 namespace Blizzard.Inventory.Itemtypes

@@ -7,7 +7,7 @@ using Zenject;
 using Blizzard.Environment;
 using Blizzard.Inventory;
 using Blizzard.Player;
-using Blizzard.Tools;
+using Blizzard.Player.Tools;
 using Blizzard.Utilities;
 using Blizzard.UI.Core;
 

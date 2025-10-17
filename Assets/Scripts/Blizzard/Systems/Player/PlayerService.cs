@@ -5,7 +5,7 @@ using UnityEngine;
 using Zenject;
 using Blizzard.Inventory;
 using Blizzard.Inventory.Itemtypes;
-using Blizzard.Tools;
+using Blizzard.Player.Tools;
 
 namespace Blizzard.Player
 {

@@ -4,14 +4,14 @@ using DG.Tweening;
 using System.Collections;
 using Blizzard.Input;
 using Blizzard.Obstacles.Harvestables;
-using Blizzard.Tools;
+using Blizzard.Player.Tools;
 using Blizzard.Utilities;
 using Blizzard.Utilities.Assistants;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
 
-namespace Blizzard
+namespace Blizzard.Player.Tools.Concrete
 {
     public class AxeTool : ToolBehaviour
     {
