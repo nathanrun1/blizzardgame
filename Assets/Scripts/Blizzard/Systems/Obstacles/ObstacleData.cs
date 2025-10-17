@@ -3,6 +3,7 @@ using UnityEngine.Assertions;
 using Blizzard.Obstacles;
 using Blizzard.Temperature;
 using System;
+using Blizzard.Constants;
 using Zenject;
 
 namespace Blizzard.Obstacles

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Blizzard.Temperature
+namespace Blizzard.Constants
 {
     public static class TemperatureConstants
     {

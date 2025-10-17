@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using UnityEngine;
+using Blizzard.Obstacles;
 
-namespace Blizzard.Obstacles
+namespace Blizzard.Constants
 {
     public static class ObstacleConstants
     {
@@ -30,15 +30,15 @@ namespace Blizzard.Obstacles
         /// Maximum allowed portion of queried invalid positions when querying K nearest
         /// in an ObstacleQuadTree
         /// </summary>
-        public const float QTmaxAllowedInvalidInQuery = 0.25f;
+        public const float QTMaxAllowedInvalidInQuery = 0.25f;
         /// <summary>
         /// Default maximum depth of ObstacleQuadTree
         /// </summary>
-        public const int QTmaxDepth = 12;
+        public const int QTMaxDepth = 12;
         /// <summary>
         /// Default maximum objects per node of ObstacleQuadTree
         /// </summary>
-        public const int QTobjectsPerNode = 16;
+        public const int QTObjectsPerNode = 16;
         /// <summary>
         /// Additional portion of space to add to bounds on QT Rebuild.
         /// </summary>

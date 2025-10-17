@@ -1,6 +1,7 @@
 using Blizzard.Temperature;
 using ModestTree;
 using System;
+using Blizzard.Constants;
 using UnityEngine;
 
 namespace Blizzard.Obstacles

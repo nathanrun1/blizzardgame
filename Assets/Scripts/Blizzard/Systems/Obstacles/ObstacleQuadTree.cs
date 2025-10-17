@@ -8,6 +8,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using Blizzard.Grid;
 using System.Linq;
+using Blizzard.Constants;
 using Sirenix.OdinInspector.Editor.Validation;
 
 namespace Blizzard.Obstacles
@@ -195,7 +196,7 @@ namespace Blizzard.Obstacles
                     invalidCount++;
 
                     // Check if invalid threshold reached
-                    if ((float)invalidCount / (float)k >= ObstacleConstants.QTmaxAllowedInvalidInQuery)
+                    if ((float)invalidCount / (float)k >= ObstacleConstants.QTMaxAllowedInvalidInQuery)
                     {
                         // Too many invalid retrieved in query! Rebuild and then restart query.
                         Rebuild();
@@ -299,8 +300,8 @@ namespace Blizzard.Obstacles
             AABB2D bounds = new(minPos, maxPos);
 
             // Re-initialize quadtree
-            _nativeQuadTree = new NativeQuadtree<QTObstacleData>(bounds, ObstacleConstants.QTobjectsPerNode,
-                ObstacleConstants.QTmaxDepth, Unity.Collections.Allocator.Persistent, _obstacleGrid.Count);
+            _nativeQuadTree = new NativeQuadtree<QTObstacleData>(bounds, ObstacleConstants.QTObjectsPerNode,
+                ObstacleConstants.QTMaxDepth, Unity.Collections.Allocator.Persistent, _obstacleGrid.Count);
             _quadTreeInitialized = true;
             foreach (var (position, obstacle) in _obstacleGrid)
             {

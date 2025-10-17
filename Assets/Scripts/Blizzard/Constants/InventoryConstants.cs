@@ -1,4 +1,4 @@
-namespace Blizzard.Inventory
+namespace Blizzard.Constants
 {
     public static class InventoryConstants
     {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Blizzard.Constants;
 using UnityEngine;
 
 namespace Blizzard.Obstacles

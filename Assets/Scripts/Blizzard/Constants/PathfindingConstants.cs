@@ -1,4 +1,4 @@
-namespace Blizzard.Pathfinding
+namespace Blizzard.Constants
 {
     /// <summary>
     /// Constant values used as configuration for the pathfinding system

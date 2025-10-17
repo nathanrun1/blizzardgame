@@ -1,3 +1,4 @@
+using Blizzard.Constants;
 using Unity.Burst;
 using Unity.VisualScripting;
 using UnityEngine;
