@@ -32,7 +32,7 @@
 //                    temperatureSum += randTemp.temperature; 
 //                }
 //            }
-//            Debug.Log($"Predicted equilibrium: {temperatureSum / (float)(_width * _height)}");
+//            BLog.Log($"Predicted equilibrium: {temperatureSum / (float)(_width * _height)}");
 //            temperatureGridCPU = new TemperatureGridCPU(grid);
 //        }
 
@@ -51,3 +51,4 @@
 //        }
 //    }
 //}
+

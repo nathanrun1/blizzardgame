@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Grid
 {
@@ -12,11 +13,8 @@ namespace Blizzard.Grid
         /// </summary>
         public static T[] GetRow<T>(this IDenseGrid<T> grid, int y)
         {
-            T[] row = new T[grid.Width];
-            for (int i = 0; i < grid.Width; ++i)
-            {
-                row[i] = grid.GetAt(i, y);
-            }
+            var row = new T[grid.Width];
+            for (var i = 0; i < grid.Width; ++i) row[i] = grid.GetAt(i, y);
             return row;
         }
 
@@ -25,11 +23,8 @@ namespace Blizzard.Grid
         /// </summary>
         public static T[] GetCol<T>(this IDenseGrid<T> grid, int x)
         {
-            T[] col = new T[grid.Height];
-            for (int i = 0; i < grid.Height; ++i)
-            {
-                col[i] = grid.GetAt(x, i);
-            }
+            var col = new T[grid.Height];
+            for (var i = 0; i < grid.Height; ++i) col[i] = grid.GetAt(x, i);
             return col;
         }
 
@@ -44,40 +39,40 @@ namespace Blizzard.Grid
         //    {
         //        neighbors[neighborCount] = (grid.GetAt(gridPosition.x - 1, gridPosition.y));
         //        neighborCount++;
-        //        //Debug.Log($"nbr left at {gridPosition.x - 1}, {gridPosition.y}with value {grid.GetAt(gridPosition.x - 1, gridPosition.y).ToString()}");
+        //        //BLog.Log($"nbr left at {gridPosition.x - 1}, {gridPosition.y}with value {grid.GetAt(gridPosition.x - 1, gridPosition.y).ToString()}");
         //    } 
         //    else if (left != null)
         //    {
         //        neighbors[neighborCount] = (T)left;
         //        neighborCount++;
-        //        //Debug.Log($"nbr left given with value {left.ToString()}");
+        //        //BLog.Log($"nbr left given with value {left.ToString()}");
         //    }
 
         //    if (gridPosition.x != grid.Width - 1)
         //    {
         //        neighbors[neighborCount] = grid.GetAt(gridPosition.x + 1, gridPosition.y);
         //        neighborCount++;
-        //        //Debug.Log($"nbr right at {gridPosition.x + 1}, {gridPosition.y} with value {grid.GetAt(gridPosition.x + 1, gridPosition.y).ToString()}");
+        //        //BLog.Log($"nbr right at {gridPosition.x + 1}, {gridPosition.y} with value {grid.GetAt(gridPosition.x + 1, gridPosition.y).ToString()}");
         //    }
 
         //    if (gridPosition.y != 0 && down == null)
         //    {
         //        neighbors[neighborCount] = grid.GetAt(gridPosition.x, gridPosition.y - 1);
         //        neighborCount++;
-        //        //Debug.Log($"nbr down at {gridPosition.x}, {gridPosition.y - 1}");
+        //        //BLog.Log($"nbr down at {gridPosition.x}, {gridPosition.y - 1}");
         //    }
         //    else if (down != null)
         //    {
         //        neighbors[neighborCount] = (T)down;
         //        neighborCount++;
-        //        //Debug.Log($"nbr down given with value {down.ToString()}");
+        //        //BLog.Log($"nbr down given with value {down.ToString()}");
         //    }
 
         //    if (gridPosition.y != grid.Height - 1)
         //    {
         //        neighbors[neighborCount] = grid.GetAt(gridPosition.x, gridPosition.y + 1);
         //        neighborCount++;
-        //        //Debug.Log($"nbr up at {gridPosition.x}, {gridPosition.y + 1}");
+        //        //BLog.Log($"nbr up at {gridPosition.x}, {gridPosition.y + 1}");
         //    }
         //    Array.Resize(ref neighbors, neighborCount);
         //}
@@ -87,26 +82,17 @@ namespace Blizzard.Grid
         /// </summary>
         public static void Log<T>(this IDenseGrid<T> grid)
         {
-            string log = $"-- CPU Grid, Width = {grid.Width}, Height = {grid.Height} --\n";
-            for (int y = 0; y < grid.Height; ++y)
-            {
-                for (int x = 0; x < grid.Width; ++x)
-                {
-                    if (x == 0)
-                    {
-                        log += $"[ {grid.GetAt(x, y).ToString()},"; // Row prefix
-                    }
-                    else if (x == grid.Width - 1)
-                    {
-                        log += $" {grid.GetAt(x, y).ToString()} ]\n"; // Row suffix
-                    }
-                    else
-                    {
-                        log += $" {grid.GetAt(x, y).ToString()},";
-                    }
-                }
-            }
-            Debug.Log(log);
+            var log = $"-- CPU Grid, Width = {grid.Width}, Height = {grid.Height} --\n";
+            for (var y = 0; y < grid.Height; ++y)
+            for (var x = 0; x < grid.Width; ++x)
+                if (x == 0)
+                    log += $"[ {grid.GetAt(x, y).ToString()},"; // Row prefix
+                else if (x == grid.Width - 1)
+                    log += $" {grid.GetAt(x, y).ToString()} ]\n"; // Row suffix
+                else
+                    log += $" {grid.GetAt(x, y).ToString()},";
+
+            BLog.Log(log);
         }
     }
 }

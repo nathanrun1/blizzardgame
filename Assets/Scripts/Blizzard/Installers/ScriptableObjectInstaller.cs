@@ -2,20 +2,21 @@ using UnityEngine;
 using Zenject;
 using System;
 using System.Collections.Generic;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
 {
     public class ScriptableObjectInstaller : MonoInstaller
     {
-        [SerializeField] List<ScriptableObject> scriptableObjects;
+        [SerializeField] private List<ScriptableObject> scriptableObjects;
 
         public override void InstallBindings()
         {
-            Debug.Log("Injecting into SOs");
-            foreach (ScriptableObject so in scriptableObjects)
+            BLog.Log("Injecting into SOs");
+            foreach (var so in scriptableObjects)
             {
                 Container.QueueForInject(so);
-                Debug.Log($"Injecting into {so.name}");
+                BLog.Log($"Injecting into {so.name}");
             }
         }
     }

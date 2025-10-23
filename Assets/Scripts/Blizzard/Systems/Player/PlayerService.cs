@@ -1,11 +1,10 @@
 using System;
 using Unity.Cinemachine;
-using UnityEditor;
 using UnityEngine;
 using Zenject;
-using Blizzard.Inventory;
 using Blizzard.Inventory.Itemtypes;
 using Blizzard.Player.Tools;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Player
 {
@@ -20,7 +19,7 @@ namespace Blizzard.Player
 
         public ToolBehaviour EquippedTool { get; private set; }
 
-        public Vector2 PlayerPosition { get => PlayerCtrl.transform.position; }
+        public Vector2 PlayerPosition => PlayerCtrl.transform.position;
 
         /// <summary>
         /// To invoke on initializations
@@ -28,7 +27,7 @@ namespace Blizzard.Player
         private Action _initialize;
 
 
-        [Inject] DiContainer _diContainer;
+        [Inject] private DiContainer _diContainer;
 
         public PlayerService(PlayerCtrl playerPrefab, Transform environment, CinemachineCamera cinemachineCamera)
         {
@@ -44,7 +43,7 @@ namespace Blizzard.Player
         public void DamagePlayer(int damage)
         {
             // TODO: implement
-            // Debug.Log("Inflicted " + damage + " damage to player!");
+            // BLog.Log("Inflicted " + damage + " damage to player!");
         }
 
         /// <summary>
@@ -52,13 +51,15 @@ namespace Blizzard.Player
         /// </summary>
         private void InitPlayer(PlayerCtrl playerPrefab, Transform environment, CinemachineCamera cinemachineCamera)
         {
-            // Debug.Log(playerPrefab);
+            // BLog.Log(playerPrefab);
 
-            PlayerCtrl = _diContainer.InstantiatePrefabForComponent<PlayerCtrl>(playerPrefab, environment); // Initialize player obj
+            PlayerCtrl =
+                _diContainer.InstantiatePrefabForComponent<PlayerCtrl>(playerPrefab,
+                    environment); // Initialize player obj
             PlayerMovement = PlayerCtrl.GetComponent<PlayerMovement>();
             PlayerTemperature = PlayerCtrl.GetComponent<PlayerTemperature>();
 
-            cinemachineCamera.Target.TrackingTarget = this.PlayerCtrl.transform; // Set camera tracking target to player
+            cinemachineCamera.Target.TrackingTarget = PlayerCtrl.transform; // Set camera tracking target to player
         }
 
 
@@ -72,7 +73,9 @@ namespace Blizzard.Player
             UnequipTool();
 
             // Instantiate tool prefab, parent to player transform
-            EquippedTool = _diContainer.InstantiatePrefabForComponent<ToolBehaviour>(toolItemData.toolPrefab, this.PlayerCtrl.toolParent.transform);
+            EquippedTool =
+                _diContainer.InstantiatePrefabForComponent<ToolBehaviour>(toolItemData.toolPrefab,
+                    PlayerCtrl.toolParent.transform);
         }
 
         /// <summary>
@@ -80,10 +83,10 @@ namespace Blizzard.Player
         /// </summary>
         public void UnequipTool()
         {
-            Debug.Log("Unequipping currently equipped tool: " + EquippedTool);
+            BLog.Log("Unequipping currently equipped tool: " + EquippedTool);
             if (EquippedTool)
             {
-                Debug.Log("Tool exists");
+                BLog.Log("Tool exists");
                 MonoBehaviour.Destroy(EquippedTool.gameObject); // TODO: obj pooling
             }
         }
@@ -94,8 +97,10 @@ namespace Blizzard.Player
         /// <returns></returns>
         public Vector2 GetFacingDirection()
         {
-            float playerAngle = Mathf.Deg2Rad * (PlayerMovement.playerObj.transform.eulerAngles.z + 90); // 90 degrees is player sprite rotation offset
-            Debug.Log("Player angle: " + playerAngle);
+            var playerAngle =
+                Mathf.Deg2Rad *
+                (PlayerMovement.playerObj.transform.eulerAngles.z + 90); // 90 degrees is player sprite rotation offset
+            BLog.Log("Player angle: " + playerAngle);
 
             return new Vector2(Mathf.Cos(playerAngle), Mathf.Sin(playerAngle));
         }

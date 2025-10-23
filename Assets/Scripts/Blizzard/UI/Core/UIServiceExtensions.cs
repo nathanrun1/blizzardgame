@@ -28,7 +28,8 @@ namespace Blizzard.UI
         /// Initialize item gain animation UI with given list of items, amount and collection position
         /// </summary>
         /// <param name="uniqueAnimDelay">Delay between animation for each unique item type in given list</param>
-        public static void ItemGain(this UIService uiService, List<ItemAmountPair> items, Vector3 collectPosition, float uniqueAnimDelay = 0.25f)
+        public static void ItemGain(this UIService uiService, List<ItemAmountPair> items, Vector3 collectPosition,
+            float uniqueAnimDelay = 0.25f)
         {
             if (items.Count == 1)
             {
@@ -38,9 +39,9 @@ namespace Blizzard.UI
 
             Action next = null;
             items.Reverse();
-            foreach (ItemAmountPair itemAmountPair in items)
+            foreach (var itemAmountPair in items)
             {
-                Action capturedNext = next;
+                var capturedNext = next;
                 Action temp = () =>
                 {
                     uiService.InitUI("item_gain", new ItemGainUI.Args

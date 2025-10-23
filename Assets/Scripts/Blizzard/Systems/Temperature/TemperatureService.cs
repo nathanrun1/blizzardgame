@@ -24,10 +24,12 @@ namespace Blizzard.Temperature
         /// Texture displaying a heatmap of the current computed subregion of the scene.
         /// </summary>
         public RenderTexture HeatmapTexture { get; private set; }
+
         /// <summary>
         /// Offset of the updated active subgrid
         /// </summary>
         public Vector2Int WindowOffset { get; set; }
+
         /// <summary>
         /// Whether temperature simulation is active
         /// </summary>
@@ -43,6 +45,7 @@ namespace Blizzard.Temperature
                 _ambientTemperature = value;
             }
         }
+
         private float _ambientTemperature;
 
 
@@ -55,20 +58,22 @@ namespace Blizzard.Temperature
         /// Compute shader used to compute heat diffusion
         /// </summary>
         private ComputeShader _heatDiffusionShader;
+
         /// <summary>
         /// Stores temperature data copied from window to compute shader
         /// </summary>
         private ComputeBuffer _inputBuffer;
+
         /// <summary>
         /// Stores temperature data copied from compute shader to window
         /// </summary>
         private ComputeBuffer _outputBuffer;
 
 
-        public TemperatureService(IWorldGrid<TemperatureCell> grid, 
-                                  IDenseGrid<TemperatureCell> window, 
-                                  ComputeShader heatDiffusionShader,
-                                  bool isActive = true)
+        public TemperatureService(IWorldGrid<TemperatureCell> grid,
+            IDenseGrid<TemperatureCell> window,
+            ComputeShader heatDiffusionShader,
+            bool isActive = true)
         {
             Grid = grid;
             _window = window;
@@ -95,13 +100,13 @@ namespace Blizzard.Temperature
         /// </summary>
         public void DoHeatDiffusionStep(float deltaTime, Vector2Int offset)
         {
-            UpdateActiveSubgrid(offset); 
+            UpdateActiveSubgrid(offset);
             _heatDiffusionShader.SetFloat("deltaTime", deltaTime);
 
-            int threadGroupSize =
+            var threadGroupSize =
                 TemperatureConstants.ComputeThreadGroupDimensions.x *
                 TemperatureConstants.ComputeThreadGroupDimensions.y;
-            _heatDiffusionShader.Dispatch(0, (_window.Width * _window.Height) / threadGroupSize, 1, 1);
+            _heatDiffusionShader.Dispatch(0, _window.Width * _window.Height / threadGroupSize, 1, 1);
             _outputBuffer.GetData(_window.GetData()); // TODO: async this (currently waits for GPU to finish)
             Grid.ReadFromDenseGrid(_window, offset);
 
@@ -121,7 +126,7 @@ namespace Blizzard.Temperature
         /// </summary>
         public float GetTemperatureAtWorldPos(Vector2 worldPosition)
         {
-            Vector2Int gridPos = Grid.WorldToCellPos(worldPosition);
+            var gridPos = Grid.WorldToCellPos(worldPosition);
             return Grid.GetAt(gridPos).temperature;
         }
 
@@ -151,7 +156,7 @@ namespace Blizzard.Temperature
             Grid.WriteToDenseGrid(_window, offset);
             _inputBuffer.SetData(_window.GetData());
         }
-        
+
         /// <summary>
         /// Sets paramaters for the compute shader.
         /// </summary>

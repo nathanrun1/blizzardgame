@@ -28,7 +28,7 @@
 //                {
 //                    if (x == 0) leftCell = null;
 
-//                    //Debug.Log($"Cell at ({x}, {y})");
+//                    //BLog.Log($"Cell at ({x}, {y})");
 //                    TemperatureCell cell = grid.GetAt(x, y);
 //                    grid.GetNeighborsAt(new Vector2Int(x, y), out TemperatureCell[] neighbors, leftCell, downRow[x]);
 //                    downRow[x] = cell;
@@ -55,14 +55,14 @@
 //            for (int i = 0; i < neighbors.Length; ++i)
 //            {
 //                sumTemperatureDifference += neighbors[i].temperature - cell.temperature;
-//                //Debug.Log($"nbr temp: {neighbors[i].temperature}");
+//                //BLog.Log($"nbr temp: {neighbors[i].temperature}");
 //            }
 
 //            float diffusion = sumTemperatureDifference * diffusionFactor * deltaTime;
 //            float ambientCooling = (cell.temperature - ambientTemperature) * coolingFactor * deltaTime;
 
 //            float temperatureDelta = diffusion + ambientCooling + sourceHeat;
-//            //Debug.Log($"temp delta: {temperatureDelta}");
+//            //BLog.Log($"temp delta: {temperatureDelta}");
 //            cell.temperature += temperatureDelta;
 //        }
 //    }

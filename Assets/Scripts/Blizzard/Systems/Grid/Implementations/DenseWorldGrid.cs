@@ -1,5 +1,3 @@
-
-
 namespace Blizzard.Grid
 {
     public class DenseWorldGrid<T> : BasicDenseGrid<T>, IWorldGrid<T>
@@ -11,8 +9,8 @@ namespace Blizzard.Grid
         public DenseWorldGrid(float cellHeight, float cellWidth, int width, int height, T[] data = null)
             : base(width, height, data)
         {
-            this.CellHeight = cellHeight;
-            this.CellWidth = cellWidth;
+            CellHeight = cellHeight;
+            CellWidth = cellWidth;
         }
     }
 }

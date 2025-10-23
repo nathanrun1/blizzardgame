@@ -1,12 +1,13 @@
 using UnityEngine;
 using Zenject;
 using Blizzard.Inventory;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
 {
     public class InventoryServiceInstaller : MonoInstaller
     {
-        [SerializeField] int slotAmount = 36; // TEMP, MOVE TO CONFIG!
+        [SerializeField] private int slotAmount = 36; // TEMP, MOVE TO CONFIG!
 
         public override void InstallBindings()
         {
@@ -15,7 +16,7 @@ namespace Blizzard.Installers
                 .AsSingle()
                 .WithArguments(slotAmount);
 
-            Debug.Log("Installed Inventory Service");
+            BLog.Log("Installed Inventory Service");
         }
     }
 }

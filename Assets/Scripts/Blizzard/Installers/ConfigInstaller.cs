@@ -1,6 +1,7 @@
 using Blizzard.Inventory.Crafting;
 using UnityEngine;
 using Zenject;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
 {
@@ -9,9 +10,10 @@ namespace Blizzard.Installers
     /// </summary>
     public class ConfigInstaller : MonoInstaller
     {
-        [Header("Config Objects")]
-        [SerializeField] CraftingDatabase _craftingDatabase;
-        [SerializeField] SmeltingDatabase _smeltingDatabase;
+        [Header("Config Objects")] [SerializeField]
+        private CraftingDatabase _craftingDatabase;
+
+        [SerializeField] private SmeltingDatabase _smeltingDatabase;
 
         public override void InstallBindings()
         {
@@ -21,7 +23,7 @@ namespace Blizzard.Installers
             // Smelting database
             Container.BindInstance(_smeltingDatabase).AsSingle();
 
-            Debug.Log("Installed Configs");
+            BLog.Log("Installed Configs");
         }
     }
 }

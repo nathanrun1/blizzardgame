@@ -12,6 +12,7 @@ namespace Blizzard.Constants
 
         // -- Obstacle Layers --
         public const int ObstacleLayerCount = 2;
+
         /// <summary>
         /// Sprite sorting layers assigned to obstacle of different obstacle layers
         /// </summary>
@@ -20,6 +21,7 @@ namespace Blizzard.Constants
             { ObstacleLayer.Main, 20 },
             { ObstacleLayer.Floor, 0 }
         };
+
         /// <summary>
         /// Default obstacle layer, also the one used for temperature calculations
         /// </summary>
@@ -31,14 +33,17 @@ namespace Blizzard.Constants
         /// in an ObstacleQuadTree
         /// </summary>
         public const float QTMaxAllowedInvalidInQuery = 0.25f;
+
         /// <summary>
         /// Default maximum depth of ObstacleQuadTree
         /// </summary>
         public const int QTMaxDepth = 12;
+
         /// <summary>
         /// Default maximum objects per node of ObstacleQuadTree
         /// </summary>
         public const int QTObjectsPerNode = 16;
+
         /// <summary>
         /// Additional portion of space to add to bounds on QT Rebuild.
         /// </summary>

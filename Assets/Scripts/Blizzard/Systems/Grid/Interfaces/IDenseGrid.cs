@@ -11,6 +11,7 @@ namespace Blizzard.Grid
         /// Amount of rows in the grid
         /// </summary>
         public abstract int Height { get; }
+
         /// <summary>
         /// Amount of columns in the grid
         /// </summary>

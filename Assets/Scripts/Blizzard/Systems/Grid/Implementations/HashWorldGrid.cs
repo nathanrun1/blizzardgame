@@ -12,8 +12,8 @@ namespace Blizzard.Grid
         public HashWorldGrid(float cellHeight, float cellWidth)
             : base()
         {
-            this.CellHeight = cellHeight;
-            this.CellWidth = cellWidth;
+            CellHeight = cellHeight;
+            CellWidth = cellWidth;
         }
     }
 }

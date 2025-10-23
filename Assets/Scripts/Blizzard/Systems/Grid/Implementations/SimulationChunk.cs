@@ -13,8 +13,8 @@ namespace Blizzard.Grid
 
         // We separate interface dimensions from the dimensions of underlying dense grid, since we use 1 cell wide padding in the underlying grid
         // that is part of the implementation only
-        public override int Width { get => _simulatedWidth; }
-        public override int Height { get => _simulatedHeight; }
+        public override int Width => _simulatedWidth;
+        public override int Height => _simulatedHeight;
 
         public T DefaultCell { get; set; }
 
@@ -22,6 +22,7 @@ namespace Blizzard.Grid
         /// Width of public data
         /// </summary>
         protected int _simulatedWidth;
+
         /// <summary>
         /// Height of public data
         /// </summary>
@@ -36,7 +37,8 @@ namespace Blizzard.Grid
         private ComputeBuffer _outputBuffer;
 
 
-        public SimulationChunk(int width, int height, T defaultCell) : base(width + 2, height + 2, null) // add 2 to underlying width & height for neighboring cells
+        public SimulationChunk(int width, int height, T defaultCell) :
+            base(width + 2, height + 2, null) // add 2 to underlying width & height for neighboring cells
         {
             _simulatedWidth = width;
             _simulatedHeight = height;
@@ -52,90 +54,64 @@ namespace Blizzard.Grid
         /// </summary>
         public void SetNeighborData(NeighborLocation location, ISimulationChunk<T> neighbor = null)
         {
-            switch (location) {
+            switch (location)
+            {
                 case NeighborLocation.Left:
-                    {
-                        int localX = 0; // left padding column
-                        int neighborX = neighbor.Width - 1; // rightmost column of neighbor
-                        if (neighbor != null)
-                        {
-                            for (int y = 0; y < _simulatedHeight; ++y)
-                            {
-                                base.SetAt(localX, y + PADDING, neighbor.GetAt(neighborX, y));
-                            }
-                        }
-                        else
-                        {
-                            for (int y = 0; y < _simulatedHeight; ++y)
-                            {
-                                base.SetAt(localX, y + PADDING, DefaultCell);
-                            }
-                        }
-                        
-                        break;
-                    }
+                {
+                    var localX = 0; // left padding column
+                    var neighborX = neighbor.Width - 1; // rightmost column of neighbor
+                    if (neighbor != null)
+                        for (var y = 0; y < _simulatedHeight; ++y)
+                            base.SetAt(localX, y + PADDING, neighbor.GetAt(neighborX, y));
+                    else
+                        for (var y = 0; y < _simulatedHeight; ++y)
+                            base.SetAt(localX, y + PADDING, DefaultCell);
+
+                    break;
+                }
                 case NeighborLocation.Right:
+                {
+                    var localX = _width - 1; // right padding column
+                    var neighborX = 0; // leftmost column of neighbor
+                    if (neighbor != null)
+                        for (var y = 0; y < _simulatedHeight; ++y)
+                            base.SetAt(localX, y + PADDING, neighbor.GetAt(neighborX, y));
+                    else
+                        for (var y = 0; y < _simulatedHeight; ++y)
+                            base.SetAt(localX, y + PADDING, DefaultCell);
+
+                    break;
+                }
+                case NeighborLocation.Above:
+                {
+                    var localY = _height - 1; // top padding row
+                    var neighborY = 0; // bottom row of neighbor
+                    if (neighbor != null)
                     {
-                        int localX = _width - 1; // right padding column
-                        int neighborX = 0; // leftmost column of neighbor
-                        if (neighbor != null) 
-                        { 
-                            for (int y = 0; y < _simulatedHeight; ++y)
-                            {
-                                base.SetAt(localX, y + PADDING, neighbor.GetAt(neighborX, y));
-                            }
-                        }
-                        else
-                        {
-                            for (int y = 0; y < _simulatedHeight; ++y)
-                            {
-                                base.SetAt(localX, y + PADDING, DefaultCell);
-                            }
-                        }
+                        for (var x = 0; x < _height; ++x) base.SetAt(x + PADDING, localY, neighbor.GetAt(x, neighborY));
                         break;
                     }
-                case NeighborLocation.Above:
+                    else
                     {
-                        int localY = _height - 1; // top padding row
-                        int neighborY = 0; // bottom row of neighbor
-                        if (neighbor != null)
-                        {
-                            for (int x = 0; x < _height; ++x)
-                            {
-                                base.SetAt(x + PADDING, localY, neighbor.GetAt(x, neighborY));
-                            }
-                            break;
-                        }
-                        else
-                        {
-                            for (int x = 0; x < _height; ++x)
-                            {
-                                base.SetAt(x + PADDING, localY, DefaultCell);
-                            }
-                            break;
-                        }
+                        for (var x = 0; x < _height; ++x) base.SetAt(x + PADDING, localY, DefaultCell);
+                        break;
                     }
+                }
                 case NeighborLocation.Below:
+                {
+                    var localY = 0; // bottom padding row
+                    var neighborY = neighbor.Height - 1; // top row of neighbor
+                    if (neighbor != null)
                     {
-                        int localY = 0; // bottom padding row
-                        int neighborY = neighbor.Height - 1; // top row of neighbor
-                        if (neighbor != null)
-                        {
-                            for (int x = 0; x < _height; ++x)
-                            {
-                                base.SetAt(x + PADDING, localY, neighbor.GetAt(x, neighborY));
-                            }
-                            break;
-                        }
-                        else
-                        {
-                            for (int x = 0; x < _height; ++x)
-                            {
-                                base.SetAt(x + PADDING, localY, DefaultCell);
-                            }
-                            break;
-                        }
+                        for (var x = 0; x < _height; ++x) base.SetAt(x + PADDING, localY, neighbor.GetAt(x, neighborY));
+                        break;
                     }
+                    else
+                    {
+                        for (var x = 0; x < _height; ++x) base.SetAt(x + PADDING, localY, DefaultCell);
+                        break;
+                    }
+                }
             }
         }
 
@@ -143,26 +119,22 @@ namespace Blizzard.Grid
         {
             _heatDiffusionShader.SetFloat("deltaTime", deltaTime);
 
-            _inputBuffer.SetData(base.GetData());
+            _inputBuffer.SetData(GetData());
 
-            int threadGroupSize =
+            var threadGroupSize =
                 TemperatureConstants.ComputeThreadGroupDimensions.x *
                 TemperatureConstants.ComputeThreadGroupDimensions.y;
 
-            _heatDiffusionShader.Dispatch(0, (_width * _height) / threadGroupSize, 1, 1);
-            T[] outputData = new T[_width * _height];
+            _heatDiffusionShader.Dispatch(0, _width * _height / threadGroupSize, 1, 1);
+            var outputData = new T[_width * _height];
             _outputBuffer.GetData(outputData); // TODO: async this (currently waits for GPU to finish)
 
             // Note: double copy here, copies first into temporary data array, and then again into chunk's data array
 
             // Only copy data not in padding (i.e. don't touch the cells copied from neighboring chunks)
-            for (int x = PADDING; x < _width - PADDING; ++x)
-            {
-                for (int y = PADDING; y < _height - PADDING; ++y)
-                {
-                    base.SetAt(x, y, outputData[base.GetFlattenedIndex(x, y)]);
-                }
-            }
+            for (var x = PADDING; x < _width - PADDING; ++x)
+            for (var y = PADDING; y < _height - PADDING; ++y)
+                base.SetAt(x, y, outputData[GetFlattenedIndex(x, y)]);
         }
 
         public override T GetAt(int x, int y)
@@ -175,7 +147,7 @@ namespace Blizzard.Grid
         {
             if (!IsGridPositionValid(x, y))
             {
-                value = default(T);
+                value = default;
                 return false;
             }
 
@@ -226,9 +198,7 @@ namespace Blizzard.Grid
         private void ValidateGridPosition(int x, int y)
         {
             if (!IsGridPositionValid(x, y))
-            {
                 throw new ArgumentOutOfRangeException($"Grid position ({x}, {y}) out of range!");
-            }
         }
 
         /// <summary>
@@ -240,5 +210,4 @@ namespace Blizzard.Grid
             return true;
         }
     }
-
 }

@@ -11,10 +11,12 @@ namespace Blizzard.UI
         /// Enter this UI State
         /// </summary>
         public void Enter();
+
         /// <summary>
         /// Call state's update function, to be invoked once per frame
         /// </summary>
         public void Update();
+
         /// <summary>
         /// Exit this state
         /// </summary>
@@ -26,6 +28,5 @@ namespace Blizzard.UI
     /// </summary>
     public class CentralUI : MonoBehaviour
     {
-
     }
 }

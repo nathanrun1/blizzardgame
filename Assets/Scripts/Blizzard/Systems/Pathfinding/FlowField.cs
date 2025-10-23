@@ -1,22 +1,16 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Blizzard.Constants;
 using Blizzard.Obstacles;
 using FlowFieldAI;
 using NUnit.Framework;
 using Unity.Collections;
-using Unity.Entities;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Android;
 using UnityEngine.Rendering;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Pathfinding
 {
-    enum NbrLocation
+    internal enum NbrLocation
     {
         Up = 0,
         Right = 1,
@@ -31,12 +25,12 @@ namespace Blizzard.Pathfinding
     /// <summary>
     /// Represents a contained flow field region.
     /// </summary>
-    class FlowFieldChunk
+    internal class FlowFieldChunk
     {
         /// <summary>
         /// Underlying native flow field for this chunk
         /// </summary>
-        NativeFlowField _nativeFlowField;
+        private NativeFlowField _nativeFlowField;
 
 
         /// <summary>
@@ -47,9 +41,9 @@ namespace Blizzard.Pathfinding
         public FlowFieldChunk()
         {
             _nativeFlowField = new NativeFlowField(
-                PathfindingConstants.ffChunkSideLength, 
+                PathfindingConstants.ffChunkSideLength,
                 PathfindingConstants.ffChunkSideLength
-                );
+            );
         }
 
         public void ConstructFlowFieldData(Vector2Int chunkPosition, PathfindTargetType targetType,
@@ -60,25 +54,25 @@ namespace Blizzard.Pathfinding
             Vector2Int minBounds = new(
                 chunkPosition.x * PathfindingConstants.ffChunkSideLength - 1,
                 chunkPosition.x * PathfindingConstants.ffChunkSideLength - 1
-                );
+            );
             Vector2Int maxBounds = new(
                 minBounds.x + PathfindingConstants.ffChunkSideLength + 2,
                 minBounds.y + PathfindingConstants.ffChunkSideLength + 2
-                );
+            );
 
 
             // Default initialize to float.MinValue (i.e. "Walkable")
             flowField = Enumerable.Repeat(float.MinValue,
-                (PathfindingConstants.ffChunkSideLength + 2) * (PathfindingConstants.ffChunkSideLength + 2))
+                    (PathfindingConstants.ffChunkSideLength + 2) * (PathfindingConstants.ffChunkSideLength + 2))
                 .ToArray();
 
             if (targetType == PathfindTargetType.PlayerBuildings)
-            { 
-                List<Vector2Int> inRange = obstacleGridService.GetQuadtree((ObstacleFlags)0)
+            {
+                var inRange = obstacleGridService.GetQuadtree((ObstacleFlags)0)
                     .GetValidPositionsInRange(minBounds, maxBounds);
-                foreach (Vector2Int pos in inRange)
+                foreach (var pos in inRange)
                 {
-                    Obstacle obstacle = obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                    var obstacle = obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
                         .GetAt(pos);
                     Assert.IsNotNull(obstacle, "Failed to construct flow field chunk, queried a null obstacle!");
 
@@ -93,8 +87,8 @@ namespace Blizzard.Pathfinding
         /// </summary>
         private int Flatten(Vector2Int position, Vector2Int minBounds)
         {
-            return (position.x - minBounds.x) +
-                (position.y - minBounds.y) * (PathfindingConstants.ffChunkSideLength + 2);
+            return position.x - minBounds.x +
+                   (position.y - minBounds.y) * (PathfindingConstants.ffChunkSideLength + 2);
         }
     }
 
@@ -116,10 +110,12 @@ namespace Blizzard.Pathfinding
         /// Underlying NativeFlowField implementation
         /// </summary>
         private NativeFlowField _nativeFlowField;
+
         /// <summary>
         /// Current minimum bound of native flow field
         /// </summary>
         private Vector2Int _curMinBound;
+
         /// <summary>
         /// Current maximum bound of native flow field
         /// </summary>
@@ -138,7 +134,7 @@ namespace Blizzard.Pathfinding
         /// <summary>
         /// Lock for flow field construction
         /// </summary>
-        private readonly object _ffBuildLock = new object();
+        private readonly object _ffBuildLock = new();
 
 
         private readonly ObstacleGridService _obstacleGridService;
@@ -147,7 +143,7 @@ namespace Blizzard.Pathfinding
         {
             _obstacleGridService = obstacleGridService;
         }
-        
+
 
         /// <summary>
         /// Builds flow field for given min & max bounds
@@ -158,40 +154,42 @@ namespace Blizzard.Pathfinding
         {
             lock (_ffBuildLock)
             {
-                int width = (max.x - min.x) + 1; // Add 1 because bounds are inclusive
-                int height = (max.y - min.y) + 1; // ^^
-                Debug.Log($"Rebuilding flow field of size {width} * {height}!");
+                var width = max.x - min.x + 1; // Add 1 because bounds are inclusive
+                var height = max.y - min.y + 1; // ^^
+                BLog.Log($"Rebuilding flow field of size {width} * {height}!");
 
                 if (_nativeFlowField == null || _nativeFlowField.Width != width || _nativeFlowField.Height != height)
-                {
                     // Correct the flow field's dimensions (or initialize if not already)
                     _nativeFlowField = new NativeFlowField(width, height, useTravelCosts: true);
-                }
 
                 // Default initialize to float.MinValue (i.e. "Walkable")
                 var inFieldArr = Enumerable.Repeat(float.MinValue, width * height).ToArray();
                 var travelCostsArr = Enumerable.Repeat(0f, width * height).ToArray();
 
-                List<Vector2Int> inRange = _obstacleGridService.GetQuadtree((ObstacleFlags)0)
-                        .GetValidPositionsInRange(min, max);
-                //Debug.Log($"Obstacles in range: {inRange.Count}");
-                foreach (Vector2Int pos in inRange)
+                var inRange = _obstacleGridService.GetQuadtree((ObstacleFlags)0)
+                    .GetValidPositionsInRange(min, max);
+                //BLog.Log($"Obstacles in range: {inRange.Count}");
+                foreach (var pos in inRange)
                 {
-                    Obstacle obstacle = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                    var obstacle = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
                         .GetAt(pos);
                     Assert.IsNotNull(obstacle, "Failed to construct flow field, queried a null obstacle!");
 
                     // Check if player built
-                    bool isPlayerBuilt = (ObstacleFlags.PlayerBuilt & obstacle.ObstacleFlags) == ObstacleFlags.PlayerBuilt;
+                    var isPlayerBuilt = (ObstacleFlags.PlayerBuilt & obstacle.ObstacleFlags) ==
+                                        ObstacleFlags.PlayerBuilt;
 
                     // TODO: improve weight calculation based on obstacle
-                    float weight = isPlayerBuilt ? 0f : float.MinValue; // Set no weight if not player built
-                    float travelCost = (obstacle as Damageable) ? ((obstacle as Damageable)!).Health / 10f : 0f; // TEMP: set travel cost to health/10, though this should depend on enemy's dps
-                    
+                    var weight = isPlayerBuilt ? 0f : float.MinValue; // Set no weight if not player built
+                    var travelCost =
+                        (obstacle as Damageable)
+                            ? (obstacle as Damageable)!.Health / 10f
+                            : 0f; // TEMP: set travel cost to health/10, though this should depend on enemy's dps
+
                     inFieldArr[Flatten(pos, min, width)] = weight; // TEMP: Set to default target value (0)
                     travelCostsArr[Flatten(pos, min, height)] = travelCost;
 
-                    //Debug.Log($"Adding obstacle at position {pos} with weight {weight}, travel cost {travelCost}");
+                    //BLog.Log($"Adding obstacle at position {pos} with weight {weight}, travel cost {travelCost}");
                 }
 
                 if (_inField.IsCreated) _inField.Dispose(); // Free existing data (persistent allocation)
@@ -199,12 +197,12 @@ namespace Blizzard.Pathfinding
 
                 _inField = new NativeArray<float>(inFieldArr, Allocator.Persistent);
                 _travelCosts = new NativeArray<float>(travelCostsArr, Allocator.Persistent);
-                AsyncGPUReadbackRequest rq = _nativeFlowField.Bake(_inField, _travelCosts, new BakeOptions  // TODO: Async
+                var rq = _nativeFlowField.Bake(_inField, _travelCosts, new BakeOptions // TODO: Async
                 {
                     Iterations = 100,
                     IterationsPerFrame = 0,
                     DiagonalMovement = true,
-                    ComputeQueueType = UnityEngine.Rendering.ComputeQueueType.Background
+                    ComputeQueueType = ComputeQueueType.Background
                 });
                 rq.WaitForCompletion();
                 _curMinBound = min;
@@ -227,8 +225,9 @@ namespace Blizzard.Pathfinding
                 nextPos = default;
                 return false;
             }
-            int cellIndex = Flatten(pos, _curMinBound, _nativeFlowField.Width);
-            int nextIndex = _nativeFlowField.NextIndices[cellIndex];
+
+            var cellIndex = Flatten(pos, _curMinBound, _nativeFlowField.Width);
+            var nextIndex = _nativeFlowField.NextIndices[cellIndex];
             nextPos = Unflatten(nextIndex, _curMinBound, _nativeFlowField.Width);
             return true;
         }
@@ -242,9 +241,9 @@ namespace Blizzard.Pathfinding
         /// <returns>Flattened index</returns>
         private int Flatten(Vector2Int position, Vector2Int minBounds, int width)
         {
-            // Debug.Log($"Flattening position {position} to {(position.x - minBounds.x) + (position.y - minBounds.y) * width}");
-            return (position.x - minBounds.x) +
-                (position.y - minBounds.y) * width;
+            // BLog.Log($"Flattening position {position} to {(position.x - minBounds.x) + (position.y - minBounds.y) * width}");
+            return position.x - minBounds.x +
+                   (position.y - minBounds.y) * width;
         }
 
         /// <summary>
@@ -256,8 +255,8 @@ namespace Blizzard.Pathfinding
         /// <returns>Corresponding 2D position</returns>
         private Vector2Int Unflatten(int index, Vector2Int minBounds, int width)
         {
-            // Debug.Log($"Unflattening index {index} to {new Vector2Int((index % width) + minBounds.x, (index / width) + minBounds.y)}");
-            return new Vector2Int((index % width) + minBounds.x, (index / width) + minBounds.y);
+            // BLog.Log($"Unflattening index {index} to {new Vector2Int((index % width) + minBounds.x, (index / width) + minBounds.y)}");
+            return new Vector2Int(index % width + minBounds.x, index / width + minBounds.y);
         }
     }
 }

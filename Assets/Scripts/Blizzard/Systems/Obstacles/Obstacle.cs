@@ -2,10 +2,12 @@ using ModestTree;
 using System;
 using Blizzard.Constants;
 using UnityEngine;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Obstacles
 {
-    [Flags] public enum ObstacleFlags
+    [Flags]
+    public enum ObstacleFlags
     {
         PlayerBuilt = 1 << 0
     }
@@ -16,6 +18,7 @@ namespace Blizzard.Obstacles
     public class Obstacle : MonoBehaviour
     {
         public event Action OnDestroy;
+
         /// <summary>
         /// Invoked whenever temperature sim data has been updated.
         /// </summary>
@@ -40,7 +43,7 @@ namespace Blizzard.Obstacles
         protected void SetInsulation(float insulation)
         {
             Assert.That(0 <= insulation && insulation <= 1, "Insulation value must be between 0 and 1!");
-            this.Insulation = insulation;
+            Insulation = insulation;
             TemperatureDataUpdated?.Invoke();
         }
 
@@ -49,7 +52,7 @@ namespace Blizzard.Obstacles
         /// </summary>
         protected void SetHeat(float heat)
         {
-            this.Heat = heat;
+            Heat = heat;
             TemperatureDataUpdated?.Invoke();
         }
 
@@ -58,9 +61,9 @@ namespace Blizzard.Obstacles
         /// </summary>
         public void Destroy()
         {
-            Debug.Log("Obstacle destroyed!");
+            BLog.Log("Obstacle destroyed!");
             OnDestroy?.Invoke();
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 }

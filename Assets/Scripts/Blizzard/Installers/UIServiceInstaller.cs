@@ -2,6 +2,7 @@ using UnityEngine;
 using Zenject;
 using Blizzard.Grid;
 using Blizzard.UI.Core;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
 {
@@ -17,7 +18,7 @@ namespace Blizzard.Installers
                 .AsSingle()
                 .WithArguments(_uiDatabase, _uiParent);
 
-            Debug.Log("Installed UI Service");
+            BLog.Log("Installed UI Service");
         }
     }
 }

@@ -3,6 +3,7 @@ using Zenject;
 using Blizzard.Building;
 using Blizzard.UI;
 using Blizzard.UI.Core;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Inventory.ItemTypes
 {
@@ -17,13 +18,14 @@ namespace Blizzard.Inventory.ItemTypes
         /// <summary>
         /// Category of this item, determines how its used and its attributes
         /// </summary>
-        [HideInInspector] public override ItemCategory category { get; set; } = ItemCategory.Tool;
+        [HideInInspector]
+        public override ItemCategory category { get; set; } = ItemCategory.Tool;
 
-        [Inject] UIService _uiService;
+        [Inject] private UIService _uiService;
 
         public override void Equip(EquipData equipData)
         {
-            Debug.Log($"Equipping {this}");
+            BLog.Log($"Equipping {this}");
             _uiService.InitUI("build", new BuildUI.Args
             {
                 buildingData = buildingData,
@@ -33,7 +35,7 @@ namespace Blizzard.Inventory.ItemTypes
 
         public override void Unequip()
         {
-            Debug.Log($"Unequipping {this}");
+            BLog.Log($"Unequipping {this}");
             _uiService.CloseUI("build");
         }
     }

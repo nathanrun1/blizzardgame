@@ -19,6 +19,7 @@ namespace Blizzard.UI
         {
             public ItemData item;
             public int amount;
+
             /// <summary>
             /// World position to display the UI at
             /// </summary>
@@ -30,13 +31,16 @@ namespace Blizzard.UI
             public Action OnAnimComplete;
         }
 
-        [Header("GameObject References")]
-        [SerializeField] private Image _icon;
+        [Header("GameObject References")] [SerializeField]
+        private Image _icon;
+
         [SerializeField] private TextMeshProUGUI _count;
 
-        [Header("Anim config")]
-        [SerializeField] private float _animYDelta = 30f;
+        [Header("Anim config")] [SerializeField]
+        private float _animYDelta = 30f;
+
         [SerializeField] private float _animLength = 0.2f;
+
         /// <summary>
         /// Color of number when item is removed
         /// </summary>
@@ -68,12 +72,15 @@ namespace Blizzard.UI
         private Vector2 GetUILocalPos(Vector3 worldPosition)
         {
             Vector2 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
-            Vector2 screenPosRatio = new Vector2(screenPos.x / Camera.main.pixelWidth, screenPos.y / Camera.main.pixelHeight);
+            var screenPosRatio =
+                new Vector2(screenPos.x / Camera.main.pixelWidth, screenPos.y / Camera.main.pixelHeight);
 
             // Assumes parent spans entire screen (it should be main canvas so likely valid assumption)
-            Vector2 localPos = new Vector2(
-                screenPosRatio.x * _parent.GetComponent<RectTransform>().rect.width - (_parent.GetComponent<RectTransform>().rect.width / 2),
-                screenPosRatio.y * _parent.GetComponent<RectTransform>().rect.height - (_parent.GetComponent<RectTransform>().rect.height) / 2);
+            var localPos = new Vector2(
+                screenPosRatio.x * _parent.GetComponent<RectTransform>().rect.width -
+                _parent.GetComponent<RectTransform>().rect.width / 2,
+                screenPosRatio.y * _parent.GetComponent<RectTransform>().rect.height -
+                _parent.GetComponent<RectTransform>().rect.height / 2);
 
             return localPos;
         }
@@ -91,10 +98,10 @@ namespace Blizzard.UI
                     _icon.sprite = item.icon;
                     _count.text = $"+{amount}";
                     _count.color = item.itemGainColor;
-                    Sequence seq = DOTween.Sequence();
+                    var seq = DOTween.Sequence();
                     seq.Append(transform.DOLocalMoveY(transform.localPosition.y + _animYDelta, _animLength));
-                    Color initialIconColor = _icon.color;
-                    Color initialCountColor = _count.color;
+                    var initialIconColor = _icon.color;
+                    var initialCountColor = _count.color;
                     //seq.Join(_icon.DOColor(new Color(initialIconColor.r, initialIconColor.g, initialIconColor.b, 0), ANIM_LENGTH));
                     //seq.Join(_icon.DOColor(new Color(initialCountColor.r, initialCountColor.g, initialCountColor.b, 0), ANIM_LENGTH));
                     seq.OnComplete(() =>
@@ -114,11 +121,11 @@ namespace Blizzard.UI
                     _icon.sprite = item.icon;
                     _count.text = $"-{-amount}";
                     _count.color = _negativeColor;
-                    Sequence seq = DOTween.Sequence();
+                    var seq = DOTween.Sequence();
                     transform.localPosition += new Vector3(0, _animYDelta, 0);
                     seq.Append(transform.DOLocalMoveY(transform.localPosition.y - _animYDelta, _animLength));
-                    Color initialIconColor = _icon.color;
-                    Color initialCountColor = _count.color;
+                    var initialIconColor = _icon.color;
+                    var initialCountColor = _count.color;
                     //seq.Join(_icon.DOColor(new Color(initialIconColor.r, initialIconColor.g, initialIconColor.b, 0), ANIM_LENGTH));
                     //seq.Join(_icon.DOColor(new Color(initialCountColor.r, initialCountColor.g, initialCountColor.b, 0), ANIM_LENGTH));
                     seq.OnComplete(() =>

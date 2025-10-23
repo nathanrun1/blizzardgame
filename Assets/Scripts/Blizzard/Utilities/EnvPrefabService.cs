@@ -11,10 +11,10 @@ namespace Blizzard.Utilities
     {
         public Transform environmentParent;
 
-        private Dictionary<int, GameObject> _intIdDict = new Dictionary<int, GameObject>();
-        private Dictionary<string, GameObject> _stringIdDict = new Dictionary<string, GameObject>();
+        private Dictionary<int, GameObject> _intIdDict = new();
+        private Dictionary<string, GameObject> _stringIdDict = new();
 
-        [Inject] DiContainer _diContainer;
+        [Inject] private DiContainer _diContainer;
 
         public EnvPrefabService(EnvironmentDatabase database, Transform environmentParent)
         {
@@ -51,7 +51,7 @@ namespace Blizzard.Utilities
         /// </summary>
         public GameObject InstantiatePrefab(int id)
         {
-            GameObject prefab = GetPrefab(id);
+            var prefab = GetPrefab(id);
             return _diContainer.InstantiatePrefab(prefab, environmentParent);
         }
 
@@ -60,14 +60,14 @@ namespace Blizzard.Utilities
         /// </summary>
         public GameObject InstantiatePrefab(string stringId)
         {
-            GameObject prefab = GetPrefab(stringId);
+            var prefab = GetPrefab(stringId);
             return _diContainer.InstantiatePrefab(prefab, environmentParent);
         }
 
 
         private void InitDictionaries(EnvironmentDatabase database)
         {
-            foreach (EnvPrefabData envPrefabData in database.environmentPrefabs)
+            foreach (var envPrefabData in database.environmentPrefabs)
             {
                 _intIdDict[envPrefabData.id] = envPrefabData.prefab;
                 _stringIdDict[envPrefabData.stringId] = envPrefabData.prefab;

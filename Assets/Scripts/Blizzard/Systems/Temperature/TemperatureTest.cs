@@ -1,8 +1,9 @@
-using Blizzard.Grid;
-using Blizzard.Input;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Blizzard.Grid;
+using Blizzard.Input;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Temperature
 {
@@ -14,37 +15,41 @@ namespace Blizzard.Temperature
         [SerializeField] private ComputeShader _heatDiffusionShader;
         [SerializeField] private InputService _playerInput;
 
-        [Header("Simulation Params")]
-        [SerializeField] private int _windowWidth = 16;
+        [Header("Simulation Params")] [SerializeField]
+        private int _windowWidth = 16;
+
         [SerializeField] private int _windowHeight = 16;
         // [SerializeField, Range(0.5f, 20f)] private float _timeScale = 1.0f;
 
-        [Header("Real time modifications (SPACEBAR to apply them at selected square)")]
-        [SerializeField] private float setTemperature = 10.0f;
+        [Header("Real time modifications (SPACEBAR to apply them at selected square)")] [SerializeField]
+        private float setTemperature = 10.0f;
+
         [SerializeField] private float setInsulation = 0.0f;
         [SerializeField] private float setSourceHeat = 0.0f;
         private Vector2Int _selectedCell = new(0, 0);
 
-        [Header("Heatmap display")]
-        [SerializeField] private Image _heatmap;
+        [Header("Heatmap display")] [SerializeField]
+        private Image _heatmap;
+
         [SerializeField] private TextMeshProUGUI _temperatureText;
 
         private TemperatureService _temperatureService;
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        private void Start()
         {
             SetupTemperatureService();
             BindInputs();
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
-            Debug.Log(_temperatureService);
+            BLog.Log(_temperatureService);
             //_temperatureService.DoHeatDiffusionStep(Time.deltaTime * _timeScale);
             _temperatureService.ComputeHeatmap();
-            _temperatureText.text = $"{_temperatureService.Grid.GetAt(_selectedCell).temperature}�"; // Display temperature at selected cell
+            _temperatureText.text =
+                $"{_temperatureService.Grid.GetAt(_selectedCell).temperature}�"; // Display temperature at selected cell
             UpdateHeatmap();
         }
 
@@ -59,11 +64,11 @@ namespace Blizzard.Temperature
                 ambient = 1
             });
             _temperatureService = new TemperatureService(
-                    mainGrid, 
-                    new BasicDenseGrid<TemperatureCell>(_windowWidth, _windowHeight),
-                    _heatDiffusionShader
-                );
-            Debug.Log(_temperatureService);
+                mainGrid,
+                new BasicDenseGrid<TemperatureCell>(_windowWidth, _windowHeight),
+                _heatDiffusionShader
+            );
+            BLog.Log(_temperatureService);
         }
 
         private void UpdateHeatmap()
@@ -77,7 +82,7 @@ namespace Blizzard.Temperature
             _playerInput.inputActions.Player.Move.performed += (ctx) =>
             {
                 if (!ctx.action.WasPressedThisFrame()) return;
-                Vector2 input = ctx.ReadValue<Vector2>();
+                var input = ctx.ReadValue<Vector2>();
                 OnMoveSelectedSquare(input);
             };
 

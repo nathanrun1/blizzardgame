@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Obstacles
 {
@@ -15,7 +15,7 @@ namespace Blizzard.Obstacles
         Player = 1 << 0,
         Enemy = 1 << 1
     }
-    
+
     /// <summary>
     /// An obstacle that has health
     /// </summary>
@@ -25,14 +25,20 @@ namespace Blizzard.Obstacles
         /// Health remaining, harvestable is destroyed (harvested) when health reaches 0
         /// </summary>
         public float Health { get; private set; }
-        [Button][Conditional("DEBUG")] public void PrintHealth() {Debug.Log(Health);}
 
-        [Header("Damageable Properties")]
-        [SerializeField] int _startingHealth = 100;
+        [Button]
+        [Conditional("UNITY_EDITOR")]
+        public void PrintHealth()
+        {
+            BLog.Log(Health);
+        }
+
+        [Header("Damageable Properties")] [SerializeField]
+        private int _startingHealth = 100;
 
         public override void Init(ObstacleData obstacleData)
         {
-            this.Health = _startingHealth;
+            Health = _startingHealth;
             base.Init(obstacleData);
         }
 
@@ -48,7 +54,7 @@ namespace Blizzard.Obstacles
         {
             Health -= damage;
 
-            // Debug.Log("Taking " + damage + " damage, health is now " + Health);
+            // BLog.Log("Taking " + damage + " damage, health is now " + Health);
             OnDamage(damage, damageFlags, sourcePosition);
 
             if (Health <= 0)
@@ -57,7 +63,10 @@ namespace Blizzard.Obstacles
                 death = true;
                 OnDeath(damageFlags, sourcePosition);
             }
-            else death = false;
+            else
+            {
+                death = false;
+            }
         }
 
         /// <summary>
@@ -66,14 +75,18 @@ namespace Blizzard.Obstacles
         /// <param name="damage">Damage inflicted</param>
         /// <param name="damageFlags">Damage flags associated with damage source</param>
         /// <param name="sourcePosition">World position of the damage source</param>s
-        protected virtual void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition) { }
+        protected virtual void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition)
+        {
+        }
 
         /// <summary>
         /// Invoked when health reaches 0
         /// </summary>
         /// <param name="damageFlags"></param>
         /// <param name="sourcePosition"></param>
-        protected virtual void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition) { }
+        protected virtual void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition)
+        {
+        }
     }
 }
 

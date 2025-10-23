@@ -15,10 +15,12 @@ namespace Blizzard.Inventory.Crafting
         /// Item that will be crafted
         /// </summary>
         public ItemData result;
+
         /// <summary>
         /// Amount of the resulting item that is crafted
         /// </summary>
         public int resultAmount;
+
         /// <summary>
         /// Items spent to craft the result
         /// </summary>
@@ -43,5 +45,4 @@ namespace Blizzard.Inventory.Crafting
     {
         public CraftingCategory[] craftingCategories;
     }
-
 }

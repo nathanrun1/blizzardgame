@@ -12,19 +12,18 @@ namespace Blizzard.Grid
     {
         public T DefaultCell { get; set; }
 
-        public IEnumerable<Vector2Int> ValidPositions { get => _hashmap.Keys; }
+        public IEnumerable<Vector2Int> ValidPositions => _hashmap.Keys;
 
-        public IEnumerable<T> Values { get => _hashmap.Values;  }
+        public IEnumerable<T> Values => _hashmap.Values;
 
         public int Count => _hashmap.Count;
 
-        private Dictionary<Vector2Int, T> _hashmap = new Dictionary<Vector2Int, T>();
-
+        private Dictionary<Vector2Int, T> _hashmap = new();
 
 
         public T GetAt(int x, int y)
         {
-            return GetAt(new(x, y));
+            return GetAt(new Vector2Int(x, y));
         }
 
         public T GetAt(Vector2Int gridPosition)
@@ -34,7 +33,7 @@ namespace Blizzard.Grid
 
         public bool TryGetValue(int x, int y, out T value)
         {
-            return TryGetValue(new(x, y), out value);
+            return TryGetValue(new Vector2Int(x, y), out value);
         }
 
         public bool TryGetValue(Vector2Int gridPosition, out T value)
@@ -44,7 +43,7 @@ namespace Blizzard.Grid
 
         public void SetAt(int x, int y, T value)
         {
-            SetAt(new(x, y), value);
+            SetAt(new Vector2Int(x, y), value);
         }
 
         public void SetAt(Vector2Int gridPosition, T value)
@@ -69,7 +68,7 @@ namespace Blizzard.Grid
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
     }
 }

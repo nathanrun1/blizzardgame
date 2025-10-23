@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using Blizzard.Utilities.Logging;
 
 
 namespace Blizzard.UI.Core
@@ -12,20 +13,20 @@ namespace Blizzard.UI.Core
         /// </summary>
         private RectTransform _uiParent;
 
-        [Inject] DiContainer _diContainer;
+        [Inject] private DiContainer _diContainer;
 
-        private Dictionary<int, UIData> _intDict = new Dictionary<int, UIData>();
-        private Dictionary<string, UIData> _strDict = new Dictionary<string, UIData>();
+        private Dictionary<int, UIData> _intDict = new();
+        private Dictionary<string, UIData> _strDict = new();
 
         /// <summary>
         /// Active UI instances, mapped by ID
         /// </summary>
-        private Dictionary<int, UIBase> _activeUI = new Dictionary<int, UIBase>();
+        private Dictionary<int, UIBase> _activeUI = new();
 
         /// <summary>
         /// Inactive but ready UI instances, pooled for reuse, mapped by ID
         /// </summary>
-        private Dictionary<int, UIBase> _inactiveUI = new Dictionary<int, UIBase>();
+        private Dictionary<int, UIBase> _inactiveUI = new();
 
 
         /// <summary>
@@ -41,13 +42,14 @@ namespace Blizzard.UI.Core
                 return _canvasTop;
             }
         }
+
         [SerializeField] private Transform _canvasTop;
 
 
         public UIService(UIDatabase uiDatabase, RectTransform uiParent)
         {
-            Debug.Log("DI Container: " + _diContainer);
-            this._uiParent = uiParent;
+            BLog.Log("DI Container: " + _diContainer);
+            _uiParent = uiParent;
 
             // Initialize CanvasTop
             _canvasTop = new GameObject("CanvasTop").transform;
@@ -67,9 +69,7 @@ namespace Blizzard.UI.Core
             UIData uiData;
             if (_intDict.ContainsKey(id)) uiData = _intDict[id];
             else
-            {
                 throw new KeyNotFoundException("No UI prefab exists with this id: " + id);
-            }
 
             return InitUI(uiData, args);
         }
@@ -84,9 +84,7 @@ namespace Blizzard.UI.Core
             UIData uiData;
             if (_strDict.ContainsKey(stringId)) uiData = _strDict[stringId];
             else
-            {
                 throw new KeyNotFoundException("No UI prefab exists with this id: " + stringId);
-            }
 
             return InitUI(uiData, args);
         }
@@ -98,12 +96,12 @@ namespace Blizzard.UI.Core
         {
             if (!_activeUI.ContainsKey(id))
             {
-                Debug.LogError($"Attempted to close UI (id {id}), but not open or isSingle set to false");
+                BLog.LogError($"Attempted to close UI (id {id}), but not open or isSingle set to false");
                 return;
             }
 
-            bool destroyOnClose = _intDict[id].destroyOnClose;
-            UIBase uiObj = _activeUI[id];
+            var destroyOnClose = _intDict[id].destroyOnClose;
+            var uiObj = _activeUI[id];
             uiObj.Close(destroyOnClose);
         }
 
@@ -112,7 +110,7 @@ namespace Blizzard.UI.Core
         /// </summary>
         public void CloseUI(string stringId)
         {
-            int id = _strDict[stringId].id;
+            var id = _strDict[stringId].id;
             CloseUI(id);
         }
 
@@ -123,11 +121,12 @@ namespace Blizzard.UI.Core
         {
             if (!_activeUI.ContainsKey(id))
             {
-                Debug.LogError($"Attempted to get singleton instance of UI (id {id}), but not open or isSingle set to false");
+                BLog.LogError(
+                    $"Attempted to get singleton instance of UI (id {id}), but not open or isSingle set to false");
                 return null;
             }
 
-            UIBase uiObj = _activeUI[id];
+            var uiObj = _activeUI[id];
             return uiObj;
         }
 
@@ -136,7 +135,7 @@ namespace Blizzard.UI.Core
         /// </summary>
         public UIBase GetSingletonUI(string stringId)
         {
-            int id = _strDict[stringId].id;
+            var id = _strDict[stringId].id;
             return GetSingletonUI(id);
         }
 
@@ -150,22 +149,15 @@ namespace Blizzard.UI.Core
                 uiObj.SetParent(_uiParent);
 
                 if (uiData.isSingle && !uiData.destroyOnClose)
-                {
                     // Set instance as inactive rather than destroy
                     uiObj.OnClose += () =>
                     {
                         _activeUI.Remove(uiData.id);
                         _inactiveUI.Add(uiData.id, uiObj);
                     };
-                }
                 else if (uiData.isSingle)
-                {
                     // Remove instance from active list before destroying
-                    uiObj.OnClose += () =>
-                    {
-                        _activeUI.Remove(uiData.id);
-                    };
-                }
+                    uiObj.OnClose += () => { _activeUI.Remove(uiData.id); };
             }
             else
             {
@@ -175,18 +167,15 @@ namespace Blizzard.UI.Core
 
             uiObj.Setup(args);
 
-            if (uiData.isSingle)
-            {
-                _activeUI.Add(uiData.id, uiObj); // Track active UI instance only if single
-            }
+            if (uiData.isSingle) _activeUI.Add(uiData.id, uiObj); // Track active UI instance only if single
 
             return uiObj;
         }
 
         private void InitDictionaries(UIDatabase uiDatabase)
         {
-            Debug.Log("Initializing UI prefab dictionaries");
-            foreach (UIData uiData in uiDatabase.uiDatas)
+            BLog.Log("Initializing UI prefab dictionaries");
+            foreach (var uiData in uiDatabase.uiDatas)
             {
                 _intDict.Add(uiData.id, uiData);
                 _strDict.Add(uiData.stringId, uiData);

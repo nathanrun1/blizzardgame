@@ -7,6 +7,7 @@ using Zenject;
 using Sirenix.OdinInspector;
 using Blizzard.Inventory;
 using Blizzard.Utilities;
+using Blizzard.Utilities.Logging;
 using Blizzard.Player;
 using Blizzard.UI.Core;
 
@@ -17,29 +18,31 @@ namespace Blizzard.UI.Inventory
     /// </summary>
     public class InventoryUI : UIBase
     {
-        [Header("References")]
-        [SerializeField] InventorySlotCtrl _inventorySlotPrefab;
-        [SerializeField] Transform _inventorySlotParent;
+        [Header("References")] [SerializeField]
+        private InventorySlotCtrl _inventorySlotPrefab;
 
-        [Inject] InventoryService _inventoryService;
-        [Inject] PlayerService _playerService;
-        [Inject] InputService _inputService;
-        [Inject] EnvPrefabService _envPrefabService;
-        [Inject] DiContainer _diContainer;
+        [SerializeField] private Transform _inventorySlotParent;
 
-        private List<InventorySlotCtrl> _uiSlots = new List<InventorySlotCtrl>();
+        [Inject] private InventoryService _inventoryService;
+        [Inject] private PlayerService _playerService;
+        [Inject] private InputService _inputService;
+        [Inject] private EnvPrefabService _envPrefabService;
+        [Inject] private DiContainer _diContainer;
+
+        private List<InventorySlotCtrl> _uiSlots = new();
+
         /// <summary>
         /// Index of selected slot in _inventoryService.inventorySlots (and thus also in _uiSlots)
         /// </summary>
         private int _selectedSlotIndex;
-        
+
         private bool _setup = false;
 
         public override void Setup(object args)
         {
             if (!_setup) InitSlots();
             else RefreshAllSlots();
-            
+
 
             _inventoryService.OnInventoryModified += RefreshSlot;
 
@@ -83,11 +86,13 @@ namespace Blizzard.UI.Inventory
 
         private void InitSlots()
         {
-            foreach (InventorySlot slot in _inventoryService.inventorySlots)
+            foreach (var slot in _inventoryService.inventorySlots)
             {
-                int slotIndex = _uiSlots.Count;
+                var slotIndex = _uiSlots.Count;
 
-                InventorySlotCtrl uiSlot = _diContainer.InstantiatePrefabForComponent<InventorySlotCtrl>(_inventorySlotPrefab, _inventorySlotParent);
+                var uiSlot =
+                    _diContainer.InstantiatePrefabForComponent<InventorySlotCtrl>(_inventorySlotPrefab,
+                        _inventorySlotParent);
                 uiSlot.transform.SetAsLastSibling();
                 uiSlot.LinkedSetup(slot);
                 uiSlot.SetSelected(false); // Slots are by default not selected
@@ -108,7 +113,8 @@ namespace Blizzard.UI.Inventory
         /// <param name="index">Index of slot to refresh</param>
         private void RefreshSlot(int index)
         {
-            Assert.IsTrue(0 <= index && index < _uiSlots.Count, $"Given index ({index}) out of range! Slot count: {_uiSlots.Count}");
+            Assert.IsTrue(0 <= index && index < _uiSlots.Count,
+                $"Given index ({index}) out of range! Slot count: {_uiSlots.Count}");
 
             // (re-setup now redundant since slot is just linked)
             //_uiSlots[index].Setup(_inventoryService.inventorySlots[index].Item,
@@ -129,9 +135,9 @@ namespace Blizzard.UI.Inventory
         /// </summary>
         private void RefreshAllSlots()
         {
-            for (int i = 0; i < _uiSlots.Count; ++i)
+            for (var i = 0; i < _uiSlots.Count; ++i)
             {
-                InventorySlot correspondingSlot = _inventoryService.inventorySlots[i];
+                var correspondingSlot = _inventoryService.inventorySlots[i];
                 _uiSlots[i].Setup(correspondingSlot.Item, correspondingSlot.Amount);
             }
         }
@@ -144,7 +150,8 @@ namespace Blizzard.UI.Inventory
         {
             if (selection == _selectedSlotIndex) return; // Already selected
 
-            Assert.IsTrue(0 <= selection && selection < _uiSlots.Count, $"Given selection ({selection}) is out of range! Slot count: ${_uiSlots.Count}");
+            Assert.IsTrue(0 <= selection && selection < _uiSlots.Count,
+                $"Given selection ({selection}) is out of range! Slot count: ${_uiSlots.Count}");
 
             _uiSlots[_selectedSlotIndex].SetSelected(false);
             _uiSlots[selection].SetSelected(true);
@@ -155,11 +162,11 @@ namespace Blizzard.UI.Inventory
 
         private void DropSelectedItem()
         {
-            ItemData itemToDrop = _inventoryService.inventorySlots[_selectedSlotIndex].Item;
+            var itemToDrop = _inventoryService.inventorySlots[_selectedSlotIndex].Item;
             if (itemToDrop == null) return; // No item to drop from selected slot
 
             // Attempt drop
-            int amountRemoved = _inventoryService.TryRemoveItemAt(_selectedSlotIndex, 1);
+            var amountRemoved = _inventoryService.TryRemoveItemAt(_selectedSlotIndex, 1);
 
             if (amountRemoved == 0) return; // Items wasn't successfully removed, do not drop
 
@@ -171,11 +178,11 @@ namespace Blizzard.UI.Inventory
         {
             Assert.IsTrue(0 <= srcIndex && srcIndex < _uiSlots.Count, $"Invalid srcIndex: {srcIndex}");
             Assert.IsTrue(0 <= destIndex && destIndex < _uiSlots.Count, $"Invalid destIndex: {destIndex}");
-            InventorySlotCtrl srcSlot = _uiSlots[srcIndex];
-            InventorySlotCtrl destSlot = _uiSlots[destIndex];
+            var srcSlot = _uiSlots[srcIndex];
+            var destSlot = _uiSlots[destIndex];
 
-            int amntMoved = srcSlot.TryMoveItemsOut(destSlot, amount);
-            Debug.Log($"Transfered {amntMoved} items!");
+            var amntMoved = srcSlot.TryMoveItemsOut(destSlot, amount);
+            BLog.Log($"Transfered {amntMoved} items!");
         }
     }
 }

@@ -13,38 +13,37 @@ namespace Blizzard.UI
 {
     public class CraftUI : UIBase
     {
-        [Header("References")]
-        [SerializeField] CraftingDatabase _craftingDatabase;
+        [Header("References")] [SerializeField]
+        private CraftingDatabase _craftingDatabase;
 
         // -- Categories panel --
-        [SerializeField] GameObject _categoriesPanel;
-        [SerializeField] Transform _categoriesButtonParent;
+        [SerializeField] private GameObject _categoriesPanel;
+        [SerializeField] private Transform _categoriesButtonParent;
 
         // -- Recipes panel (per category) --
-        [SerializeField] GameObject _recipeListPanel;
-        [SerializeField] Transform _recipeListButtonParent;
+        [SerializeField] private GameObject _recipeListPanel;
+        [SerializeField] private Transform _recipeListButtonParent;
 
         // -- Recipe panel -- 
-        [SerializeField] GameObject _recipePanel;
-        [SerializeField] Button _craftButton;
+        [SerializeField] private GameObject _recipePanel;
+        [SerializeField] private Button _craftButton;
 
-        [Header("Prefabs")]
-        [SerializeField] Button _categoryButtonPrefab;
-        [SerializeField] Button _recipeButtonPrefab;
+        [Header("Prefabs")] [SerializeField] private Button _categoryButtonPrefab;
+        [SerializeField] private Button _recipeButtonPrefab;
 
-        [Inject] InventoryService _inventoryService;
-        [Inject] UIService _uiService;
-        [Inject] EnvPrefabService _envPrefabService;
-        [Inject] PlayerService _playerService;
+        [Inject] private InventoryService _inventoryService;
+        [Inject] private UIService _uiService;
+        [Inject] private EnvPrefabService _envPrefabService;
+        [Inject] private PlayerService _playerService;
 
-        private List<Button> _activeRecipeButtons = new List<Button>();
+        private List<Button> _activeRecipeButtons = new();
 
         private bool _setup = false;
 
         public override void Setup(object args)
         {
             if (!_setup) // Only need to setup once
-            { 
+            {
                 _categoriesPanel.SetActive(true);
                 _recipeListPanel.SetActive(false);
                 _recipePanel.SetActive(false);
@@ -55,9 +54,9 @@ namespace Blizzard.UI
 
         private void LoadCategoriesUI()
         {
-            foreach (CraftingCategory category in _craftingDatabase.craftingCategories)
+            foreach (var category in _craftingDatabase.craftingCategories)
             {
-                Button categoryButton = Instantiate(_categoryButtonPrefab, _categoriesButtonParent);
+                var categoryButton = Instantiate(_categoryButtonPrefab, _categoriesButtonParent);
                 categoryButton.gameObject.SetActive(true);
                 categoryButton.onClick.AddListener(() => LoadRecipeListUI(category));
 
@@ -68,16 +67,13 @@ namespace Blizzard.UI
         private void LoadRecipeListUI(CraftingCategory category)
         {
             // Clear existing recipe buttons
-            foreach (Button activeRecipeButton in _activeRecipeButtons)
-            {
-                Destroy(activeRecipeButton.gameObject);
-            }
+            foreach (var activeRecipeButton in _activeRecipeButtons) Destroy(activeRecipeButton.gameObject);
             _activeRecipeButtons.Clear();
 
             _recipeListPanel.SetActive(true);
-            foreach (CraftingRecipe recipe in category.recipes)
+            foreach (var recipe in category.recipes)
             {
-                Button recipeButton = Instantiate(_recipeButtonPrefab, _recipeListButtonParent);
+                var recipeButton = Instantiate(_recipeButtonPrefab, _recipeListButtonParent);
                 recipeButton.gameObject.SetActive(true);
                 recipeButton.onClick.AddListener(() => LoadRecipeUI(recipe));
 
@@ -101,15 +97,15 @@ namespace Blizzard.UI
             if (_inventoryService.TryRemoveItems(recipe.cost))
             {
                 // Spent recipe successfully, give player the result
-                int amountAdded = _inventoryService.TryAddItem(recipe.result, recipe.resultAmount, fill: true);
+                var amountAdded = _inventoryService.TryAddItem(recipe.result, recipe.resultAmount, true);
 
-                _uiService.ItemGain(recipe.result, amountAdded, default); // TODO: somehow get player position (playerservice?)
+                _uiService.ItemGain(recipe.result, amountAdded,
+                    default); // TODO: somehow get player position (playerservice?)
 
                 if (amountAdded < recipe.resultAmount)
-                {
                     // Drop item on ground, not successfully added to inventory
-                    InventoryServiceExtensions.DropItem(_envPrefabService, _playerService, recipe.result, recipe.resultAmount - amountAdded);
-                }
+                    InventoryServiceExtensions.DropItem(_envPrefabService, _playerService, recipe.result,
+                        recipe.resultAmount - amountAdded);
             }
         }
     }

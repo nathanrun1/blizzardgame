@@ -14,13 +14,13 @@ namespace Blizzard.Utilities // TODO: Separate stats counter namespace or someth
         private int _framesSinceLastUpdate = 0;
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             _framesSinceLastUpdate++;
             _timeSinceUpdate += Time.unscaledDeltaTime;
             if (_timeSinceUpdate > _updateDelay)
             {
-                int fps = Mathf.RoundToInt(_framesSinceLastUpdate / _updateDelay);
+                var fps = Mathf.RoundToInt(_framesSinceLastUpdate / _updateDelay);
                 _framesSinceLastUpdate = 0;
                 _timeSinceUpdate -= _updateDelay;
                 _fpsText.text = $"FPS: {fps}";

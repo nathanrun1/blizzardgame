@@ -2,6 +2,7 @@ using Unity.Cinemachine;
 using UnityEngine;
 using Zenject;
 using Blizzard.Player;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
 {
@@ -18,7 +19,7 @@ namespace Blizzard.Installers
                 .AsSingle()
                 .WithArguments(_playerPrefab, _environment, _cinemachineCamera);
 
-            Debug.Log("Installed Player Service");
+            BLog.Log("Installed Player Service");
         }
     }
 }

@@ -36,7 +36,7 @@
 //        /// </summary>
 //        [Tooltip("Axe = 1, Pickaxe = 2")]
 //        public uint toolType;
-            
+
 //        /// <summary>
 //        /// Creates a harvestable obstacle using 'obstaclePrefab'
 //        /// </summary>
@@ -53,3 +53,4 @@
 //        }
 //    }
 //}
+

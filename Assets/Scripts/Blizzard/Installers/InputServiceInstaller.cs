@@ -1,7 +1,6 @@
-using UnityEngine;
 using Zenject;
-using Blizzard.Grid;
 using Blizzard.Input;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
 {
@@ -12,7 +11,7 @@ namespace Blizzard.Installers
             Container.BindInterfacesAndSelfTo<InputService>()
                 .AsSingle();
 
-            Debug.Log("Installed Input Service");
+            BLog.Log("Installed Input Service");
         }
     }
 }

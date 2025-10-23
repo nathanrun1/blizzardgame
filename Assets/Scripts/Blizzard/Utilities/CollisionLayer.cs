@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace Blizzard.Utilities
 {
-    [Flags] public enum CollisionLayer
+    [Flags]
+    public enum CollisionLayer
     {
         Default = 1 << 0,
         TransparentFX = 1 << 1,
@@ -22,11 +23,10 @@ namespace Blizzard.Utilities
         /// What can be hit by a tool held by the player
         /// </summary>
         public static CollisionLayer Hittable = CollisionLayer.Obstacle | CollisionLayer.Enemy;
+
         /// <summary>
         /// What will block enemy vision
         /// </summary>
         public static CollisionLayer Visible = CollisionLayer.Obstacle | CollisionLayer.Player;
     }
 }
-
-

@@ -10,20 +10,28 @@ using Blizzard.Input;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Blizzard.UI.Core;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.UI.Inventory
 {
     public class InventorySlotCtrl : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        [Header("References")]
-        [SerializeField] Image _itemIcon;
-        [SerializeField] TextMeshProUGUI _itemCount;
-        [SerializeField] Image _bgSelected;
-        [SerializeField] Image _itemPreviewIcon;
+        [Header("References")] [SerializeField]
+        private Image _itemIcon;
+
+        [SerializeField] private TextMeshProUGUI _itemCount;
+        [SerializeField] private Image _bgSelected;
+
+        [SerializeField] private Image _itemPreviewIcon;
+
         // Item Dragging
-        [SerializeField] Image _itemIconDrag; // Item icon & count used to show an item being dragged from the slot
-        [SerializeField] TextMeshProUGUI _itemCountDrag;
-        [SerializeField] RectTransform _dragParent; // Parent to drag-dedicated icon & count, to move them together
+        [SerializeField]
+        private Image _itemIconDrag; // Item icon & count used to show an item being dragged from the slot
+
+        [SerializeField] private TextMeshProUGUI _itemCountDrag;
+
+        [SerializeField]
+        private RectTransform _dragParent; // Parent to drag-dedicated icon & count, to move them together
 
         [Inject] private InputService _inputService;
         [Inject] private UIService _uiService;
@@ -40,6 +48,7 @@ namespace Blizzard.UI.Inventory
         /// Only relevant if linked to an InventorySlot instance.
         /// </summary>
         private bool _moveInEnabled = false;
+
         /// <summary>
         /// Whether items can be moved out of this slot to other slots that have moving in enabled.
         /// Only relevant if linked to an InventorySlot instance.
@@ -58,7 +67,7 @@ namespace Blizzard.UI.Inventory
             }
         }
 
-        private DragState _dragState = new DragState(false, 0);  // Used to manage item dragging
+        private DragState _dragState = new(false, 0); // Used to manage item dragging
 
         private void OnDestroy()
         {
@@ -74,17 +83,19 @@ namespace Blizzard.UI.Inventory
         {
             if (_dragState.isDragging) return; // If dragging, ignore pointer on this slot.
 
-            Debug.Log($"OnPointerEnter: {this}");
+            BLog.Log($"OnPointerEnter: {this}");
             _mouseOverSlot = this;
             _inputService.inputActions.Player.Fire.performed += OnInputFire;
         }
+
         public void OnPointerExit(PointerEventData eventData)
         {
             if (_mouseOverSlot == this)
             {
-                Debug.Log($"OnPointerExit: {this}");
+                BLog.Log($"OnPointerExit: {this}");
                 _mouseOverSlot = null;
             }
+
             _inputService.inputActions.Player.Fire.performed -= OnInputFire;
         }
 
@@ -94,7 +105,7 @@ namespace Blizzard.UI.Inventory
         /// </summary>
         public void Setup(ItemData item, int amount, bool isPreview = false)
         {
-            _dragState = new(false, 0); // Stop dragging if applicable
+            _dragState = new DragState(false, 0); // Stop dragging if applicable
             _dragParent.gameObject.SetActive(false);
 
             if (item != null && amount > 0)
@@ -115,6 +126,7 @@ namespace Blizzard.UI.Inventory
                     _itemIcon.enabled = true;
                     _itemIcon.sprite = item.icon;
                 }
+
                 _itemCount.text = amount != 1 ? amount.ToString() : ""; // Don't show amount if only 1
             }
             else
@@ -131,13 +143,15 @@ namespace Blizzard.UI.Inventory
         /// The inventory slot UI will automatically update when the linked slot is updated.
         /// Also allows the ability for moving items between slots through the UI.
         /// </summary>
-        public void LinkedSetup(InventorySlot slot, bool moveInEnabled=false, bool moveOutEnabled=false)
+        public void LinkedSetup(InventorySlot slot, bool moveInEnabled = false, bool moveOutEnabled = false)
         {
             if (_linkedSlot != null)
             {
-                Debug.LogWarning("[InventorySlotCtrl] This slot has already been linked to a different InventorySlot! Unlinking...");
+                BLog.LogWarning(
+                    "[InventorySlotCtrl] This slot has already been linked to a different InventorySlot! Unlinking...");
                 _linkedSlot.OnUpdate -= OnLinkedSlotUpdated;
             }
+
             Setup(slot.Item, slot.Amount, false);
 
             _moveInEnabled = moveInEnabled;
@@ -156,9 +170,10 @@ namespace Blizzard.UI.Inventory
         {
             if (_linkedSlot == null)
             {
-                Debug.LogWarning("[InventorySlotCtrl] Unlink() called, yet not linked!");
+                BLog.LogWarning("[InventorySlotCtrl] Unlink() called, yet not linked!");
                 return;
             }
+
             _linkedSlot.OnUpdate -= OnLinkedSlotUpdated;
             _linkedSlot = null;
             Setup(null, 0);
@@ -185,6 +200,7 @@ namespace Blizzard.UI.Inventory
             if (_linkedSlot == null) return;
             _moveInEnabled = moveInEnabled;
         }
+
         /// <summary>
         /// Sets whether items can be moved out of this UI inventory slot to other UI inventory slots with moving in enabled.
         /// Must be linked with an InventorySlot instance, otherwise this has no effect.
@@ -215,7 +231,7 @@ namespace Blizzard.UI.Inventory
         /// <returns>Amount moved out successfully.</returns>
         public int TryMoveItemsOut(InventorySlotCtrl destination, int amount)
         {
-            Debug.Log($"Attempting move out, amount: {amount}");
+            BLog.Log($"Attempting move out, amount: {amount}");
             if (_linkedSlot == null || destination._linkedSlot == null) return 0; // Missing linked slot. Not allowed.
             if (!_moveOutEnabled) return 0; // This slot does not have moving out enabled. Not allowed.
             if (!destination._moveInEnabled) return 0; // Other slot does not have moving in enabled. Not allowed.
@@ -224,7 +240,8 @@ namespace Blizzard.UI.Inventory
             if (destination._linkedSlot.Item != null && destination._linkedSlot.Item != _linkedSlot.Item)
             {
                 // Different items, must swap.
-                if (!(_moveInEnabled && destination._moveOutEnabled)) return 0; // Both must have both directions enabled for swap.
+                if (!(_moveInEnabled && destination._moveOutEnabled))
+                    return 0; // Both must have both directions enabled for swap.
                 if (amount != _linkedSlot.Amount) return 0; // Must move entire stack out to swap. Otherwise no can do.
 
                 // Perform swap.
@@ -239,17 +256,21 @@ namespace Blizzard.UI.Inventory
             }
 
             // Same items or other slot empty, move as much as possible
-            int amountInDestination = destination._linkedSlot.Item == null ? 0 : destination._linkedSlot.Amount;
-            int amountToMove = Math.Min(_linkedSlot.Item.stackSize - amountInDestination, amount); // Can move at most as much as there is space in other slot
+            var amountInDestination = destination._linkedSlot.Item == null ? 0 : destination._linkedSlot.Amount;
+            var amountToMove =
+                Math.Min(_linkedSlot.Item.stackSize - amountInDestination,
+                    amount); // Can move at most as much as there is space in other slot
             if (amountToMove > _linkedSlot.Amount)
             {
-                Debug.LogWarning($"[InventorySlotCtrl] TryMoveItemsOut() Attempted to move out more items than in slot!\n" +
+                BLog.LogWarning(
+                    $"[InventorySlotCtrl] TryMoveItemsOut() Attempted to move out more items than in slot!\n" +
                     $"amountToMove = {amountToMove}, _linkedSlot.Amount = {_linkedSlot.Amount}");
                 return 0;
             }
 
             destination._linkedSlot.Amount += amountToMove;
-            if (destination._linkedSlot.Item == null) destination._linkedSlot.Item = _linkedSlot.Item; // Added item to empty slot
+            if (destination._linkedSlot.Item == null)
+                destination._linkedSlot.Item = _linkedSlot.Item; // Added item to empty slot
             _linkedSlot.Amount -= amountToMove;
             if (_linkedSlot.Amount == 0) _linkedSlot.Item = null; // None left in this slot
 
@@ -265,9 +286,10 @@ namespace Blizzard.UI.Inventory
             {
                 // Linked to inventory slot & item in slot, dragging behaviour supported
                 // Start item drag
-                bool shiftPressed = _inputService.inputActions.Player.UIInteract1.IsPressed(); // Full stack if shift drag
-                int amntToDrag = shiftPressed ? _linkedSlot.Amount : 1;
-                _dragState = new(true, amntToDrag);
+                var shiftPressed =
+                    _inputService.inputActions.Player.UIInteract1.IsPressed(); // Full stack if shift drag
+                var amntToDrag = shiftPressed ? _linkedSlot.Amount : 1;
+                _dragState = new DragState(true, amntToDrag);
                 StartCoroutine(DragCoroutine());
             }
         }
@@ -280,11 +302,12 @@ namespace Blizzard.UI.Inventory
             _itemCountDrag.text = _dragState.amount > 1 ? _dragState.amount.ToString() : "";
 
             // Adjust slot content temporarily (as if item is actually being "picked up")
-            int amntRemaining = _linkedSlot.Amount - _dragState.amount;
+            var amntRemaining = _linkedSlot.Amount - _dragState.amount;
             _itemCount.text = amntRemaining > 1 ? amntRemaining.ToString() : "";
             if (amntRemaining < 1) _itemIcon.enabled = false;
 
-            while (_dragState.isDragging && _inputService.inputActions.Player.Fire.IsPressed()) // TODO: adapt this code, uses OG mouse shit
+            while (_dragState.isDragging &&
+                   _inputService.inputActions.Player.Fire.IsPressed()) // TODO: adapt this code, uses OG mouse shit
             {
                 _dragParent.position = UnityEngine.Input.mousePosition;
                 yield return null;
@@ -296,14 +319,11 @@ namespace Blizzard.UI.Inventory
 
             // Drop the item if still in dragging state (i.e. mouse was just lifted)
             if (_dragState.isDragging && _mouseOverSlot != null && _mouseOverSlot != this)
-            {
                 // Mouse is over different slot, attempt item transfer!
                 TryMoveItemsOut(_mouseOverSlot, _dragState.amount);
-            }
-            _dragState = new(false, 0); // Reset dragging state (if not already)
+            _dragState = new DragState(false, 0); // Reset dragging state (if not already)
             _dragParent.gameObject.SetActive(false);
             _dragParent.SetParent(transform);
         }
     }
-
 }

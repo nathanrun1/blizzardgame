@@ -3,6 +3,7 @@ using Blizzard.Utilities.Assistants;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
+using Blizzard.Utilities.Logging;
 
 
 namespace Blizzard.Input
@@ -36,21 +37,21 @@ namespace Blizzard.Input
         {
             return _mainCamera;
         }
-        
+
 
         private void BindInteractionInputs()
         {
-            Debug.Log("Bound interaction inputs!");
+            BLog.Log("Bound interaction inputs!");
             inputActions.Player.Interact1.performed += OnPrimaryInteractionInput;
             inputActions.Player.Interact2.performed += OnSecondaryInteractionInput;
         }
 
         private void OnPrimaryInteractionInput(InputAction.CallbackContext ctx)
         {
-            Collider2D pointerOverCollider = InputAssistant.GetColliderUnderPointer(_mainCamera);
+            var pointerOverCollider = InputAssistant.GetColliderUnderPointer(_mainCamera);
             if (pointerOverCollider == null) return;
 
-            IInteractable interactable = pointerOverCollider.GetComponent<IInteractable>();
+            var interactable = pointerOverCollider.GetComponent<IInteractable>();
             interactable?.OnPrimaryInteract();
         }
 

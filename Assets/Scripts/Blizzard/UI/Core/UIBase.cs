@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Blizzard.Utilities.Logging;
 
 
 namespace Blizzard.UI.Core
@@ -16,9 +17,9 @@ namespace Blizzard.UI.Core
 
         public void SetParent(RectTransform parent)
         {
-            Debug.Log((transform as RectTransform).sizeDelta);
-            transform.SetParent(parent, worldPositionStays: false);
-            this._parent = parent;
+            BLog.Log((transform as RectTransform).sizeDelta);
+            transform.SetParent(parent, false);
+            _parent = parent;
         }
 
         /// <summary>

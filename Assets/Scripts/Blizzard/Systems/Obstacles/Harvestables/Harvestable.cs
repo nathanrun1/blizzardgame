@@ -21,8 +21,9 @@ namespace Blizzard.Obstacles.Harvestables
         /// <summary>
         /// Type of tool(s) that can harvest this harvestable, interpreted as bit field.
         /// </summary>
-        [Header("Harvestable properties")]
-        [SerializeField] public ToolType ToolTypes;
+        [Header("Harvestable properties")] [SerializeField]
+        public ToolType ToolTypes;
+
         /// <summary>
         /// Resources given to the player when harvested
         /// </summary>
@@ -35,8 +36,9 @@ namespace Blizzard.Obstacles.Harvestables
 
         protected override void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition)
         {
-            if (Health > 0) StartCoroutine(FXAssistant.DamageAnim(transform, sourcePosition,
-                () => Health <= 0));
+            if (Health > 0)
+                StartCoroutine(FXAssistant.DamageAnim(transform, sourcePosition,
+                    () => Health <= 0));
         }
 
         protected override void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition)
@@ -55,18 +57,17 @@ namespace Blizzard.Obstacles.Harvestables
             _inventoryService.TryAddItemsWithAnim(_uiService, transform.position, items);
 
             if (!items.IsNullOrEmpty())
-            {
                 // Some items weren't succesfully added (inventory full likely), drop instead
-                foreach (ItemAmountPair item in items)
+                foreach (var item in items)
                 {
                     if (item.amount == 0) continue; // Sanity check
-                    ItemDrop dropObj = _envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
+                    var dropObj = _envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
                     // Initialize drop at harvestable location with random offset
-                    dropObj.transform.position = transform.position + new Vector3(UnityEngine.Random.Range(-.5f, .5f), UnityEngine.Random.Range(-.5f, .5f), 0);
+                    dropObj.transform.position = transform.position +
+                                                 new Vector3(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f), 0);
                     dropObj.Setup(item);
                 }
-            }
-             
+
             HarvestAnim(Destroy);
         }
 
@@ -76,10 +77,10 @@ namespace Blizzard.Obstacles.Harvestables
         private IEnumerator DamageAnim(Vector3 sourcePosition)
         {
             if (Health <= 0) yield break;
-            Vector3 hitDirection = (transform.position - sourcePosition).normalized;
-            Vector3 startPos = transform.position;
-            Vector3 endPos = startPos + hitDirection * 0.05f;
-            Sequence sequence = DOTween.Sequence();
+            var hitDirection = (transform.position - sourcePosition).normalized;
+            var startPos = transform.position;
+            var endPos = startPos + hitDirection * 0.05f;
+            var sequence = DOTween.Sequence();
             sequence.Append(transform.DOMove(endPos, 0.1f));
             sequence.Append(transform.DOMove(startPos, 0.1f));
 

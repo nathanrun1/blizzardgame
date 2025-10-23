@@ -2,7 +2,10 @@ namespace Blizzard.Grid
 {
     public enum NeighborLocation
     {
-        Above, Below, Left, Right
+        Above,
+        Below,
+        Left,
+        Right
     }
 
     /// <summary>

@@ -2,18 +2,18 @@ using UnityEngine;
 using Zenject;
 using Blizzard.Grid;
 using Blizzard.Temperature;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
 {
     public class TemperatureServiceInstaller : MonoInstaller
     {
-        const int SIM_WINDOW_WIDTH = 32;
-        const int SIM_WINDOW_HEIGHT = 32;
-        const float CELL_SIDE_LENGTH = 0.5f;
+        private const int SIM_WINDOW_WIDTH = 32;
+        private const int SIM_WINDOW_HEIGHT = 32;
+        private const float CELL_SIDE_LENGTH = 0.5f;
 
-        [SerializeField] ComputeShader _heatDiffusionShader;
-        [Header("Config")]
-        [SerializeField] bool _simulationIsActive = true;
+        [SerializeField] private ComputeShader _heatDiffusionShader;
+        [Header("Config")] [SerializeField] private bool _simulationIsActive = true;
 
         public override void InstallBindings()
         {
@@ -29,9 +29,10 @@ namespace Blizzard.Installers
             Container.BindInterfacesAndSelfTo<TemperatureService>()
                 .FromNew()
                 .AsSingle()
-                .WithArguments(mainGrid, new BasicDenseGrid<TemperatureCell>(SIM_WINDOW_WIDTH, SIM_WINDOW_HEIGHT), _heatDiffusionShader, _simulationIsActive);
+                .WithArguments(mainGrid, new BasicDenseGrid<TemperatureCell>(SIM_WINDOW_WIDTH, SIM_WINDOW_HEIGHT),
+                    _heatDiffusionShader, _simulationIsActive);
 
-            Debug.Log("Installed Temperature Service");
+            BLog.Log("Installed Temperature Service");
         }
     }
 }

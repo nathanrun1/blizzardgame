@@ -1,7 +1,6 @@
-using System;
-using UnityEngine;
 using Zenject;
 using Blizzard.Obstacles;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
 {
@@ -12,7 +11,7 @@ namespace Blizzard.Installers
             Container.BindInterfacesAndSelfTo<InteractionService>()
                 .AsSingle();
 
-            Debug.Log("Installed Interaction Service");
+            BLog.Log("Installed Interaction Service");
         }
     }
 }

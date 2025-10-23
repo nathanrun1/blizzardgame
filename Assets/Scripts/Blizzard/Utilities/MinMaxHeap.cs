@@ -13,12 +13,12 @@ namespace Blizzard.Utilities
     public class MinMaxHeap<T> where T : IComparable<T>
     {
         private List<T> _elements = new();
-        
+
         /// <summary>
         /// Location of each value within _elements
         /// </summary>
         private Dictionary<T, int> _elementLocation = new();
-        
+
         /// <summary>
         /// Amount of each element in MinMaxHeap. An element is only removed once its amount
         /// reaches 0.
@@ -37,21 +37,21 @@ namespace Blizzard.Utilities
                 _elementCount[value]++;
                 return;
             }
-            
+
             // New value, add to MinMaxHeap
             _elementCount.Add(value, 1);
             _elementLocation.Add(value, _elements.Count);
             _elements.Add(value);
             BubbleUp(_elements.Count - 1);
         }
-        
+
         /// <summary>
         /// Removes an element by value
         /// </summary>
         /// <param name="value">Value of element to remove</param>
         public void Remove(T value)
         {
-            Assert.IsTrue(_elementCount.ContainsKey(value), 
+            Assert.IsTrue(_elementCount.ContainsKey(value),
                 $"Attempted to remove element from MinMaxHeap, yet has not yet been added!\nElement: {value}");
             if (_elementCount[value] > 1)
             {
@@ -59,20 +59,20 @@ namespace Blizzard.Utilities
                 _elementCount[value]--;
                 return;
             }
-            
+
             // Count of this element has reached 0, remove it.
-            
+
             // Fetch location
-            int index = _elementLocation[value];
-            
+            var index = _elementLocation[value];
+
             // Re-map element locations
             _elementLocation[_elements[^1]] = index;
             _elementLocation.Remove(value);
-            
+
             // Replace value with last leaf node's element
             _elements[index] = _elements[^1];
             _elements.RemoveAt(_elements.Count - 1);
-            
+
             // Bubble up and then trickle down from replaced index.
             // Bubble up may swap the index with its parent, and the parent may be in incorrect location, so
             //   will also need to be trickled down regardless. Thus, we do both.
@@ -87,17 +87,17 @@ namespace Blizzard.Utilities
         /// </summary>
         public T DeleteMax()
         {
-            int maxIndex = GetMaxIndex();
-            T maxValue = _elements[maxIndex];
-            
+            var maxIndex = GetMaxIndex();
+            var maxValue = _elements[maxIndex];
+
             // Re-map element locations
             _elementLocation[_elements[^1]] = maxIndex;
             _elementLocation.Remove(_elements[maxIndex]);
-            
+
             // Replace max value with last leaf node's element
             _elements[maxIndex] = _elements[^1];
             _elements.RemoveAt(_elements.Count - 1);
-            
+
             // Trickle down from replaced node to correct heap structure
             TrickleDown(maxIndex);
 
@@ -110,17 +110,17 @@ namespace Blizzard.Utilities
         /// <returns></returns>
         public T DeleteMin()
         {
-            int minIndex = GetMinIndex();
-            T minValue = _elements[minIndex];
-            
+            var minIndex = GetMinIndex();
+            var minValue = _elements[minIndex];
+
             // Re-map element locations
             _elementLocation[_elements[^1]] = minIndex;
             _elementLocation.Remove(_elements[minIndex]);
-            
+
             // Replace max value with last leaf node's element
             _elements[minIndex] = _elements[^1];
             _elements.RemoveAt(_elements.Count - 1);
-            
+
             // Trickle down from replaced node to correct heap structure
             TrickleDown(minIndex);
 
@@ -135,7 +135,7 @@ namespace Blizzard.Utilities
         {
             return _elements[GetMaxIndex()];
         }
-        
+
         /// <summary>
         /// Retrieves the minimum element, assuming the MinMaxHeap is not empty
         /// </summary>
@@ -151,7 +151,7 @@ namespace Blizzard.Utilities
         {
             return _elements.Count == 0;
         }
-        
+
         // -- Private --
 
         /// <summary>
@@ -179,14 +179,12 @@ namespace Blizzard.Utilities
         private int GetMinIndex()
         {
             if (_elements.Count == 0)
-            {
                 throw new InvalidOperationException(
                     "Tried to get minimum element, but MinMaxHeap contains no elements!");
-            }
             // Min element always at root
             return 0;
         }
-        
+
         /// <summary>
         /// Re-orders subtree rooted at index such that it holds
         /// min-max heap properties, assuming that the node
@@ -196,7 +194,7 @@ namespace Blizzard.Utilities
         {
             while (true)
             {
-                int m = GetMinChildGrandchild(index);
+                var m = GetMinChildGrandchild(index);
                 if (m == -1) return;
                 if (IsGrandchild(index, m))
                 {
@@ -205,29 +203,26 @@ namespace Blizzard.Utilities
                         // Larger than grandchild in min row, swap with grandchild
                         Swap(m, index);
                         if (_elements[m].CompareTo(_elements[GetParent(m)]) < 0)
-                        {
                             // Parent of new grandchild (in max row) smaller than grandchild, swap
                             //   new grandchild and its parent
                             Swap(m, GetParent(m));
-                        }
 
                         index = m;
                         continue;
                     }
+
                     // Position is correct, done.
                     break;
                 }
 
                 // Is child, and child is a leaf node (otherwise couldn't be smallest)
                 if (_elements[m].CompareTo(_elements[index]) < 0)
-                {
                     // Larger than child, swap.
                     Swap(m, index);
-                }
                 // Position is correct, done.
                 break;
             }
-        }   
+        }
 
         /// <summary>
         /// Re-orders subtree rooted at index such that it holds
@@ -238,7 +233,7 @@ namespace Blizzard.Utilities
         {
             while (true)
             {
-                int m = GetMaxChildGrandchild(index);
+                var m = GetMaxChildGrandchild(index);
                 if (m == -1) return;
                 if (IsGrandchild(index, m))
                 {
@@ -247,30 +242,27 @@ namespace Blizzard.Utilities
                         // Larger than grandchild in min row, swap with grandchild
                         Swap(m, index);
                         if (_elements[m].CompareTo(_elements[GetParent(m)]) > 0)
-                        {
                             // Parent of new grandchild (in max row) larger than grandchild, swap
                             //   new grandchild and its parent
                             Swap(m, GetParent(m));
-                        }
 
                         index = m;
                         continue;
                     }
+
                     // Position is correct, done.
                     return;
                 }
 
                 // Is child, and child is a leaf node (otherwise couldn't be largest)
                 if (_elements[m].CompareTo(_elements[index]) > 0)
-                {
                     // Smaller than child, swap.
                     Swap(m, index);
-                }
                 // Position is correct, done.
                 return;
             }
         }
-        
+
         /// <summary>
         /// Re-orders subtree rooted at index such that it holds
         /// min-max heap properties.
@@ -278,13 +270,9 @@ namespace Blizzard.Utilities
         private void TrickleDown(int index)
         {
             if (index % 2 == 0)
-            {
                 TrickleDownMin(index);
-            }
             else
-            {
                 TrickleDownMax(index);
-            }
         }
 
         /// <summary>
@@ -296,7 +284,7 @@ namespace Blizzard.Utilities
         {
             while (true)
             {
-                if (index <= 2) return;  // Has no grandparent
+                if (index <= 2) return; // Has no grandparent
                 var grandparentIndex = GetGrandparent(index);
                 if (_elements[index].CompareTo(_elements[grandparentIndex]) < 0)
                 {
@@ -305,6 +293,7 @@ namespace Blizzard.Utilities
                     index = grandparentIndex;
                     continue;
                 }
+
                 // In correct position, done.
                 break;
             }
@@ -319,7 +308,7 @@ namespace Blizzard.Utilities
         {
             while (true)
             {
-                if (index <= 2) return;  // Has no grandparent
+                if (index <= 2) return; // Has no grandparent
                 var grandparentIndex = GetGrandparent(index);
                 if (_elements[index].CompareTo(_elements[grandparentIndex]) > 0)
                 {
@@ -328,11 +317,12 @@ namespace Blizzard.Utilities
                     index = grandparentIndex;
                     continue;
                 }
+
                 // In correct position, done.
                 break;
             }
         }
-        
+
         /// <summary>
         /// Re-orders path from node to root such that the full tree
         /// holds min-max heap properties
@@ -340,7 +330,7 @@ namespace Blizzard.Utilities
         private void BubbleUp(int index)
         {
             if (index == 0) return; // Index is root, done.
-            int parentIndex = GetParent(index);
+            var parentIndex = GetParent(index);
             if (index % 2 == 0)
             {
                 // On a min level
@@ -349,7 +339,7 @@ namespace Blizzard.Utilities
                     // Larger than parent and on min level, swap with parent.
                     Swap(index, parentIndex);
                     // Value at 'index' guaranteed to be correct, 'parentIndex' might not (is new), bubble up.
-                    BubbleUpMax(parentIndex); 
+                    BubbleUpMax(parentIndex);
                 }
                 else
                 {
@@ -374,7 +364,7 @@ namespace Blizzard.Utilities
                 }
             }
         }
-        
+
         // -- Helpers --
         /// <summary>
         /// Retrieves the index of the minimum element out of a node's
@@ -382,15 +372,16 @@ namespace Blizzard.Utilities
         /// </summary>
         private int GetMinChildGrandchild(int n)
         {
-            int minIndex = -1;
+            var minIndex = -1;
             int cur;
-            for (int i = 0; i < 2; ++i)  // Children
+            for (var i = 0; i < 2; ++i) // Children
             {
                 cur = GetChild(n, i);
                 if (cur >= _elements.Count) return minIndex;
                 minIndex = _elements[minIndex].CompareTo(_elements[cur]) < 0 ? cur : minIndex;
             }
-            for (int j = 0; j < 4; ++j)  // Grandchildren
+
+            for (var j = 0; j < 4; ++j) // Grandchildren
             {
                 cur = GetGrandchild(n, j);
                 if (cur >= _elements.Count) return minIndex;
@@ -406,15 +397,16 @@ namespace Blizzard.Utilities
         /// </summary>
         private int GetMaxChildGrandchild(int n)
         {
-            int maxIndex = -1;
+            var maxIndex = -1;
             int cur;
-            for (int i = 0; i < 2; ++i)  // Children
+            for (var i = 0; i < 2; ++i) // Children
             {
                 cur = GetChild(n, i);
                 if (cur >= _elements.Count) return maxIndex;
                 maxIndex = _elements[maxIndex].CompareTo(_elements[cur]) > 0 ? cur : maxIndex;
             }
-            for (int j = 0; j < 4; ++j)  // Grandchildren
+
+            for (var j = 0; j < 4; ++j) // Grandchildren
             {
                 cur = GetGrandchild(n, j);
                 if (cur >= _elements.Count) return maxIndex;
@@ -432,7 +424,7 @@ namespace Blizzard.Utilities
             // Update element location map
             _elementLocation[_elements[t]] = f;
             _elementLocation[_elements[f]] = t;
-            
+
             // Swap elements
             (_elements[t], _elements[f]) = (_elements[f], _elements[t]);
         }
@@ -444,7 +436,7 @@ namespace Blizzard.Utilities
         private static bool IsChild(int n, int c)
         {
             // True if c == 2n + 1 or c == 2n + 2
-            return c > n && c - (2 * n) <= 2;
+            return c > n && c - 2 * n <= 2;
         }
 
         /// <summary>
@@ -452,7 +444,7 @@ namespace Blizzard.Utilities
         /// </summary>
         private static bool IsGrandchild(int n, int g)
         {
-            return (4 * n + 3) <= g && g <= (4 * n + 6);
+            return 4 * n + 3 <= g && g <= 4 * n + 6;
         }
 
         /// <summary>

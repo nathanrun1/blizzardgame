@@ -9,7 +9,7 @@ namespace Blizzard.Grid
         /// </summary>
         public static Vector2Int WorldToCellPos<T>(this IWorldGrid<T> grid, Vector2 worldPosition)
         {
-            Vector2Int gridPosition = new Vector2Int();
+            var gridPosition = new Vector2Int();
             gridPosition.x = Mathf.FloorToInt(worldPosition.x / grid.CellWidth);
             gridPosition.y = Mathf.FloorToInt(worldPosition.y / grid.CellHeight);
 
@@ -34,8 +34,8 @@ namespace Blizzard.Grid
         public static Vector2 CellToWorldPosCenter<T>(this IWorldGrid<T> grid, Vector2Int gridPosition)
         {
             Vector2 worldPosition;
-            worldPosition.x = gridPosition.x * grid.CellWidth + (grid.CellWidth * 0.5f);
-            worldPosition.y = gridPosition.y * grid.CellHeight + (grid.CellHeight * 0.5f);
+            worldPosition.x = gridPosition.x * grid.CellWidth + grid.CellWidth * 0.5f;
+            worldPosition.y = gridPosition.y * grid.CellHeight + grid.CellHeight * 0.5f;
 
             return worldPosition;
         }

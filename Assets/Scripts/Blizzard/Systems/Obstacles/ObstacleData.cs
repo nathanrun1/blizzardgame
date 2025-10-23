@@ -15,24 +15,28 @@ namespace Blizzard.Obstacles
         /// Prefab of the obstacle's gameobject
         /// </summary>
         public Obstacle obstaclePrefab;
+
         /// <summary>
         /// Initial heat value
         /// </summary>
         public float startingHeat = TemperatureConstants.DefaultHeatValue;
+
         /// <summary>
         /// Initial insulation value
         /// </summary>
         public float startingInsulation = TemperatureConstants.DefaultInsulationValue;
+
         /// <summary>
         /// Obstacle flags
         /// </summary>
         public ObstacleFlags obstacleFlags = 0;
+
         /// <summary>
         /// Which obstacle grid layer this obstacle is placed on
         /// </summary>
         public ObstacleLayer obstacleLayer;
 
-        [Inject] DiContainer _diContainer;
+        [Inject] private DiContainer _diContainer;
 
         /// <summary>
         /// Creates an obstacle using 'obstaclePrefab'
@@ -42,7 +46,7 @@ namespace Blizzard.Obstacles
         {
             Assert.IsTrue(obstaclePrefab != null, "obstaclePrefab not provided!");
 
-            Obstacle obstacle = _diContainer.InstantiatePrefabForComponent<Obstacle>(obstaclePrefab);
+            var obstacle = _diContainer.InstantiatePrefabForComponent<Obstacle>(obstaclePrefab);
             obstacle.Init(this);
             obstacle.transform.position = position;
 

@@ -7,8 +7,8 @@ namespace Blizzard.Utilities
     /// </summary>
     public class OuterMostBounds
     {
-        public Vector2Int MaxBound => new Vector2Int(_xBounds.GetMax(), _yBounds.GetMax());
-        public Vector2Int MinBound => new Vector2Int(_xBounds.GetMin(), _yBounds.GetMin());
+        public Vector2Int MaxBound => new(_xBounds.GetMax(), _yBounds.GetMax());
+        public Vector2Int MinBound => new(_xBounds.GetMin(), _yBounds.GetMin());
 
         private MinMaxHeap<int> _xBounds = new();
         private MinMaxHeap<int> _yBounds = new();
@@ -22,7 +22,7 @@ namespace Blizzard.Utilities
             _xBounds.Add(position.x);
             _yBounds.Add(position.y);
         }
-        
+
         /// <summary>
         /// Remove position from set
         /// </summary>

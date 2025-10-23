@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zenject;
 using Blizzard.Pathfinding;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
 {
@@ -12,7 +13,7 @@ namespace Blizzard.Installers
                 .FromNew()
                 .AsSingle();
 
-            Debug.Log("Installed Pathfinding Service");
+            BLog.Log("Installed Pathfinding Service");
         }
     }
 }

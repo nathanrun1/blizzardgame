@@ -18,12 +18,12 @@ namespace Blizzard.Obstacles
     /// </summary>
     public class ObstacleQuadTree
     {
-
         #region QT Structs
+
         /// <summary>
         /// Represents a stored obstacle in a NativeQuadTree
         /// </summary>
-        private struct QTObstacleData 
+        private struct QTObstacleData
         {
             /// <summary>
             /// Position of associated obstacle in obstacle grid
@@ -64,7 +64,7 @@ namespace Blizzard.Obstacles
 
             public QTKNearestVisitor(int k)
             {
-                kNearest = new();
+                kNearest = new List<QTObstacleData>();
 
                 _k = k;
             }
@@ -80,11 +80,9 @@ namespace Blizzard.Obstacles
             public bool OnVisit(QTObstacleData obj, AABB2D _, AABB2D __)
             {
                 // Ensure position is within range
-                if (_min.x <= obj.position.x && _min.y <= obj.position.y && 
+                if (_min.x <= obj.position.x && _min.y <= obj.position.y &&
                     _max.x >= obj.position.x && _max.y >= obj.position.y)
-                {
                     results.Add(obj);
-                }
 
                 return true;
             }
@@ -94,9 +92,10 @@ namespace Blizzard.Obstacles
                 _min = min;
                 _max = max;
 
-                results = new();
+                results = new List<QTObstacleData>();
             }
         }
+
         #endregion QT Structs
 
 
@@ -104,17 +103,21 @@ namespace Blizzard.Obstacles
         /// Underlying QuadTree implementation
         /// </summary>
         private NativeQuadtree<QTObstacleData> _nativeQuadTree;
+
         private bool _quadTreeInitialized = false;
+
         /// <summary>
         /// Set of coordinates that have been inserted into the underlying quadtree,
         /// yet the associated obstacle has been removed.
         /// </summary>
         private HashSet<Vector2Int> _invalidPositions = new();
+
         /// <summary>
         /// Associated obstacle grid, will cross-reference obstacles from within
         /// for queries.
         /// </summary>
         private ISparseWorldGrid<Obstacle> _obstacleGrid;
+
         /// <summary>
         /// Obstacle flags used as a filter when refreshing the QuadTree
         /// </summary>
@@ -128,8 +131,8 @@ namespace Blizzard.Obstacles
         /// <param name="flags">Obstacle flag filters</param>
         public ObstacleQuadTree(ISparseWorldGrid<Obstacle> obstacleGrid, ObstacleFlags obstacleFlags)
         {
-            this._obstacleGrid = obstacleGrid;
-            this._obstacleFlags = obstacleFlags;
+            _obstacleGrid = obstacleGrid;
+            _obstacleFlags = obstacleFlags;
         }
 
 
@@ -138,7 +141,7 @@ namespace Blizzard.Obstacles
         /// </summary>
         public void Add(Vector2Int obstaclePosition)
         {
-            // Debug.Log($"Adding {obstaclePosition} to quad tree (flags: {_obstacleFlags})");
+            // BLog.Log($"Adding {obstaclePosition} to quad tree (flags: {_obstacleFlags})");
             if (!_quadTreeInitialized) Rebuild();
             if (!_nativeQuadTree.Bounds.Contains(new float2(obstaclePosition.x, obstaclePosition.y)))
                 Rebuild(); // New point not contained within quadtree, must rebuild.
@@ -180,18 +183,18 @@ namespace Blizzard.Obstacles
         {
             if (!_quadTreeInitialized) Rebuild();
 
-            // Debug.Log($"[ObstacleQuadTree] Querying {k} nearest to {position}...");
+            // BLog.Log($"[ObstacleQuadTree] Querying {k} nearest to {position}...");
             var visitor = new QTKNearestVisitor(k);
             float2 point = new((float)position.x, (float)position.y);
-            _nativeQuadTree.Nearest(point, (float)maxDistance, 
-                                    ref visitor, default(QTManhattanDistanceProvider));
-            
+            _nativeQuadTree.Nearest(point, (float)maxDistance,
+                ref visitor, default(QTManhattanDistanceProvider));
+
             List<Obstacle> queryResults = new(k);
-            int invalidCount = 0;
-            foreach (QTObstacleData data in visitor.kNearest)
+            var invalidCount = 0;
+            foreach (var data in visitor.kNearest)
             {
-                // Debug.Log($"[ObstacleQuadTree] Queried obstacle at pos {data.position}. Checking if valid...");
-                if (_invalidPositions.Contains(data.position)) 
+                // BLog.Log($"[ObstacleQuadTree] Queried obstacle at pos {data.position}. Checking if valid...");
+                if (_invalidPositions.Contains(data.position))
                 {
                     invalidCount++;
 
@@ -202,18 +205,19 @@ namespace Blizzard.Obstacles
                         Rebuild();
                         return GetKNearestObstacles(position, k, maxDistance);
                     }
+
                     // Not reached, simply omit it.
                     continue;
                 }
 
-                Obstacle obstacle = _obstacleGrid.GetAt(data.position);
+                var obstacle = _obstacleGrid.GetAt(data.position);
                 Assert.IsTrue(obstacle, "QTObstacleData not marked invalid, yet obstacle" +
-                    "doesn't exist in grid!");
+                                        "doesn't exist in grid!");
 
                 queryResults.Add(obstacle);
             }
 
-            // Debug.Log($"[ObstacleQuadTree] Successfully queried {queryResults.Count} obstacles!");
+            // BLog.Log($"[ObstacleQuadTree] Successfully queried {queryResults.Count} obstacles!");
             return queryResults;
         }
 
@@ -227,12 +231,12 @@ namespace Blizzard.Obstacles
         {
             List<Obstacle> results = new();
 
-            List<Vector2Int> validPositions = GetValidPositionsInRange(min, max);
-            foreach (Vector2Int pos in validPositions)
+            var validPositions = GetValidPositionsInRange(min, max);
+            foreach (var pos in validPositions)
             {
-                Obstacle obstacle = _obstacleGrid.GetAt(pos);
+                var obstacle = _obstacleGrid.GetAt(pos);
                 Assert.IsTrue(obstacle != null, "QTObstacleData not marked invalid, yet obstacle" +
-                    "doesn't exist in grid!");
+                                                "doesn't exist in grid!");
                 results.Add(obstacle);
             }
 
@@ -259,8 +263,8 @@ namespace Blizzard.Obstacles
             _nativeQuadTree.Range(range, ref visitor);
 
             List<Vector2Int> results = new();
-            //Debug.Log($"Range query ({flMin}, {flMax}) yielded {visitor.results.Count} results.");
-            foreach (QTObstacleData data in visitor.results)
+            //BLog.Log($"Range query ({flMin}, {flMax}) yielded {visitor.results.Count} results.");
+            foreach (var data in visitor.results)
             {
                 if (_invalidPositions.Contains(data.position)) continue; // Position is invalid
                 results.Add(data.position);
@@ -274,28 +278,29 @@ namespace Blizzard.Obstacles
         /// </summary>
         private void Rebuild()
         {
-            // Debug.Log("[ObstacleQuadTree] Rebuilding!");
+            // BLog.Log("[ObstacleQuadTree] Rebuilding!");
 
             _invalidPositions.Clear();
             if (_obstacleGrid.Empty()) return; // Nothing in grid yet
-            Vector2Int firstPos = _obstacleGrid.ValidPositions.First();
+            var firstPos = _obstacleGrid.ValidPositions.First();
             float2 minPos = new(firstPos.x, firstPos.y);
             float2 maxPos = new(firstPos.x, firstPos.y);
-            foreach (Vector2Int position in _obstacleGrid.ValidPositions)
+            foreach (var position in _obstacleGrid.ValidPositions)
             {
-                if ((float)position.x < minPos.x) minPos = new((float)position.x, minPos.y);
-                if ((float)position.y < minPos.y) minPos = new(minPos.x, (float)position.y);
-                if ((float)position.x > maxPos.x) maxPos = new((float)position.x, maxPos.y);
-                if ((float)position.y > maxPos.y) maxPos = new(maxPos.x, (float)position.y);
+                if ((float)position.x < minPos.x) minPos = new float2((float)position.x, minPos.y);
+                if ((float)position.y < minPos.y) minPos = new float2(minPos.x, (float)position.y);
+                if ((float)position.x > maxPos.x) maxPos = new float2((float)position.x, maxPos.y);
+                if ((float)position.y > maxPos.y) maxPos = new float2(maxPos.x, (float)position.y);
             }
-            float boundsWidth = maxPos.x - minPos.x;
-            float boundsHeight = maxPos.y - minPos.y;
 
-            float horizontalPadding = boundsWidth * ObstacleConstants.QTBoundsPadding;
-            float verticalPadding = boundsHeight * ObstacleConstants.QTBoundsPadding;
+            var boundsWidth = maxPos.x - minPos.x;
+            var boundsHeight = maxPos.y - minPos.y;
 
-            minPos = new(minPos.x - horizontalPadding, minPos.y - verticalPadding);
-            maxPos = new(maxPos.x + horizontalPadding, maxPos.y + verticalPadding);
+            var horizontalPadding = boundsWidth * ObstacleConstants.QTBoundsPadding;
+            var verticalPadding = boundsHeight * ObstacleConstants.QTBoundsPadding;
+
+            minPos = new float2(minPos.x - horizontalPadding, minPos.y - verticalPadding);
+            maxPos = new float2(maxPos.x + horizontalPadding, maxPos.y + verticalPadding);
 
             AABB2D bounds = new(minPos, maxPos);
 
@@ -304,13 +309,9 @@ namespace Blizzard.Obstacles
                 ObstacleConstants.QTMaxDepth, Unity.Collections.Allocator.Persistent, _obstacleGrid.Count);
             _quadTreeInitialized = true;
             foreach (var (position, obstacle) in _obstacleGrid)
-            {
                 if ((obstacle.ObstacleFlags & _obstacleFlags) == _obstacleFlags)
-                {
                     // Filter met, add to quadtree
                     Add(position);
-                }
-            }
         }
     }
 }

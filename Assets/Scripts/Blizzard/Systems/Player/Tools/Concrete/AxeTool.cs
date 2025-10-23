@@ -1,12 +1,10 @@
-using Blizzard.Obstacles;
-using Blizzard.Player;
 using DG.Tweening;
 using System.Collections;
 using Blizzard.Input;
 using Blizzard.Obstacles.Harvestables;
-using Blizzard.Player.Tools;
 using Blizzard.Utilities;
 using Blizzard.Utilities.Assistants;
+using Blizzard.Utilities.Logging;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -15,21 +13,24 @@ namespace Blizzard.Player.Tools.Concrete
 {
     public class AxeTool : ToolBehaviour
     {
-        [Header("GameObjects")]
-        [SerializeField] GameObject _axeHitbox;
-        [SerializeField] GameObject _axeStationary;
-        [SerializeField] GameObject _axeSwing;
-        [Header("Behavior Config")]
-        [SerializeField] float _baseSwingCooldown = 0.5f;
-        [Header("Style Config")]
-        [SerializeField] float _animDuration = 0.15f;
-        [SerializeField] float _swingAnimOffset = 0.35f;
-        [SerializeField] float _swingAnimStartLocalX = 0.35f;
-        [SerializeField] float _swingAnimEndLocalX = -0.25f;
-        [Header("Testing")]
-        [SerializeField] bool _visualizeHitbox = false;
+        [Header("GameObjects")] [SerializeField]
+        private GameObject _axeHitbox;
 
-        [Inject] InputService _inputService;
+        [SerializeField] private GameObject _axeStationary;
+        [SerializeField] private GameObject _axeSwing;
+
+        [Header("Behavior Config")] [SerializeField]
+        private float _baseSwingCooldown = 0.5f;
+
+        [Header("Style Config")] [SerializeField]
+        private float _animDuration = 0.15f;
+
+        [SerializeField] private float _swingAnimOffset = 0.35f;
+        [SerializeField] private float _swingAnimStartLocalX = 0.35f;
+        [SerializeField] private float _swingAnimEndLocalX = -0.25f;
+        [Header("Testing")] [SerializeField] private bool _visualizeHitbox = false;
+
+        [Inject] private InputService _inputService;
 
         private LineRenderer _hitboxLineRenderer;
 
@@ -37,10 +38,7 @@ namespace Blizzard.Player.Tools.Concrete
 
         private void Awake()
         {
-            if (_visualizeHitbox)
-            {
-                InitAxeHitboxVisualizer();
-            }
+            if (_visualizeHitbox) InitAxeHitboxVisualizer();
 
             BindInput();
 
@@ -70,7 +68,7 @@ namespace Blizzard.Player.Tools.Concrete
 
         private void OnInputFire(InputAction.CallbackContext ctx)
         {
-            Debug.Log("Axe input detected");
+            BLog.Log("Axe input detected");
             if (!InputAssistant.IsPointerOverUIElement() && _cooldown <= 0) OnSwing();
         }
 
@@ -81,19 +79,13 @@ namespace Blizzard.Player.Tools.Concrete
         {
             _cooldown = CalculateCooldown();
             StartCoroutine(AxeSwingAnim());
-            Collider2D[] hitObjects = AxeDetectHit();
+            var hitObjects = AxeDetectHit();
 
-            foreach (Collider2D obj in hitObjects)
-            {
+            foreach (var obj in hitObjects)
                 // Get 'Harvestable' component of object, or ignore if doesn't exist
-
                 if (obj.TryGetComponent(out Harvestable harvestable))
-                {
                     Harvest(harvestable, CalculateDamage());
-                }
-
-                // TODO: handle enemies
-            }
+            // TODO: handle enemies
         }
 
         private int CalculateDamage()
@@ -114,24 +106,25 @@ namespace Blizzard.Player.Tools.Concrete
         private Collider2D[] AxeDetectHit()
         {
             // Vector from center of hitbox to its "right" edge
-            Vector3 halfX = new Vector3(
-                    (_axeHitbox.transform.lossyScale.x / 2) * Mathf.Cos(_axeHitbox.transform.eulerAngles.z * Mathf.Deg2Rad),
-                    (_axeHitbox.transform.lossyScale.x / 2) * Mathf.Sin(_axeHitbox.transform.eulerAngles.z * Mathf.Deg2Rad),
-                    0
-                    );
+            var halfX = new Vector3(
+                _axeHitbox.transform.lossyScale.x / 2 * Mathf.Cos(_axeHitbox.transform.eulerAngles.z * Mathf.Deg2Rad),
+                _axeHitbox.transform.lossyScale.x / 2 * Mathf.Sin(_axeHitbox.transform.eulerAngles.z * Mathf.Deg2Rad),
+                0
+            );
 
             // Vector from center of hitbox to its "top" edge
-            Vector3 halfY = new Vector3(
-                        -(_axeHitbox.transform.lossyScale.y / 2) * Mathf.Sin(_axeHitbox.transform.eulerAngles.z * Mathf.Deg2Rad),
-                        (_axeHitbox.transform.lossyScale.y / 2) * Mathf.Cos(_axeHitbox.transform.eulerAngles.z * Mathf.Deg2Rad),
-                        0
-                    );
+            var halfY = new Vector3(
+                -(_axeHitbox.transform.lossyScale.y / 2) *
+                Mathf.Sin(_axeHitbox.transform.eulerAngles.z * Mathf.Deg2Rad),
+                _axeHitbox.transform.lossyScale.y / 2 * Mathf.Cos(_axeHitbox.transform.eulerAngles.z * Mathf.Deg2Rad),
+                0
+            );
 
             // Bottom Left = center of hitbox + Vector to 
             Vector2 bottomLeft = _axeHitbox.transform.position - halfX - halfY;
             Vector2 topRight = _axeHitbox.transform.position + halfX + halfY;
-            
-            Collider2D[] hitList = Physics2D.OverlapAreaAll(bottomLeft, topRight, layerMask: (int)CollisionAssistant.Hittable);
+
+            var hitList = Physics2D.OverlapAreaAll(bottomLeft, topRight, (int)CollisionAssistant.Hittable);
 
             if (_visualizeHitbox) StartCoroutine(VisualizeAxeHitbox(bottomLeft, topRight));
 
@@ -162,17 +155,17 @@ namespace Blizzard.Player.Tools.Concrete
             _axeStationary.SetActive(false);
             _axeSwing.SetActive(true);
 
-            Vector3 swingStartPos = new Vector3(_swingAnimStartLocalX, _swingAnimOffset, 0f);
-            Vector3 swingEndPos = new Vector3(_swingAnimEndLocalX, _swingAnimOffset, 0f);
+            var swingStartPos = new Vector3(_swingAnimStartLocalX, _swingAnimOffset, 0f);
+            var swingEndPos = new Vector3(_swingAnimEndLocalX, _swingAnimOffset, 0f);
 
-            Quaternion swingStartRot = Quaternion.Euler(new Vector3(0, 0, 0));
-            Quaternion swingEndRot = Quaternion.Euler(new Vector3(0, 0, 90));
+            var swingStartRot = Quaternion.Euler(new Vector3(0, 0, 0));
+            var swingEndRot = Quaternion.Euler(new Vector3(0, 0, 90));
 
             _axeSwing.transform.localPosition = swingStartPos;
             _axeSwing.transform.localRotation = swingStartRot;
 
 
-            Sequence sequence = DOTween.Sequence();
+            var sequence = DOTween.Sequence();
             sequence.Append(_axeSwing.transform.DOLocalRotateQuaternion(swingEndRot, _animDuration));
             sequence.Join(_axeSwing.transform.DOLocalMove(swingEndPos, _animDuration));
 

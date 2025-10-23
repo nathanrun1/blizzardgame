@@ -9,7 +9,7 @@ namespace Blizzard.Player.Tools
     /// Type of tool, determines which tools can harvest which harvestables.
     /// Interpreted as a bit field.
     /// </summary>
-    [Flags] 
+    [Flags]
     public enum ToolType
     {
         Axe = 1 << 0,
@@ -24,8 +24,9 @@ namespace Blizzard.Player.Tools
         /// <summary>
         /// Base damage that this tool does to harvestables
         /// </summary>
-        [Header("Tool Config")]
-        [SerializeField] protected int _baseDamage;
+        [Header("Tool Config")] [SerializeField]
+        protected int _baseDamage;
+
         /// <summary>
         /// Tool type
         /// </summary>
@@ -39,9 +40,9 @@ namespace Blizzard.Player.Tools
         {
             if ((harvestable.ToolTypes & _toolType) == 0) return; // Tool type does not match
 
-            int damageToApply = damage == -1 ? _baseDamage : damage;
+            var damageToApply = damage == -1 ? _baseDamage : damage;
 
-            //Debug.Log($"Hit a {harvestable.name}! Applying damage: " + damageToApply);
+            //BLog.Log($"Hit a {harvestable.name}! Applying damage: " + damageToApply);
             harvestable.Damage(damageToApply, DamageFlags.Player, transform.position, out _);
         }
     }

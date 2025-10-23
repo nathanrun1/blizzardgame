@@ -1,16 +1,10 @@
 using UnityEngine;
-using UnityEngine.Assertions;
 using Blizzard.Grid;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Blizzard.Constants;
-using Blizzard.Temperature;
 using Zenject;
-using FlowFieldAI;
 using Blizzard.Obstacles;
 using Blizzard.Utilities;
-using Unity.Cinemachine;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Pathfinding
 {
@@ -26,11 +20,11 @@ namespace Blizzard.Pathfinding
         /// <summary>
         /// Tracks outermost bounds of obstacles with PlayerBuilt flag 
         /// </summary>
-        private OuterMostBounds _outerMostBoundsPlayerBuilt = new();
+        private readonly OuterMostBounds _outerMostBoundsPlayerBuilt = new();
 
         public void Initialize()
         {
-            Debug.Log("Pathfinding Service Initialized");
+            BLog.Log("Pathfinding Service Initialized");
 
             _obstacleGridService.OnObstacleAddedOrRemoved += OnObstacleAddedOrRemoved;
 
@@ -44,17 +38,20 @@ namespace Blizzard.Pathfinding
         /// <param name="targetObstacle">Obstacle located at target position, if any</param>
         /// /// <param name="nextTargetPos">Next target position for navigator</param>
         /// <returns>Position to navigate to</returns>
-        public bool TryGetNextTargetPosition(Vector2 navigatorPos, out Vector2 nextTargetPos, out Obstacle targetObstacle)
+        public bool TryGetNextTargetPosition(Vector2 navigatorPos, out Vector2 nextTargetPos,
+            out Obstacle targetObstacle)
         {
-            Vector2Int gridPosition = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
-                .WorldToCellPos(navigatorPos); 
-            if (!TryGetNextTargetGridPosition(gridPosition, out Vector2Int nextGridPosition, out targetObstacle))
+            var gridPosition = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                .WorldToCellPos(navigatorPos);
+            if (!TryGetNextTargetGridPosition(gridPosition, out var nextGridPosition, out targetObstacle))
             {
                 nextTargetPos = default;
                 targetObstacle = null;
                 return false;
             }
-            nextTargetPos = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer].CellToWorldPosCenter(gridPosition);
+
+            nextTargetPos = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                .CellToWorldPosCenter(gridPosition);
             return true;
         }
 
@@ -74,8 +71,9 @@ namespace Blizzard.Pathfinding
                 nextTargetGridPos = default;
                 return false;
             }
+
             _obstacleGridService.TryGetObstacleAt(nextTargetGridPos, out targetObstacle);
-            // Debug.Log($"Next pos is {nextTargetGridPos}, this pos is {navigatorGridPos} obstacle?: {targetObstacle}");
+            // BLog.Log($"Next pos is {nextTargetGridPos}, this pos is {navigatorGridPos} obstacle?: {targetObstacle}");
             return true;
         }
 
@@ -86,8 +84,8 @@ namespace Blizzard.Pathfinding
         private void OnObstacleAddedOrRemoved(Vector2Int pos, ObstacleLayer obstacleLayer, ObstacleFlags obstacleFlags)
         {
             // TEMP: simply recalculate entire flow field
-            bool added = _obstacleGridService.IsOccupied(pos);
-            
+            var added = _obstacleGridService.IsOccupied(pos);
+
             // Add/Remove position from outermost bounds tracking
             if (obstacleFlags.HasFlag(ObstacleFlags.PlayerBuilt))
             {
@@ -105,8 +103,8 @@ namespace Blizzard.Pathfinding
             Vector2Int paddedMax = new(
                 _outerMostBoundsPlayerBuilt.MinBound.x + PathfindingConstants.ffPadding,
                 _outerMostBoundsPlayerBuilt.MinBound.y + PathfindingConstants.ffPadding);
-            
-            //Debug.Log($"Building flow field with bounds {paddedMin} -> {paddedMax}");
+
+            //BLog.Log($"Building flow field with bounds {paddedMin} -> {paddedMax}");
             _flowField.BuildFlowField(paddedMin, paddedMax);
         }
 
@@ -115,7 +113,6 @@ namespace Blizzard.Pathfinding
         /// </summary>
         private void GetFullFlowFieldBounds()
         {
-            
         }
 
         //public NativeFlowField GetFlowField(Vector2Int source, Vector2Int target)

@@ -13,9 +13,10 @@ namespace Blizzard.Inventory.Itemtypes
         /// <summary>
         /// Category of this item, determines how its used and its attributes
         /// </summary>
-        [HideInInspector] public override ItemCategory category { get; set; } = ItemCategory.Tool;
+        [HideInInspector]
+        public override ItemCategory category { get; set; } = ItemCategory.Tool;
 
-        [Inject] PlayerService _playerService;
+        [Inject] private PlayerService _playerService;
 
         public override void Equip(EquipData _)
         {

@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using UnityEngine;
 using Zenject;
 using Sirenix.OdinInspector;
@@ -7,27 +9,30 @@ using Blizzard.Inventory;
 using Blizzard.Obstacles;
 using Blizzard.UI.Core;
 using Blizzard.Utilities.Assistants;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Utilities
 {
     public class DebugManager : MonoBehaviour
     {
-        [System.Serializable]
-        struct ObstaclePlacement
+        [Serializable]
+        private struct ObstaclePlacement
         {
             public ObstacleData obstacle;
             public Vector2Int position;
         }
 
-        [Inject] InventoryService _inventoryService;
-        [Inject] UIService _uiService;
-        [Inject] TemperatureService _temperatureService;
-        [Inject] ObstacleGridService _obstacleGridService;
+        [Inject] private InventoryService _inventoryService;
+        [Inject] private UIService _uiService;
+        [Inject] private TemperatureService _temperatureService;
+        [Inject] private ObstacleGridService _obstacleGridService;
 
-        [FoldoutGroup("UI")] [SerializeField] int[] _startupUI;
+        [FoldoutGroup("UI")] [SerializeField] private int[] _startupUI;
 
         [FoldoutGroup("UI")]
         [Button]
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void InitUI(int id)
         {
             _uiService.InitUI(id);
@@ -35,50 +40,58 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("UI")]
         [Button]
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void CloseUI(int id)
         {
             _uiService.CloseUI(id);
         }
 
         [FoldoutGroup("Inventory")] [SerializeField]
-        ItemAmountPair[] _startingItems;
+        private ItemAmountPair[] _startingItems;
 
         [FoldoutGroup("Inventory")]
         [Button]
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void InventoryAddItem(ItemData item, int amount, bool fill = true)
         {
-            int added = _inventoryService.TryAddItem(item, amount, fill);
-            Debug.Log($"Successfully added {added}x {item.displayName}");
+            var added = _inventoryService.TryAddItem(item, amount, fill);
+            BLog.Log($"Successfully added {added}x {item.displayName}");
         }
 
         [FoldoutGroup("Inventory")]
         [Button]
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void InventoryRemoveItem(ItemData item, int amount, bool drain = false)
         {
-            Debug.Log(item == null);
-            int removed = _inventoryService.TryRemoveItem(item, amount, drain);
-            Debug.Log($"Successfully removed {removed}x {item.displayName}");
+            BLog.Log(item == null);
+            var removed = _inventoryService.TryRemoveItem(item, amount, drain);
+            BLog.Log($"Successfully removed {removed}x {item.displayName}");
         }
 
         [FoldoutGroup("Inventory")]
         [Button]
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void PrintInventoryContents()
         {
-            string str = "--INVENTORY--\n";
-            foreach (InventorySlot slot in _inventoryService.inventorySlots)
-            {
+            var str = "--INVENTORY--\n";
+            foreach (var slot in _inventoryService.inventorySlots)
                 if (slot.Empty()) str += "[EMPTY]\n";
                 else str += $"[{slot.Amount}x {slot.Item.displayName}]\n";
-            }
 
-            Debug.Log(str);
+            BLog.Log(str);
         }
 
         [FoldoutGroup("Obstacles")] [SerializeField]
-        ObstaclePlacement[] _initialObstacles;
+        private ObstaclePlacement[] _initialObstacles;
 
         [FoldoutGroup("Obstacles")]
         [Button]
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void PlaceObstacle(ObstaclePlacement placement)
         {
             _obstacleGridService.PlaceObstacleAt(placement.position, placement.obstacle);
@@ -86,6 +99,8 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Obstacles")]
         [Button]
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void RemoveObstacleAt(Vector2Int position)
         {
             _obstacleGridService.TryRemoveObstacleAt(position);
@@ -93,56 +108,56 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Obstacles")]
         [Button]
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void PrintLocationsOfObstaclesWithFlag(ObstacleFlags flags)
         {
-            string str = "OBSTACLE POSITIONS:\n";
-            foreach (Obstacle o in _obstacleGridService.GetAllObstaclesWithFlags(flags))
-            {
+            var str = "OBSTACLE POSITIONS:\n";
+            foreach (var o in _obstacleGridService.GetAllObstaclesWithFlags(flags))
                 str += o.name + " at " + o.transform.position + '\n';
-            }
 
-            Debug.Log(str);
+            BLog.Log(str);
         }
 
 
         [FoldoutGroup("Temperature")] [SerializeField]
-        bool _temperatureOverride = false;
+        private bool _temperatureOverride = false;
 
         [FoldoutGroup("Temperature")] [SerializeField]
-        float _diffusionFactor = 0.3f;
+        private float _diffusionFactor = 0.3f;
 
         [FoldoutGroup("Temperature")] [SerializeField]
-        float _ambientFactor = 0.0005f;
+        private float _ambientFactor = 0.0005f;
 
         [FoldoutGroup("Temperature")] [SerializeField]
-        float _ambientTemperature;
+        private float _ambientTemperature;
 
         private Camera _camera;
 
         [FoldoutGroup("Input")]
         [LabelText("TAB to print collider under pointer")]
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void PrintColliderUnderPointer()
         {
-            Debug.Log($"Collider under pointer: {InputAssistant.GetColliderUnderPointer(_camera)}");
+            BLog.Log($"Collider under pointer: {InputAssistant.GetColliderUnderPointer(_camera)}");
         }
 
-
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void Start()
         {
             _camera = Camera.main;
-            foreach (int uiId in _startupUI)
-            {
-                InitUI(uiId);
-            }
+            foreach (var uiId in _startupUI) InitUI(uiId);
 
             _inventoryService.TryAddItems(_startingItems.ToList());
 
-            foreach (ObstaclePlacement placement in _initialObstacles)
-            {
+            foreach (var placement in _initialObstacles)
                 _obstacleGridService.PlaceObstacleAt(placement.position, placement.obstacle);
-            }
         }
 
+        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("UNITY_EDITOR")]
         private void Update()
         {
             if (_temperatureOverride)
@@ -153,10 +168,8 @@ namespace Blizzard.Utilities
             }
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
-            {
                 // TAB to print collider under pointer
                 PrintColliderUnderPointer();
-            }
         }
     }
 }

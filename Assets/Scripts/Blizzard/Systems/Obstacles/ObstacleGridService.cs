@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Blizzard.Constants;
 using Blizzard.Temperature;
+using Blizzard.Utilities.Logging;
 using Zenject;
 
 namespace Blizzard.Obstacles
@@ -43,26 +44,29 @@ namespace Blizzard.Obstacles
         public ObstacleGridService(Dictionary<ObstacleLayer, ISparseWorldGrid<Obstacle>> grids,
             Transform obstaclesParent = null)
         {
-            Assert.IsTrue(grids.Count == ObstacleConstants.ObstacleLayerCount, 
-                "Amount of layers in provided grid map does not match obstacle layer count! Count: " + ObstacleConstants.ObstacleLayerCount);
+            Assert.IsTrue(grids.Count == ObstacleConstants.ObstacleLayerCount,
+                "Amount of layers in provided grid map does not match obstacle layer count! Count: " +
+                ObstacleConstants.ObstacleLayerCount);
 
-            this.Grids = grids;
-            this._obstaclesParent = obstaclesParent;
+            Grids = grids;
+            _obstaclesParent = obstaclesParent;
         }
 
-        
+
         /// <summary>
         /// Returns true if given grid position is occupied by an obstacle, false otherwise.
         /// </summary>
-        public bool IsOccupied(Vector2Int gridPosition, ObstacleLayer obstacleLayer = ObstacleConstants.MainObstacleLayer)
+        public bool IsOccupied(Vector2Int gridPosition,
+            ObstacleLayer obstacleLayer = ObstacleConstants.MainObstacleLayer)
         {
-            return Grids[obstacleLayer].TryGetValue(gridPosition, out Obstacle value);
+            return Grids[obstacleLayer].TryGetValue(gridPosition, out var value);
         }
 
         /// <summary>
         /// Returns true and sets value to occupying obstacle if position is occupied, else returns false and sets value to default.
         /// </summary>
-        public bool TryGetObstacleAt(Vector2Int gridPosition, out Obstacle value, ObstacleLayer obstacleLayer = ObstacleConstants.MainObstacleLayer)
+        public bool TryGetObstacleAt(Vector2Int gridPosition, out Obstacle value,
+            ObstacleLayer obstacleLayer = ObstacleConstants.MainObstacleLayer)
         {
             return Grids[obstacleLayer].TryGetValue(gridPosition, out value);
         }
@@ -73,22 +77,19 @@ namespace Blizzard.Obstacles
         /// </summary>
         public void PlaceObstacleAt(Vector2Int gridPosition, ObstacleData obstacleData)
         {
-            Debug.Log($"Placing obstacle at {gridPosition}, layer: {obstacleData.obstacleLayer}");
-            
+            BLog.Log($"Placing obstacle at {gridPosition}, layer: {obstacleData.obstacleLayer}");
+
             if (IsOccupied(gridPosition, obstacleData.obstacleLayer))
-            {
-                throw new ArgumentException($"Grid position {gridPosition} occupied on layer {obstacleData.obstacleLayer}!");
-            }
+                throw new ArgumentException(
+                    $"Grid position {gridPosition} occupied on layer {obstacleData.obstacleLayer}!");
 
             Vector3 obstaclePosition = Grids[obstacleData.obstacleLayer].CellToWorldPosCenter(gridPosition);
 
-            Obstacle obstacle = obstacleData.CreateObstacle(obstaclePosition);
+            var obstacle = obstacleData.CreateObstacle(obstaclePosition);
 
             // Set sorting order of obstacle based on layer
-            foreach (Renderer renderer in obstacle.GetComponentsInChildren<Renderer>(obstacle))
-            {
+            foreach (var renderer in obstacle.GetComponentsInChildren<Renderer>(obstacle))
                 renderer.sortingOrder = ObstacleConstants.ObstacleLayerSortingLayers[obstacleData.obstacleLayer];
-            }
 
             obstacle.OnDestroy += () => OnObstacleDestroyed(gridPosition, obstacleData.obstacleLayer);
             obstacle.TemperatureDataUpdated += () => UpdateTemperatureSimData(gridPosition, obstacle);
@@ -99,14 +100,12 @@ namespace Blizzard.Obstacles
             if (obstacleData.obstacleLayer == ObstacleConstants.MainObstacleLayer)
             {
                 UpdateTemperatureSimData(gridPosition, obstacle);
-                foreach (ObstacleFlags flagCombo in QuadTrees.Keys)
+                foreach (var flagCombo in QuadTrees.Keys)
                 {
-                    Debug.Log($"Checking flag combo {flagCombo} against obstacle's {obstacleData.obstacleFlags}");
+                    BLog.Log($"Checking flag combo {flagCombo} against obstacle's {obstacleData.obstacleFlags}");
                     if (obstacleData.obstacleFlags.HasFlag(flagCombo))
-                    {
                         // Add obstacle to relevant QuadTree
                         QuadTrees[flagCombo].Add(gridPosition);
-                    }
                 }
             }
 
@@ -116,9 +115,10 @@ namespace Blizzard.Obstacles
         /// <summary>
         /// If given grid position is occupied, removes obstacle from that position and destroys it. Else returns false and does nothing.
         /// </summary>
-        public bool TryRemoveObstacleAt(Vector2Int gridPosition, ObstacleLayer obstacleLayer = ObstacleConstants.MainObstacleLayer)
+        public bool TryRemoveObstacleAt(Vector2Int gridPosition,
+            ObstacleLayer obstacleLayer = ObstacleConstants.MainObstacleLayer)
         {
-            if (!TryGetObstacleAt(gridPosition, out Obstacle obstacle, obstacleLayer)) return false;
+            if (!TryGetObstacleAt(gridPosition, out var obstacle, obstacleLayer)) return false;
             obstacle.Destroy();
 
             return true;
@@ -148,27 +148,22 @@ namespace Blizzard.Obstacles
         }
 
 
-
         /// <summary>
         /// Invoked when an obstacle at the given grid position is destroyed.
         /// Removes the obstacle from the Obstacle Grid at the given grid position if it exists
         /// </summary>
         private void OnObstacleDestroyed(Vector2Int gridPosition, ObstacleLayer obstacleLayer)
         {
-            if (Grids[obstacleLayer].TryGetValue(gridPosition, out Obstacle obstacle))
+            if (Grids[obstacleLayer].TryGetValue(gridPosition, out var obstacle))
             {
                 Grids[obstacleLayer].ResetAt(gridPosition);
                 if (obstacleLayer == ObstacleConstants.MainObstacleLayer)
                 {
                     UpdateTemperatureSimData(gridPosition, null);
-                    foreach (ObstacleFlags flagCombo in QuadTrees.Keys)
-                    {
+                    foreach (var flagCombo in QuadTrees.Keys)
                         if ((flagCombo & obstacle.ObstacleFlags) == flagCombo)
-                        {
                             // Add obstacle to relevant QuadTree
                             QuadTrees[flagCombo].Remove(gridPosition);
-                        }
-                    }
                 }
             }
 
@@ -180,14 +175,15 @@ namespace Blizzard.Obstacles
         /// </summary>
         private void UpdateTemperatureSimData(Vector2Int gridPosition, Obstacle obstacle)
         {
-            TemperatureCell newTemperatureCell = _temperatureService.Grid.GetAt(gridPosition);
+            var newTemperatureCell = _temperatureService.Grid.GetAt(gridPosition);
             if (obstacle)
             {
                 // Update temperature data using obstacle's heat and insulation values
                 newTemperatureCell.heat = obstacle.Heat;
                 newTemperatureCell.insulation = obstacle.Insulation;
 
-                Debug.Log($"Temperature sim data updated at {gridPosition}.\n\tNew heat: {obstacle.Heat}\n\tNew Insulation: {obstacle.Insulation}");
+                BLog.Log(
+                    $"Temperature sim data updated at {gridPosition}.\n\tNew heat: {obstacle.Heat}\n\tNew Insulation: {obstacle.Insulation}");
             }
             else
             {

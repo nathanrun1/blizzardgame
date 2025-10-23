@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using ModestTree;
-using Blizzard.UI;
-using Zenject;
-using Unity.VisualScripting;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Inventory
 {
@@ -27,12 +24,14 @@ namespace Blizzard.Inventory
             set
             {
                 _item = value;
-                Debug.Log($"Updated item in slot: {_item}");
-                Debug.Log(OnUpdate != null ? OnUpdate.GetInvocationList().Length : "0");
+                BLog.Log($"Updated item in slot: {_item}");
+                BLog.Log(OnUpdate != null ? OnUpdate.GetInvocationList().Length : "0");
                 OnUpdate?.Invoke();
             }
         }
+
         private ItemData _item = null;
+
         /// <summary>
         /// Amount of specified item contained within the slot
         /// </summary>
@@ -42,11 +41,12 @@ namespace Blizzard.Inventory
             set
             {
                 _amount = value;
-                Debug.Log($"Updated amount in slot. {_amount}");
-                Debug.Log(OnUpdate != null ? OnUpdate.GetInvocationList().Length : "0");
+                BLog.Log($"Updated amount in slot. {_amount}");
+                BLog.Log(OnUpdate != null ? OnUpdate.GetInvocationList().Length : "0");
                 OnUpdate?.Invoke();
             }
         }
+
         private int _amount = 0;
 
         /// <summary>
@@ -56,6 +56,7 @@ namespace Blizzard.Inventory
         {
             _item = item;
         }
+
         /// <summary>
         /// Sets slot item without triggering OnUpdate event
         /// </summary>
@@ -75,8 +76,8 @@ namespace Blizzard.Inventory
         public int amount;
     }
 
-    public static class InventorySlotExtensions 
-    { 
+    public static class InventorySlotExtensions
+    {
         /// <summary>
         /// Whether the slot is empty
         /// </summary>
@@ -91,9 +92,11 @@ namespace Blizzard.Inventory
         /// </summary>
         public static bool CanAdd(this InventorySlot slot, ItemData item, int amount)
         {
-            return slot.Item == null ? amount <= item.stackSize
-                : (slot.Amount + amount) <= item.stackSize && item == slot.Item;
+            return slot.Item == null
+                ? amount <= item.stackSize
+                : slot.Amount + amount <= item.stackSize && item == slot.Item;
         }
+
         /// <summary>
         /// Attempts to add given item to slot. Fails if stack is full, or item is of different type.
         /// </summary>
@@ -107,12 +110,13 @@ namespace Blizzard.Inventory
                 slot.SetItemQuiet(item); // Only trigger event once
                 if (quiet) slot.SetAmountQuiet(amount);
                 else slot.Amount = amount;
-            } 
+            }
             else
             {
                 if (quiet) slot.SetAmountQuiet(slot.Amount + amount);
                 else slot.Amount += amount;
             }
+
             return true;
         }
 
@@ -125,12 +129,10 @@ namespace Blizzard.Inventory
         {
             if (amount <= 0 || slot.Amount <= 0 || (drain == false && slot.Amount < amount)) return 0;
 
-            int canRemove = Math.Min(amount, slot.Amount);
+            var canRemove = Math.Min(amount, slot.Amount);
             if (canRemove == slot.Amount)
-            {
                 // Entire slot is cleared
                 slot.SetItemQuiet(null);
-            }
             if (quiet) slot.SetAmountQuiet(slot.Amount - amount);
             else slot.Amount -= amount;
 
@@ -154,14 +156,11 @@ namespace Blizzard.Inventory
         public InventoryService(int slotAmount)
         {
             inventorySlots = new List<InventorySlot>();
-            for (int i = 0; i < slotAmount; ++i)
+            for (var i = 0; i < slotAmount; ++i)
             {
                 var slot = new InventorySlot();
-                int j = i; // Make copy of index for the lambda
-                slot.OnUpdate += () =>
-                {
-                    OnInventoryModified?.Invoke(j);
-                };
+                var j = i; // Make copy of index for the lambda
+                slot.OnUpdate += () => { OnInventoryModified?.Invoke(j); };
                 inventorySlots.Add(slot);
             }
         }
@@ -173,29 +172,35 @@ namespace Blizzard.Inventory
         /// <returns>Amount of item successfully added</returns>
         public int TryAddItem(ItemData item, int amount = 1, bool fill = true)
         {
-            if (!fill && !CanFitItem(item, amount)) return 0; // If not set to fill and can't fit all items, don't add any
+            if (!fill && !CanFitItem(item, amount))
+                return 0; // If not set to fill and can't fit all items, don't add any
 
-            int leftToAdd = amount;
-            for (int i = 0; i < inventorySlots.Count; ++i)
+            var leftToAdd = amount;
+            for (var i = 0; i < inventorySlots.Count; ++i)
             {
-                InventorySlot slot = inventorySlots[i];
+                var slot = inventorySlots[i];
 
                 if (slot.Empty() || item == slot.Item)
                 {
                     // Add max(stacksize - amount in slot, amount left to add)
-                    int amountToAdd = Math.Min(item.stackSize - slot.Amount, Math.Max(leftToAdd, 0));
+                    var amountToAdd = Math.Min(item.stackSize - slot.Amount, Math.Max(leftToAdd, 0));
                     slot.Amount += amountToAdd;
                     leftToAdd -= amountToAdd;
 
                     if (slot.Empty()) slot.Item = item;
 
-                    Debug.Log($"Added {amountToAdd}x {item.displayName}!");
+                    BLog.Log($"Added {amountToAdd}x {item.displayName}!");
 
                     if (leftToAdd <= 0) break;
                 }
             }
-            if (fill) Assert.That(leftToAdd >= 0, "More than given amount was added! Likely an implementation error in InventoryService.");
-            else Assert.That(leftToAdd == 0, "Not exactly the given amount added, yet not set to fill! Likely an implementation error in InventoryService.");
+
+            if (fill)
+                Assert.That(leftToAdd >= 0,
+                    "More than given amount was added! Likely an implementation error in InventoryService.");
+            else
+                Assert.That(leftToAdd == 0,
+                    "Not exactly the given amount added, yet not set to fill! Likely an implementation error in InventoryService.");
             return amount - leftToAdd;
         }
 
@@ -206,10 +211,10 @@ namespace Blizzard.Inventory
         /// <param name="items">Items to add, modified during invocation to contain items that couldn't be added</param>
         public void TryAddItems(List<ItemAmountPair> items)
         {
-            for (int i = 0; i < items.Count; ++i)
+            for (var i = 0; i < items.Count; ++i)
             {
-                ItemAmountPair pair = items[i];
-                int added = TryAddItem(pair.item, pair.amount, fill: true);
+                var pair = items[i];
+                var added = TryAddItem(pair.item, pair.amount, true);
 
                 // Update pair
                 items[i] = new ItemAmountPair { item = pair.item, amount = pair.amount - added };
@@ -224,15 +229,14 @@ namespace Blizzard.Inventory
         /// </summary>
         public bool CanFitItem(ItemData item, int amount = 1)
         {
-            foreach (InventorySlot slot in inventorySlots)
-            {
+            foreach (var slot in inventorySlots)
                 if (slot.Empty() || slot.Item.Equals(item))
                 {
-                    int amountCanAdd = Math.Max(item.stackSize - slot.Amount, 0);
+                    var amountCanAdd = Math.Max(item.stackSize - slot.Amount, 0);
                     amount -= amountCanAdd;
                     if (amount <= 0) return true;
                 }
-            }
+
             return false;
         }
 
@@ -243,11 +247,10 @@ namespace Blizzard.Inventory
         /// <returns></returns>
         public int CountOfItem(ItemData item)
         {
-            int count = 0;
-            foreach (InventorySlot slot in inventorySlots)
-            {
-                if (item == slot.Item) count += slot.Amount;
-            }
+            var count = 0;
+            foreach (var slot in inventorySlots)
+                if (item == slot.Item)
+                    count += slot.Amount;
             return count;
         }
 
@@ -257,27 +260,20 @@ namespace Blizzard.Inventory
         public bool HasItems(List<ItemAmountPair> items)
         {
             // Convert to dictionary for efficient checks
-            Dictionary<int, int> itemAmounts = new Dictionary<int, int>();
-            foreach (ItemAmountPair pair in items)
-            {
+            var itemAmounts = new Dictionary<int, int>();
+            foreach (var pair in items)
                 if (!itemAmounts.ContainsKey(pair.item.id)) itemAmounts.Add(pair.item.id, pair.amount);
                 else itemAmounts[pair.item.id] += pair.amount;
-            }
 
-            foreach (InventorySlot slot in inventorySlots)
-            {
+            foreach (var slot in inventorySlots)
                 if (!slot.Empty() && itemAmounts.ContainsKey(slot.Item.id))
-                {
                     itemAmounts[slot.Item.id] -= slot.Amount;
-                }
-            }
 
 
             // Inventory has all items if all dictionary entries have non-positive value
-            foreach (KeyValuePair<int, int> pair in itemAmounts)
-            {
-                if (pair.Value > 0) return false;
-            }
+            foreach (var pair in itemAmounts)
+                if (pair.Value > 0)
+                    return false;
 
             return true;
         }
@@ -291,20 +287,20 @@ namespace Blizzard.Inventory
         {
             if (!drain && CountOfItem(item) < amount)
             {
-                Debug.Log("Drain set to false and not enough of item to remove, 0 removed!");
+                BLog.Log("Drain set to false and not enough of item to remove, 0 removed!");
                 return 0; // 'drain' set to false and not enough available to be removed.
             }
 
-            int leftToRemove = amount;
-            for (int i = 0; i < inventorySlots.Count; ++i)
+            var leftToRemove = amount;
+            for (var i = 0; i < inventorySlots.Count; ++i)
             {
-                InventorySlot slot = inventorySlots[i];
+                var slot = inventorySlots[i];
 
                 if (item == slot.Item)
                 {
                     // Remove min(amount in slot, amount left to remove)
-                    int amountToRemove = Math.Min(slot.Amount, leftToRemove);
-                    Debug.Log($"Removing {amountToRemove}x {item.displayName}");
+                    var amountToRemove = Math.Min(slot.Amount, leftToRemove);
+                    BLog.Log($"Removing {amountToRemove}x {item.displayName}");
 
                     slot.Amount -= amountToRemove;
                     if (slot.Amount == 0) slot.Item = null;
@@ -314,8 +310,12 @@ namespace Blizzard.Inventory
                 }
             }
 
-            if (drain) Assert.That(leftToRemove >= 0, "More than given amount was removed! Likely implementation error in InventoryService.");
-            else Assert.That(leftToRemove == 0, "Not exactly the given amount removed, yet not set to drain! Likely implementation error in InventoryService.");
+            if (drain)
+                Assert.That(leftToRemove >= 0,
+                    "More than given amount was removed! Likely implementation error in InventoryService.");
+            else
+                Assert.That(leftToRemove == 0,
+                    "Not exactly the given amount removed, yet not set to drain! Likely implementation error in InventoryService.");
             return amount - leftToRemove;
         }
 
@@ -330,12 +330,12 @@ namespace Blizzard.Inventory
         {
             Assert.That(0 <= slotIndex && slotIndex <= inventorySlots.Count);
 
-            InventorySlot slot = inventorySlots[slotIndex];
+            var slot = inventorySlots[slotIndex];
 
             if (slot.Item == null) return 0; // No items to remove
             if (!drain && slot.Amount < amount) return 0; // Not enough to remove
 
-            int amountToRemove = Math.Min(slot.Amount, amount);
+            var amountToRemove = Math.Min(slot.Amount, amount);
             slot.Amount -= amountToRemove;
 
             if (slot.Amount == 0) slot.Item = null;
@@ -350,42 +350,40 @@ namespace Blizzard.Inventory
         public bool TryRemoveItems(List<ItemAmountPair> items)
         {
             // Convert to dictionary for efficient checks
-            Dictionary<int, int> itemAmounts = new Dictionary<int, int>();
-            foreach (ItemAmountPair pair in items)
-            {
+            var itemAmounts = new Dictionary<int, int>();
+            foreach (var pair in items)
                 if (!itemAmounts.ContainsKey(pair.item.id)) itemAmounts.Add(pair.item.id, pair.amount);
                 else itemAmounts[pair.item.id] += pair.amount;
-            }
 
-            int[] toRemove = new int[inventorySlots.Count]; // Amount to remove from each slot
+            var toRemove = new int[inventorySlots.Count]; // Amount to remove from each slot
 
             // Check that there is enough in inventory to remove (effectively HasItems(items))
-            for (int i = 0; i < inventorySlots.Count; ++i)
+            for (var i = 0; i < inventorySlots.Count; ++i)
             {
-                InventorySlot slot = inventorySlots[i];
+                var slot = inventorySlots[i];
                 if (slot.Empty() || !itemAmounts.ContainsKey(slot.Item.id)) continue;
 
-                int amountToRemove = Math.Min(slot.Amount, itemAmounts[slot.Item.id]);
+                var amountToRemove = Math.Min(slot.Amount, itemAmounts[slot.Item.id]);
                 itemAmounts[slot.Item.id] -= amountToRemove;
 
                 // Remember to remove this much from this slot
-                toRemove[i] += amountToRemove; 
+                toRemove[i] += amountToRemove;
             }
 
             // Inventory has all items if all dictionary entries are now zero
-            foreach (KeyValuePair<int, int> pair in itemAmounts)
-            {
-                if (pair.Value != 0) return false;
-            }
+            foreach (var pair in itemAmounts)
+                if (pair.Value != 0)
+                    return false;
 
             // Remove amounts from slots
-            for (int i = 0; i < inventorySlots.Count; ++i)
+            for (var i = 0; i < inventorySlots.Count; ++i)
             {
-                InventorySlot slot = inventorySlots[i];
+                var slot = inventorySlots[i];
                 slot.Amount -= toRemove[i];
                 if (slot.Amount == 0) slot.Item = null;
 
-                Assert.That(slot.Amount >= 0, "Removed more of an item than there was in inventory! Likely an implementation error.");
+                Assert.That(slot.Amount >= 0,
+                    "Removed more of an item than there was in inventory! Likely an implementation error.");
             }
 
             return true;
@@ -396,12 +394,14 @@ namespace Blizzard.Inventory
         /// </summary>
         public void EquipItem(int slotIndex)
         {
-            Assert.That(0 <= slotIndex && slotIndex <= inventorySlots.Count, $"Invalid slot index given ({slotIndex}) when attempting to equip item! # Slots: " + inventorySlots.Count);
+            Assert.That(0 <= slotIndex && slotIndex <= inventorySlots.Count,
+                $"Invalid slot index given ({slotIndex}) when attempting to equip item! # Slots: " +
+                inventorySlots.Count);
 
             UnequipItem();
 
             equippedItem = inventorySlots[slotIndex].Item;
-            if (equippedItem != null) equippedItem.Equip(new EquipData { slotIndex = slotIndex});
+            if (equippedItem != null) equippedItem.Equip(new EquipData { slotIndex = slotIndex });
         }
 
 

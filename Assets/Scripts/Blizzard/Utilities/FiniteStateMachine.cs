@@ -6,17 +6,19 @@ namespace Blizzard.Utilities
         /// Enter this state
         /// </summary>
         public void Enter(IStateContext ctx);
+
         /// <summary>
         /// Call state's update function, to be invoked once per frame
         /// </summary>
         public void Update();
+
         /// <summary>
         /// Exit this state
         /// </summary>
         public void Exit();
     }
 
-    public interface IStateContext 
+    public interface IStateContext
     {
         public StateMachine stateMachine { get; set; }
     }

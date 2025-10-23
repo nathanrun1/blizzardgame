@@ -26,15 +26,16 @@ namespace Blizzard.UI
 
         private Furnace.State _linkedFurnaceState = null;
 
-        [Header("References")]
-        [SerializeField] CraftingDatabase _smeltingDatabase;
+        [Header("References")] [SerializeField]
+        private CraftingDatabase _smeltingDatabase;
+
         // -- Smelting --
         [SerializeField] private InventorySlotCtrl _ingredientSlotUi;
         [SerializeField] private InventorySlotCtrl _resultSlotUi;
         [SerializeField] private InventorySlotCtrl _fuelSlotUi;
 
-        [Inject] InventoryService _inventoryService;
-        [Inject] UIService _uiService;
+        [Inject] private InventoryService _inventoryService;
+        [Inject] private UIService _uiService;
 
         public override void Setup(object args)
         {
@@ -56,7 +57,7 @@ namespace Blizzard.UI
 
         //private void OnCraft(CraftingRecipe recipe)
         //{
-            
+
         //}
     }
 }

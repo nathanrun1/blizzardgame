@@ -23,12 +23,12 @@ namespace Blizzard.Utilities.Assistants
 
         private static List<RaycastResult> GetEventSystemRaycastResults()
         {
-            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            var eventData = new PointerEventData(EventSystem.current)
             {
                 position = UnityEngine.Input.mousePosition
             };
 
-            List<RaycastResult> raycastResults = new List<RaycastResult>();
+            var raycastResults = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData, raycastResults);
 
             return raycastResults;

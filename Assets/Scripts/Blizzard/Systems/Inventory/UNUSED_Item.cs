@@ -31,9 +31,9 @@ using Unity.VisualScripting;
 //        public bool Equals(Item other)
 //        {
 //            if (other == null || Id != other.Id) return false;
-//            Debug.Log($"Comparing equality between {this.DisplayName} (id {Id}) and {other.DisplayName} (id {other.Id})");
+//            BLog.Log($"Comparing equality between {this.DisplayName} (id {Id}) and {other.DisplayName} (id {other.Id})");
 //            if (dynamicAttributes.Count != other.dynamicAttributes.Count) return false;
-            
+
 //            foreach (KeyValuePair<string, object> attr in dynamicAttributes)
 //            {
 //                if (!other.dynamicAttributes.ContainsKey(attr.Key) || other.dynamicAttributes[attr.Key] != attr.Value) return false;

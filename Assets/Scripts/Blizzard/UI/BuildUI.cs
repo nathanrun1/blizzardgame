@@ -11,9 +11,10 @@ using Blizzard.Inventory.ItemTypes;
 using ModestTree;
 using Blizzard.UI.Core;
 using Blizzard.Utilities.Assistants;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.UI
-{   
+{
     public class BuildUI : UIBase
     {
         public struct Args
@@ -22,6 +23,7 @@ namespace Blizzard.UI
             /// Building to build, associated with item
             /// </summary>
             public BuildingData buildingData;
+
             /// <summary>
             /// Slot where building item is located in inventorySlots.
             /// </summary>
@@ -36,8 +38,8 @@ namespace Blizzard.UI
         /// <summary>
         /// How often build preview gets updated (ideally less than framerate for performance)
         /// </summary>
-        [Header("Config")]
-        [SerializeField] private float _updateDelay = 0.2f;
+        [Header("Config")] [SerializeField] private float _updateDelay = 0.2f;
+
         /// <summary>
         /// Building preview is tinted with this color when location is occupied
         /// </summary>
@@ -47,10 +49,12 @@ namespace Blizzard.UI
 
         private BuildingData _buildingData;
         private int _buildItemSlotIndex;
+
         /// <summary>
         /// Visual-only copy of the building, to preview to the player as to where the building will be placed
         /// </summary>
         private GameObject _buildingPreview;
+
         private GameObject _occupiedBuildingPreview;
 
         public override void Setup(object args)
@@ -67,10 +71,7 @@ namespace Blizzard.UI
 
             _buildingData = buildArgs.buildingData;
             _buildItemSlotIndex = buildArgs.itemSlot;
-            if (_buildingData == null)
-            {
-                throw new ArgumentException("Building Data is null!");
-            }
+            if (_buildingData == null) throw new ArgumentException("Building Data is null!");
 
             // Bind input
             _inputService.inputActions.Player.Build.performed += OnInputBuild;
@@ -80,10 +81,8 @@ namespace Blizzard.UI
 
             // Init occupied building preview (swapped with building preview when location occupied)
             _occupiedBuildingPreview = Instantiate(_buildingPreview);
-            foreach (SpriteRenderer spriteRenderer in _occupiedBuildingPreview.GetComponentsInChildren<SpriteRenderer>())
-            {
+            foreach (var spriteRenderer in _occupiedBuildingPreview.GetComponentsInChildren<SpriteRenderer>())
                 spriteRenderer.color *= _occupiedLocationColor;
-            }
         }
 
         public override void Close(bool destroy = true)
@@ -94,7 +93,7 @@ namespace Blizzard.UI
             // Destroy previews
             Destroy(_buildingPreview.gameObject);
             Destroy(_occupiedBuildingPreview.gameObject);
-            
+
             base.Close(destroy);
         }
 
@@ -102,21 +101,24 @@ namespace Blizzard.UI
         {
             if (InputAssistant.IsPointerOverUIElement()) return;
 
-            Vector2Int mouseGridPosition = _obstacleGridService.Grids[0].WorldToCellPos(_inputService.GetMainCamera().ScreenToWorldPoint(UnityEngine.Input.mousePosition));
-            if (_obstacleGridService.IsOccupied(mouseGridPosition, _buildingData.obstacleData.obstacleLayer)) return; // Location occupied
+            var mouseGridPosition = _obstacleGridService.Grids[0]
+                .WorldToCellPos(_inputService.GetMainCamera().ScreenToWorldPoint(UnityEngine.Input.mousePosition));
+            if (_obstacleGridService.IsOccupied(mouseGridPosition, _buildingData.obstacleData.obstacleLayer))
+                return; // Location occupied
 
             // Sanity check: Ensure item corresponding to building is the correct item
-            BuildingItemData buildItem = _inventoryService.inventorySlots[_buildItemSlotIndex].Item as BuildingItemData;
-            Assert.That(buildItem != null && buildItem.buildingData == _buildingData, "Given inventory slot does not contain matching item to building!");
+            var buildItem = _inventoryService.inventorySlots[_buildItemSlotIndex].Item as BuildingItemData;
+            Assert.That(buildItem != null && buildItem.buildingData == _buildingData,
+                "Given inventory slot does not contain matching item to building!");
 
             // Remove one of the building from inventory, ensure item removed successfully
             if (_inventoryService.TryRemoveItemAt(_buildItemSlotIndex, 1) != 1)
             {
-                Debug.LogError("Build item not successfully removed from inventory! Cancelling build.");
+                BLog.LogError("Build item not successfully removed from inventory! Cancelling build.");
                 return;
             }
 
-            Debug.Log($"Placing at {mouseGridPosition}");
+            BLog.Log($"Placing at {mouseGridPosition}");
             _obstacleGridService.PlaceObstacleAt(mouseGridPosition, _buildingData.obstacleData);
         }
 
@@ -132,7 +134,8 @@ namespace Blizzard.UI
 
         private void UpdatePreview()
         {
-            Vector2Int mouseGridPosition = _obstacleGridService.Grids[0].WorldToCellPos(_inputService.GetMainCamera().ScreenToWorldPoint(UnityEngine.Input.mousePosition));
+            var mouseGridPosition = _obstacleGridService.Grids[0]
+                .WorldToCellPos(_inputService.GetMainCamera().ScreenToWorldPoint(UnityEngine.Input.mousePosition));
 
             GameObject preview;
             if (_obstacleGridService.IsOccupied(mouseGridPosition, _buildingData.obstacleData.obstacleLayer))
@@ -140,7 +143,7 @@ namespace Blizzard.UI
                 preview = _occupiedBuildingPreview;
                 _occupiedBuildingPreview.SetActive(true);
                 _buildingPreview.SetActive(false);
-            } 
+            }
             else
             {
                 preview = _buildingPreview;

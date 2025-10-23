@@ -1,10 +1,8 @@
-using Blizzard.Grid;
-using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using Blizzard.Temperature;
+using Blizzard.Utilities.Logging;
 using TMPro;
 using Zenject;
 
@@ -13,14 +11,13 @@ namespace Blizzard.Obstacles
 {
     public class ObstacleTest : MonoBehaviour
     {
-        [SerializeField] ObstacleData obstacleToPlace; // Place this obstacle to test placement
-        [SerializeField] Vector2Int obstaclePosition;
-        [SerializeField] ComputeShader _heatDiffusionShader;
-        [SerializeField] Image _heatmap;
-        [SerializeField] GameObject _player;
-        [SerializeField] TextMeshProUGUI _playerTemp;
-        [Header("Testing")]
-        [SerializeField] bool _doTemperatureHeatStep = true;
+        [SerializeField] private ObstacleData obstacleToPlace; // Place this obstacle to test placement
+        [SerializeField] private Vector2Int obstaclePosition;
+        [SerializeField] private ComputeShader _heatDiffusionShader;
+        [SerializeField] private Image _heatmap;
+        [SerializeField] private GameObject _player;
+        [SerializeField] private TextMeshProUGUI _playerTemp;
+        [Header("Testing")] [SerializeField] private bool _doTemperatureHeatStep = true;
 
 
         [Inject] private TemperatureService _temperatureService;
@@ -33,6 +30,7 @@ namespace Blizzard.Obstacles
                 //_temperatureService.DoHeatDiffusionStep(Time.deltaTime);
                 //_temperatureService.ComputeHeatmap();
             }
+
             UpdateHeatmap();
         }
 
@@ -40,16 +38,14 @@ namespace Blizzard.Obstacles
         [Button]
         public void LogIsCellOccupied()
         {
-            Debug.Log($"{obstaclePosition} occupied?: {_obstacleGridService.IsOccupied(obstaclePosition)}");
+            BLog.Log($"{obstaclePosition} occupied?: {_obstacleGridService.IsOccupied(obstaclePosition)}");
         }
 
         [Button]
         public void LogCellTemperature()
         {
-            if (_obstacleGridService.TryGetObstacleAt(obstaclePosition, out Obstacle obstacle))
-            {
-                Debug.Log($"Obstacle temperature: {_temperatureService.Grid.GetAt(obstaclePosition).temperature}");
-            }
+            if (_obstacleGridService.TryGetObstacleAt(obstaclePosition, out var obstacle))
+                BLog.Log($"Obstacle temperature: {_temperatureService.Grid.GetAt(obstaclePosition).temperature}");
         }
 
         [Button]
@@ -61,7 +57,7 @@ namespace Blizzard.Obstacles
         [Button]
         public void RemoveObstacle()
         {
-            Debug.Log("remove success: " + _obstacleGridService.TryRemoveObstacleAt(obstaclePosition));
+            BLog.Log("remove success: " + _obstacleGridService.TryRemoveObstacleAt(obstaclePosition));
         }
 
         private void UpdateHeatmap()

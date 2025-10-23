@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
 using Blizzard.Utilities.Assistants;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Obstacles
 {
@@ -14,13 +15,13 @@ namespace Blizzard.Obstacles
         [Inject] private InputService _inputService;
 
         private Camera _mainCamera;
-        
+
         public InteractionService()
         {
-            Debug.Log("InteractionSErvice constructor");
+            BLog.Log("InteractionSErvice constructor");
             BindInteractionInputs();
         }
-        
+
         public void Initialize()
         {
             _mainCamera = Camera.main;
@@ -28,17 +29,17 @@ namespace Blizzard.Obstacles
 
         private void BindInteractionInputs()
         {
-            Debug.Log("Bound interaction inputs!");
+            BLog.Log("Bound interaction inputs!");
             _inputService.inputActions.Player.Interact1.performed += OnPrimaryInteractionInput;
             _inputService.inputActions.Player.Interact2.performed += OnSecondaryInteractionInput;
         }
 
         private void OnPrimaryInteractionInput(InputAction.CallbackContext ctx)
         {
-            Debug.Log("[InteractionService] Primary Interaction detected!");
-            Collider2D pointerOverCollider = InputAssistant.GetColliderUnderPointer(_mainCamera);
-            Debug.Log($"[InteractionService] pointer is over collider:{pointerOverCollider}");
-            IInteractable interactable = pointerOverCollider.GetComponent<IInteractable>();
+            BLog.Log("[InteractionService] Primary Interaction detected!");
+            var pointerOverCollider = InputAssistant.GetColliderUnderPointer(_mainCamera);
+            BLog.Log($"[InteractionService] pointer is over collider:{pointerOverCollider}");
+            var interactable = pointerOverCollider.GetComponent<IInteractable>();
             interactable?.OnPrimaryInteract();
         }
 

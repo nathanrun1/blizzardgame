@@ -10,7 +10,7 @@ namespace Blizzard.Inventory.Crafting
     /// Database of available smelting recipes
     /// </summary>
     [CreateAssetMenu(fileName = "SmeltingDatabase", menuName = "ScriptableObjects/Crafting/SmeltingDatabase")]
-    public class SmeltingDatabase : CraftingDatabase 
+    public class SmeltingDatabase : CraftingDatabase
     {
         /// <summary>
         /// Maps ingredient item ID to associated smelting crafting recipe
@@ -24,18 +24,17 @@ namespace Blizzard.Inventory.Crafting
                 return _smeltRecipeMap;
             }
         }
+
         private Dictionary<int, CraftingRecipe> _smeltRecipeMap = null;
 
         private void InitSmeltRecipeMap()
         {
-            _smeltRecipeMap = new();
-            foreach (CraftingCategory category in craftingCategories)
+            _smeltRecipeMap = new Dictionary<int, CraftingRecipe>();
+            foreach (var category in craftingCategories)
+            foreach (var recipe in category.recipes)
             {
-                foreach (CraftingRecipe recipe in category.recipes)
-                {
-                    Assert.IsTrue(recipe.cost.Count == 1, "Smelting recipe has more than one unique ingredient!");
-                    _smeltRecipeMap.Add(recipe.cost[0].item.id, recipe);
-                }
+                Assert.IsTrue(recipe.cost.Count == 1, "Smelting recipe has more than one unique ingredient!");
+                _smeltRecipeMap.Add(recipe.cost[0].item.id, recipe);
             }
         }
     }

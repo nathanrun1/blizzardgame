@@ -9,10 +9,20 @@ namespace Blizzard.Grid
 {
     public class BasicDenseGrid<T> : IDenseGrid<T>
     {
-        public virtual int Width { get => _width; protected set => _width = value; }
+        public virtual int Width
+        {
+            get => _width;
+            protected set => _width = value;
+        }
+
         protected int _width;
 
-        public virtual int Height { get => _width; protected set => _width = value; }
+        public virtual int Height
+        {
+            get => _width;
+            protected set => _width = value;
+        }
+
         protected int _height;
 
         /// <summary>
@@ -39,13 +49,9 @@ namespace Blizzard.Grid
 
         public void Initialize(T value)
         {
-            for (int y = 0; y < _height; ++y)
-            {
-                for (int x = 0; x < _width; ++x)
-                {
-                    _data[GetFlattenedIndex(x, y)] = value;
-                }
-            }
+            for (var y = 0; y < _height; ++y)
+            for (var x = 0; x < _width; ++x)
+                _data[GetFlattenedIndex(x, y)] = value;
         }
 
         public virtual T GetAt(int x, int y)
@@ -63,7 +69,7 @@ namespace Blizzard.Grid
         {
             if (!IsGridPositionValid(x, y))
             {
-                value = default(T);
+                value = default;
                 return false;
             }
             else
@@ -105,9 +111,7 @@ namespace Blizzard.Grid
         private void ValidateGridPosition(int x, int y)
         {
             if (!IsGridPositionValid(x, y))
-            {
                 throw new ArgumentOutOfRangeException($"Grid position ({x}, {y}) out of range!");
-            }
         }
 
         /// <summary>
@@ -131,8 +135,7 @@ namespace Blizzard.Grid
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
     }
 }
-

@@ -13,20 +13,26 @@ namespace Blizzard.UI
 {
     public class TemperatureUI : UIBase
     {
-        [Inject] PlayerService _playerService;
-        [Inject] TemperatureService _temperatureService;
+        [Inject] private PlayerService _playerService;
+        [Inject] private TemperatureService _temperatureService;
 
-        [Header("References")]
-        [SerializeField] private TextMeshProUGUI _bodyTemperature;
+        [Header("References")] [SerializeField]
+        private TextMeshProUGUI _bodyTemperature;
+
         [SerializeField] private TextMeshProUGUI _areaTemperature;
 
-        public override void Setup(object args) { }
+        public override void Setup(object args)
+        {
+        }
 
         private void FixedUpdate()
         {
-            _bodyTemperature.text = "Body: " + Math.Round(_playerService.PlayerTemperature.BodyTemperature, 2).ToString() + '�';
-            _areaTemperature.text = "Area: " + Math.Round(_temperatureService.GetTemperatureAtWorldPos(_playerService.PlayerCtrl.transform.position), 2).ToString() + '�';
+            _bodyTemperature.text =
+                "Body: " + Math.Round(_playerService.PlayerTemperature.BodyTemperature, 2).ToString() + '�';
+            _areaTemperature.text = "Area: " +
+                                    Math.Round(
+                                        _temperatureService.GetTemperatureAtWorldPos(_playerService.PlayerCtrl.transform
+                                            .position), 2).ToString() + '�';
         }
     }
 }
-

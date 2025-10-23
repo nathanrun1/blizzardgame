@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+
 //using System.Collections.Generic;
 // >> CURRENTLY UNUSED! <<
 
@@ -17,7 +18,7 @@ using System;
 //        {
 //            if (clothingItem.Category != ItemCategory.Clothing)
 //            {
-//                UnityEngine.Debug.LogWarning("Attempted to get insulation on a non-clothing item");
+//                UnityEngine.BLog.LogWarning("Attempted to get insulation on a non-clothing item");
 //                return default;
 //            }
 
@@ -27,7 +28,7 @@ using System;
 //            }
 //            catch (KeyNotFoundException _)
 //            {
-//                UnityEngine.Debug.LogError("Clothing item does not have 'insulation' set!");
+//                UnityEngine.BLog.LogError("Clothing item does not have 'insulation' set!");
 //                return default;
 //            }
 //        }
@@ -41,7 +42,7 @@ using System;
 
 //            if (clothingItem.Category != ItemCategory.Clothing)
 //            {
-//                UnityEngine.Debug.LogWarning("Attempted to set insulation on a non-clothing item");
+//                UnityEngine.BLog.LogWarning("Attempted to set insulation on a non-clothing item");
 //            }
 
 //            try
@@ -50,7 +51,7 @@ using System;
 //            }
 //            catch (KeyNotFoundException _)
 //            {
-//                UnityEngine.Debug.LogError("Clothing item does not have 'insulation' set!");
+//                UnityEngine.BLog.LogError("Clothing item does not have 'insulation' set!");
 //            }
 //        }
 //    }
