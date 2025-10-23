@@ -1,4 +1,3 @@
-using Blizzard.Temperature;
 using ModestTree;
 using System;
 using Blizzard.Constants;

@@ -1,15 +1,8 @@
 using System;
-using Blizzard.Environment;
-using Blizzard.Inventory;
-using Blizzard.Player;
-using Blizzard.Utilities;
-using DG.Tweening;
+using System.Diagnostics;
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
+using Debug = UnityEngine.Debug;
 
 namespace Blizzard.Obstacles
 {
@@ -32,6 +25,7 @@ namespace Blizzard.Obstacles
         /// Health remaining, harvestable is destroyed (harvested) when health reaches 0
         /// </summary>
         public float Health { get; private set; }
+        [Button][Conditional("DEBUG")] public void PrintHealth() {Debug.Log(Health);}
 
         [Header("Damageable Properties")]
         [SerializeField] int _startingHealth = 100;

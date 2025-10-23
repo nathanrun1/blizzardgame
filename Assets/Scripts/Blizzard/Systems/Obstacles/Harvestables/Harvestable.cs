@@ -42,6 +42,7 @@ namespace Blizzard.Obstacles.Harvestables
         protected override void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition)
         {
             if (damageFlags.HasFlag(DamageFlags.Player)) Harvest();
+            else Destroy();
         }
 
         /// <summary>
@@ -72,7 +73,6 @@ namespace Blizzard.Obstacles.Harvestables
         /// <summary>
         /// Feedback for the harvestable being damaged by a tool
         /// </summary>
-        /// <returns></returns>
         private IEnumerator DamageAnim(Vector3 sourcePosition)
         {
             if (Health <= 0) yield break;
@@ -92,7 +92,7 @@ namespace Blizzard.Obstacles.Harvestables
         /// </summary>
         private void HarvestAnim(System.Action onComplete = null)
         {
-            // TODO: particle effects or sum
+            // TODO: HarvestAnim FX
             onComplete?.Invoke();
         }
     }
