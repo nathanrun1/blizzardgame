@@ -9,9 +9,9 @@ namespace Blizzard.Utilities
     {
         public Vector2Int MaxBound => new Vector2Int(_xBounds.GetMax(), _yBounds.GetMax());
         public Vector2Int MinBound => new Vector2Int(_xBounds.GetMin(), _yBounds.GetMin());
-        
-        private MinMaxHeap<int> _xBounds;
-        private MinMaxHeap<int> _yBounds;
+
+        private MinMaxHeap<int> _xBounds = new();
+        private MinMaxHeap<int> _yBounds = new();
 
         /// <summary>
         /// Add position to set
@@ -31,6 +31,14 @@ namespace Blizzard.Utilities
         {
             _xBounds.Remove(position.x);
             _yBounds.Remove(position.y);
+        }
+
+        /// <summary>
+        /// Whether OuterMostBounds is empty
+        /// </summary>
+        public bool IsEmpty()
+        {
+            return _xBounds.IsEmpty() || _yBounds.IsEmpty();
         }
     }
 }

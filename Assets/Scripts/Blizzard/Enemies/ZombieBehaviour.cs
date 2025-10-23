@@ -95,6 +95,7 @@ namespace Blizzard.Enemies
             /// <returns>Whether player can be targeted</returns>
             protected bool TryGetPlayerTarget()
             {
+                return false; // TEMP: disable player nav
                 Vector2 plrDirection = stateContext.playerService.PlayerPosition -
                                        (Vector2)stateContext.gameObject.transform.position;
                 if (plrDirection.sqrMagnitude > stateContext.behaviourConfig.playerAgroRangeSqr)
@@ -106,7 +107,7 @@ namespace Blizzard.Enemies
                 // Debug.Log(raycast.collider);
                 if (raycast.collider && raycast.collider.gameObject.CompareTag("Player"))
                     return true; // Player is visible and in range!
-                else return false;
+                return false;
             }
 
             /// <summary>
@@ -134,7 +135,7 @@ namespace Blizzard.Enemies
                     return false; // No targets available
                 }
 
-                // Choose closest target
+                // Choose the closest target
                 stateContext.targetObstacle = targetOptions[0] as Damageable;
                 return true;
             }
@@ -279,21 +280,28 @@ namespace Blizzard.Enemies
                 if (!stateContext.pathfindingService.TryGetNextTargetGridPosition(_curGridPos, out _nextGridPos,
                         out Obstacle targetObstacle))
                 {
-                    // Debug.Log("No next target position!");
-                    // Not in flow field, move directory towards closest player-built obstacle instead
+                    Debug.Log("No next target position!");
+                    // Not in flow field, move directly towards closest player-built obstacle instead
+                    
                     if (!TryGetDamageableTarget())
                     {
                         // No damageable obstacles at all, just navigate to the player.
                         stateContext.stateMachine.ChangeState(new NavPlayerState());
                         return;
                     }
-
-                    Vector2 movementVector = stateContext.targetObstacle.transform.position
-                                             - stateContext.gameObject.transform.position;
-                    stateContext.rigidBody.MovePosition(stateContext.rigidBody.position
-                                                        + stateContext.behaviourConfig.walkSpeed * Time.fixedDeltaTime *
-                                                        movementVector.normalized);
-                    // TODO: handle when stuck
+                    
+                    // Set next grid position to direct path
+                    Debug.Log($"Moving instead toward {stateContext.targetObstacle}");
+                    Vector2 movementVector = (stateContext.targetObstacle.transform.position
+                                                 - stateContext.gameObject.transform.position).normalized;
+                    Vector2Int movementVectorInt =
+                        new(Mathf.RoundToInt(movementVector.x), Mathf.RoundToInt(movementVector.y));
+                    Debug.Log($"Direction: {movementVector}, integer dir: {movementVectorInt}");
+                    Debug.Log($"{Mathf.RoundToInt(-0.25f)}");
+                    _nextGridPos = _curGridPos + movementVectorInt;
+                    
+                    // Check if target obstacle at next grid position
+                    stateContext.obstacleGridService.TryGetObstacleAt(_nextGridPos, out targetObstacle);
                 }
                 
                 // Debug.Log($"Next position is {_nextGridPos}");

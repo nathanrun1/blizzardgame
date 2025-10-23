@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Blizzard.Utilities
@@ -11,7 +12,7 @@ namespace Blizzard.Utilities
     /// <typeparam name="T">Hashable & Comparable type</typeparam>
     public class MinMaxHeap<T> where T : IComparable<T>
     {
-        private List<T> _elements;
+        private List<T> _elements = new();
         
         /// <summary>
         /// Location of each value within _elements
@@ -50,12 +51,8 @@ namespace Blizzard.Utilities
         /// <param name="value">Value of element to remove</param>
         public void Remove(T value)
         {
-            if (!_elementCount.ContainsKey(value))
-            {
-                Debug.LogError($"Attempted to remove element from MinMaxHeap, yet has not yet been added!\n" +
-                               $"Element: {value}");
-                return;
-            }
+            Assert.IsTrue(_elementCount.ContainsKey(value), 
+                $"Attempted to remove element from MinMaxHeap, yet has not yet been added!\nElement: {value}");
             if (_elementCount[value] > 1)
             {
                 // More than one of this element in MinMaxHeap, decrease count.

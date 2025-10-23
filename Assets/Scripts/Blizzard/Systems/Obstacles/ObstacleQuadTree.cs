@@ -259,7 +259,7 @@ namespace Blizzard.Obstacles
             _nativeQuadTree.Range(range, ref visitor);
 
             List<Vector2Int> results = new();
-            Debug.Log($"Range query ({flMin}, {flMax}) yielded {visitor.results.Count} results.");
+            //Debug.Log($"Range query ({flMin}, {flMax}) yielded {visitor.results.Count} results.");
             foreach (QTObstacleData data in visitor.results)
             {
                 if (_invalidPositions.Contains(data.position)) continue; // Position is invalid

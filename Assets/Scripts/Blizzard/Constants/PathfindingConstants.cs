@@ -13,6 +13,6 @@ namespace Blizzard.Constants
         /// Amount of padding (# of cells) given to the overall flow-field
         /// covering player-built obstacles
         /// </summary>
-        public const int ffPadding = 25;
+        public const int ffPadding = 5;
     }
 }

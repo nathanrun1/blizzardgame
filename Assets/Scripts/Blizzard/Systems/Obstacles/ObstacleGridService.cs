@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using Blizzard.Grid;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Blizzard.Constants;
 using Blizzard.Temperature;
@@ -17,15 +16,15 @@ namespace Blizzard.Obstacles
     {
         /// <summary>
         /// Invoked when an obstacle is added or removed from some location.
-        /// Args: (Affected grid position, Affected Obstacle Layer)
+        /// Args: (Affected grid position, Affected Obstacle Layer, Flags of added/removed obstacle)
         /// </summary>
-        public event Action<Vector2Int, ObstacleLayer> OnObstacleAddedOrRemoved;
+        public event Action<Vector2Int, ObstacleLayer, ObstacleFlags> OnObstacleAddedOrRemoved;
 
 
         /// <summary>
         /// Grids (organized by obstacle layer) containing obstacle instances mapped by their grid positions in a world grid
         /// </summary>
-        public Dictionary<ObstacleLayer, ISparseWorldGrid<Obstacle>> Grids;
+        public readonly Dictionary<ObstacleLayer, ISparseWorldGrid<Obstacle>> Grids;
 
         /// <summary>
         /// QuadTrees for querying obstacles with different ObstacleFlags on main obstacle layer.
@@ -38,7 +37,7 @@ namespace Blizzard.Obstacles
         /// <summary>
         /// Empty object that is a parent to all instantiated obstacles
         /// </summary>
-        private Transform _obstaclesParent;
+        private readonly Transform _obstaclesParent;
 
 
         public ObstacleGridService(Dictionary<ObstacleLayer, ISparseWorldGrid<Obstacle>> grids,
@@ -103,7 +102,7 @@ namespace Blizzard.Obstacles
                 foreach (ObstacleFlags flagCombo in QuadTrees.Keys)
                 {
                     Debug.Log($"Checking flag combo {flagCombo} against obstacle's {obstacleData.obstacleFlags}");
-                    if ((flagCombo & obstacleData.obstacleFlags) == flagCombo)
+                    if (obstacleData.obstacleFlags.HasFlag(flagCombo))
                     {
                         // Add obstacle to relevant QuadTree
                         QuadTrees[flagCombo].Add(gridPosition);
@@ -111,7 +110,7 @@ namespace Blizzard.Obstacles
                 }
             }
 
-            OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleData.obstacleLayer);
+            OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleData.obstacleLayer, obstacleData.obstacleFlags);
         }
 
         /// <summary>
@@ -173,7 +172,7 @@ namespace Blizzard.Obstacles
                 }
             }
 
-            OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleLayer);
+            OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleLayer, obstacle.ObstacleFlags);
         }
 
         /// <summary>

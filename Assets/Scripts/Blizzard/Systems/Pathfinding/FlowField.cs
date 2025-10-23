@@ -11,6 +11,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Android;
 using UnityEngine.Rendering;
 
 namespace Blizzard.Pathfinding
@@ -159,7 +160,7 @@ namespace Blizzard.Pathfinding
             {
                 int width = (max.x - min.x) + 1; // Add 1 because bounds are inclusive
                 int height = (max.y - min.y) + 1; // ^^
-                // Debug.Log($"Rebuilding flow field of size {width} * {height}!");
+                Debug.Log($"Rebuilding flow field of size {width} * {height}!");
 
                 if (_nativeFlowField == null || _nativeFlowField.Width != width || _nativeFlowField.Height != height)
                 {
@@ -190,7 +191,7 @@ namespace Blizzard.Pathfinding
                     inFieldArr[Flatten(pos, min, width)] = weight; // TEMP: Set to default target value (0)
                     travelCostsArr[Flatten(pos, min, height)] = travelCost;
 
-                    Debug.Log($"Adding obstacle at position {pos} with weight {weight}, travel cost {travelCost}");
+                    //Debug.Log($"Adding obstacle at position {pos} with weight {weight}, travel cost {travelCost}");
                 }
 
                 if (_inField.IsCreated) _inField.Dispose(); // Free existing data (persistent allocation)
@@ -198,7 +199,7 @@ namespace Blizzard.Pathfinding
 
                 _inField = new NativeArray<float>(inFieldArr, Allocator.Persistent);
                 _travelCosts = new NativeArray<float>(travelCostsArr, Allocator.Persistent);
-                AsyncGPUReadbackRequest rq = _nativeFlowField.Bake(_inField, _travelCosts, new BakeOptions
+                AsyncGPUReadbackRequest rq = _nativeFlowField.Bake(_inField, _travelCosts, new BakeOptions  // TODO: Async
                 {
                     Iterations = 100,
                     IterationsPerFrame = 0,

@@ -9,6 +9,7 @@ using Blizzard.Temperature;
 using Zenject;
 using FlowFieldAI;
 using Blizzard.Obstacles;
+using Blizzard.Utilities;
 using Unity.Cinemachine;
 
 namespace Blizzard.Pathfinding
@@ -20,8 +21,12 @@ namespace Blizzard.Pathfinding
     {
         private FlowField _flowField;
 
-
         [Inject] private ObstacleGridService _obstacleGridService;
+
+        /// <summary>
+        /// Tracks outermost bounds of obstacles with PlayerBuilt flag 
+        /// </summary>
+        private OuterMostBounds _outerMostBoundsPlayerBuilt = new();
 
         public void Initialize()
         {
@@ -78,15 +83,31 @@ namespace Blizzard.Pathfinding
         /// <summary>
         /// Invoked with the obstacle grid service's identically named event
         /// </summary>
-        private void OnObstacleAddedOrRemoved(Vector2Int pos, ObstacleLayer obstacleLayer)
+        private void OnObstacleAddedOrRemoved(Vector2Int pos, ObstacleLayer obstacleLayer, ObstacleFlags obstacleFlags)
         {
             // TEMP: simply recalculate entire flow field
+            bool added = _obstacleGridService.IsOccupied(pos);
+            
+            // Add/Remove position from outermost bounds tracking
+            if (obstacleFlags.HasFlag(ObstacleFlags.PlayerBuilt))
+            {
+                if (added) _outerMostBoundsPlayerBuilt.Add(pos);
+                else _outerMostBoundsPlayerBuilt.Remove(pos);
+            }
 
-            // TEMP: hardcoded min/max bounds
-            Vector2Int min = new(-50, -50);
-            Vector2Int max = new(50, 50);
+            if (_outerMostBoundsPlayerBuilt.IsEmpty()) return; // No player built obstacles, no need for flow field
 
-            _flowField.BuildFlowField(min, max);
+            // Add padding to min/max bounds so that enemies near (within padding) player built objects can still
+            //  pathfind to them
+            Vector2Int paddedMin = new(
+                _outerMostBoundsPlayerBuilt.MinBound.x - PathfindingConstants.ffPadding,
+                _outerMostBoundsPlayerBuilt.MinBound.y - PathfindingConstants.ffPadding);
+            Vector2Int paddedMax = new(
+                _outerMostBoundsPlayerBuilt.MinBound.x + PathfindingConstants.ffPadding,
+                _outerMostBoundsPlayerBuilt.MinBound.y + PathfindingConstants.ffPadding);
+            
+            //Debug.Log($"Building flow field with bounds {paddedMin} -> {paddedMax}");
+            _flowField.BuildFlowField(paddedMin, paddedMax);
         }
 
         /// <summary>
