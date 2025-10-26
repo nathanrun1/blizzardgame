@@ -1,11 +1,13 @@
 using ModestTree;
 using System;
+using Blizzard.Input;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using Blizzard.Inventory;
 using Blizzard.UI.Core;
+using Zenject;
 
 
 namespace Blizzard.UI
@@ -31,20 +33,19 @@ namespace Blizzard.UI
             public Action OnAnimComplete;
         }
 
-        [Header("GameObject References")] [SerializeField]
-        private Image _icon;
-
+        [Header("GameObject References")] 
+        [SerializeField] private Image _icon;
         [SerializeField] private TextMeshProUGUI _count;
 
-        [Header("Anim config")] [SerializeField]
-        private float _animYDelta = 30f;
-
+        [Header("Anim config")]
+        [SerializeField] private float _animYDelta = 30f;
         [SerializeField] private float _animLength = 0.2f;
-
         /// <summary>
         /// Color of number when item is removed
         /// </summary>
         [SerializeField] private Color _negativeColor = new Color32(217, 5, 5, 255);
+
+        [Inject] private InputService _inputService;
 
         public override void Setup(object args)
         {
@@ -60,7 +61,8 @@ namespace Blizzard.UI
 
             if (itemGainArgs.amount == 0) Close(); // Only display non-zero amount
 
-            transform.localPosition = GetUILocalPos(itemGainArgs.worldPosition);
+            //transform.localPosition = GetUILocalPos(itemGainArgs.worldPosition);
+            transform.position = _inputService.GetMainCamera().WorldToScreenPoint(itemGainArgs.worldPosition);
             GainItemAnim(itemGainArgs.item, itemGainArgs.amount, itemGainArgs.OnAnimComplete);
         }
 
@@ -71,16 +73,17 @@ namespace Blizzard.UI
         /// <returns></returns>
         private Vector2 GetUILocalPos(Vector3 worldPosition)
         {
-            Vector2 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
+            Camera mainCamera = _inputService.GetMainCamera();
+            Vector2 screenPos = mainCamera.WorldToScreenPoint(worldPosition);
             var screenPosRatio =
-                new Vector2(screenPos.x / Camera.main.pixelWidth, screenPos.y / Camera.main.pixelHeight);
+                new Vector2(screenPos.x / mainCamera.pixelWidth, screenPos.y / mainCamera.pixelHeight);
 
             // Assumes parent spans entire screen (it should be main canvas so likely valid assumption)
             var localPos = new Vector2(
-                screenPosRatio.x * _parent.GetComponent<RectTransform>().rect.width -
-                _parent.GetComponent<RectTransform>().rect.width / 2,
-                screenPosRatio.y * _parent.GetComponent<RectTransform>().rect.height -
-                _parent.GetComponent<RectTransform>().rect.height / 2);
+                screenPosRatio.x * _parent.rect.width -
+                _parent.rect.width / 2,
+                screenPosRatio.y * _parent.rect.height -
+                _parent.rect.height / 2);
 
             return localPos;
         }

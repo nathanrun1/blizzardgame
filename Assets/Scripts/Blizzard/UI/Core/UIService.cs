@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Blizzard.Obstacles;
 using UnityEngine;
 using Zenject;
 using Blizzard.Utilities.Logging;
@@ -11,22 +12,22 @@ namespace Blizzard.UI.Core
         /// <summary>
         /// Parent of instantiated UI prefabs
         /// </summary>
-        private RectTransform _uiParent;
+        private readonly RectTransform _uiParent;
 
         [Inject] private DiContainer _diContainer;
 
-        private Dictionary<int, UIData> _intDict = new();
-        private Dictionary<string, UIData> _strDict = new();
+        private readonly Dictionary<int, UIData> _intDict = new();
+        private readonly Dictionary<string, UIData> _strDict = new();
 
         /// <summary>
         /// Active UI instances, mapped by ID
         /// </summary>
-        private Dictionary<int, UIBase> _activeUI = new();
+        private readonly Dictionary<int, UIBase> _activeUI = new();
 
         /// <summary>
         /// Inactive but ready UI instances, pooled for reuse, mapped by ID
         /// </summary>
-        private Dictionary<int, UIBase> _inactiveUI = new();
+        private readonly Dictionary<int, UIBase> _inactiveUI = new();
 
 
         /// <summary>
@@ -42,8 +43,7 @@ namespace Blizzard.UI.Core
                 return _canvasTop;
             }
         }
-
-        [SerializeField] private Transform _canvasTop;
+        private readonly Transform _canvasTop;
 
 
         public UIService(UIDatabase uiDatabase, RectTransform uiParent)
@@ -67,7 +67,7 @@ namespace Blizzard.UI.Core
         public UIBase InitUI(int id, object args = null)
         {
             UIData uiData;
-            if (_intDict.ContainsKey(id)) uiData = _intDict[id];
+            if (_intDict.TryGetValue(id, out var value)) uiData = value;
             else
                 throw new KeyNotFoundException("No UI prefab exists with this id: " + id);
 
@@ -82,7 +82,7 @@ namespace Blizzard.UI.Core
         public UIBase InitUI(string stringId, object args = null)
         {
             UIData uiData;
-            if (_strDict.ContainsKey(stringId)) uiData = _strDict[stringId];
+            if (_strDict.TryGetValue(stringId, out var value)) uiData = value;
             else
                 throw new KeyNotFoundException("No UI prefab exists with this id: " + stringId);
 
@@ -90,23 +90,17 @@ namespace Blizzard.UI.Core
         }
 
         /// <summary>
-        /// Closes UI of given id, if there is an active instance of it
+        /// Closes UI of given id, if it is a singleton UI and there is an active instance of it
         /// </summary>
         public void CloseUI(int id)
         {
-            if (!_activeUI.ContainsKey(id))
-            {
-                BLog.LogError($"Attempted to close UI (id {id}), but not open or isSingle set to false");
-                return;
-            }
+            if (!_activeUI.TryGetValue(id, out var uiObj)) return;
 
-            var destroyOnClose = _intDict[id].destroyOnClose;
-            var uiObj = _activeUI[id];
-            uiObj.Close(destroyOnClose);
+            uiObj.Close();
         }
 
         /// <summary>
-        /// Closes UI of given string id, if there is an active instance of it
+        /// Closes UI of given string id, if it is a singleton UI and there is an active instance of it
         /// </summary>
         public void CloseUI(string stringId)
         {
@@ -119,14 +113,13 @@ namespace Blizzard.UI.Core
         /// </summary>
         public UIBase GetSingletonUI(int id)
         {
-            if (!_activeUI.ContainsKey(id))
+            if (!_activeUI.TryGetValue(id, out var uiObj))
             {
                 BLog.LogError(
                     $"Attempted to get singleton instance of UI (id {id}), but not open or isSingle set to false");
                 return null;
             }
 
-            var uiObj = _activeUI[id];
             return uiObj;
         }
 
@@ -142,30 +135,37 @@ namespace Blizzard.UI.Core
 
         private UIBase InitUI(UIData uiData, object args)
         {
-            UIBase uiObj;
+            if (uiData.isSingle && _activeUI.TryGetValue(uiData.id, out UIBase uiObj))
+            {
+                // Singleton and already active, just setup with new data
+                uiObj.Setup(args);
+                return uiObj;
+            } 
+            
             if (!_inactiveUI.TryGetValue(uiData.id, out uiObj)) // Prioritize inactive pool before instantiating
             {
+                // None in inactive pool, instantiate new instance
                 uiObj = _diContainer.InstantiatePrefabForComponent<UIBase>(uiData.uiPrefab);
                 uiObj.SetParent(_uiParent);
+                uiObj.Setup(args);
 
-                if (uiData.isSingle && !uiData.destroyOnClose)
-                    // Set instance as inactive rather than destroy
-                    uiObj.OnClose += () =>
-                    {
-                        _activeUI.Remove(uiData.id);
-                        _inactiveUI.Add(uiData.id, uiObj);
-                    };
-                else if (uiData.isSingle)
-                    // Remove instance from active list before destroying
-                    uiObj.OnClose += () => { _activeUI.Remove(uiData.id); };
+                uiObj.OnClose += (destroyed) =>
+                {
+                    _activeUI.Remove(uiData.id);
+                    if (!destroyed) _inactiveUI.Add(uiData.id, uiObj);
+                };
+                
+                // Don't destroy on close only if: not singleton and destroyOnClose is false
+                uiObj.SetMetadata(new UIMetadata(
+                    destroyOnClose: !uiData.isSingle || uiData.destroyOnClose
+                    ));
             }
             else
             {
+                uiObj.Setup(args);  // Setup before active
                 uiObj.gameObject.SetActive(true);
                 _inactiveUI.Remove(uiData.id); // No longer inactive
             }
-
-            uiObj.Setup(args);
 
             if (uiData.isSingle) _activeUI.Add(uiData.id, uiObj); // Track active UI instance only if single
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace Blizzard.Utilities.Assistants
 {
@@ -25,7 +26,7 @@ namespace Blizzard.Utilities.Assistants
         {
             var eventData = new PointerEventData(EventSystem.current)
             {
-                position = UnityEngine.Input.mousePosition
+                position = Mouse.current.position.ReadValue()
             };
 
             var raycastResults = new List<RaycastResult>();
@@ -37,7 +38,7 @@ namespace Blizzard.Utilities.Assistants
 
         public static Collider2D GetColliderUnderPointer(Camera camera)
         {
-            Vector2 mouseWorld = camera.ScreenToWorldPoint(UnityEngine.Input.mousePosition);
+            Vector2 mouseWorld = camera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             return Physics2D.OverlapPoint(mouseWorld);
         }
     }

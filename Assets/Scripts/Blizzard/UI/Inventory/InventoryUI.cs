@@ -55,10 +55,9 @@ namespace Blizzard.UI.Inventory
             _inputService.inputActions.Player.DropItem.performed += OnInputDropItem;
         }
 
-        public override void Close(bool destroy = true)
+        public override void Close()
         {
             _inventoryService.OnInventoryModified -= RefreshSlot;
-
 
             // Unbind Input
             _inputService.inputActions.Player.NumberKey.performed -= OnInputNumberKey;
@@ -67,7 +66,7 @@ namespace Blizzard.UI.Inventory
             // Can't have equipped item if inventory UI closed
             _inventoryService.UnequipItem();
 
-            base.Close(destroy);
+            base.Close();
         }
 
 

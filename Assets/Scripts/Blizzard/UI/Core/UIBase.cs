@@ -5,37 +5,70 @@ using Blizzard.Utilities.Logging;
 
 namespace Blizzard.UI.Core
 {
+    public struct UIMetadata
+    {
+        /// <summary>
+        /// Whether the UIBase instance destroys itself when closed, or instead sets itself inactive.
+        /// </summary>
+        public readonly bool destroyOnClose;
+
+        public UIMetadata(bool destroyOnClose)
+        {
+            this.destroyOnClose = destroyOnClose;
+        }
+    }
+    
     /// <summary>
     /// Base class that UI prefabs instantiatable from UIService should inherit from.
     /// Provides functionality to pass arguments to it.
     /// </summary>
     public abstract class UIBase : MonoBehaviour
     {
+        /// <summary>
+        /// Metadata about the UI
+        /// </summary>
+        private UIMetadata _metadata;
+        
+        /// <summary>
+        /// Parent transform of UI
+        /// </summary>
         protected RectTransform _parent;
 
-        public event Action OnClose;
+        /// <summary>
+        /// Invoked when UI instance is about to be closed.
+        ///
+        /// Args: (Whether UI instance will be destroyed: bool)
+        /// </summary>
+        public event Action<bool> OnClose;
 
         public void SetParent(RectTransform parent)
         {
-            BLog.Log((transform as RectTransform).sizeDelta);
+            BLog.Log((transform as RectTransform)!.sizeDelta);
             transform.SetParent(parent, false);
             _parent = parent;
         }
 
         /// <summary>
-        /// Sets up this UI element given data
+        /// Sets the metadata of this UI instance
         /// </summary>
-        /// <param name="data"></param>
+        public void SetMetadata(UIMetadata metadata)
+        {
+            _metadata = metadata;
+        }
+
+        /// <summary>
+        /// Sets up this UI element given ID and args.
+        /// If re-activating UI, called before re-activated.
+        /// </summary>
         public abstract void Setup(object args);
 
         /// <summary>
         /// Closes the UI
         /// </summary>
-        /// <param name="destroy">Whether to destroy the prefab, if false will instead set itself inactive</param>
-        public virtual void Close(bool destroy = true)
+        public virtual void Close()
         {
-            OnClose?.Invoke();
-            if (destroy) Destroy(gameObject);
+            OnClose?.Invoke(_metadata.destroyOnClose);
+            if (_metadata.destroyOnClose) Destroy(gameObject);
             else gameObject.SetActive(false);
         }
     }

@@ -60,7 +60,7 @@ namespace Blizzard.Inventory
 
         public bool Equals(ItemData other)
         {
-            return !(other == null) && id == other.id;
+            return other && id == other.id;
         }
 
         /// <summary>

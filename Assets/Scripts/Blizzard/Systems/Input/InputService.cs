@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
 using Blizzard.Utilities.Logging;
+using UnityEngine.PlayerLoop;
 
 
 namespace Blizzard.Input
@@ -13,7 +14,7 @@ namespace Blizzard.Input
     /// </summary>
     public class InputService : IInitializable
     {
-        public PlayerInputActions inputActions;
+        public readonly PlayerInputActions inputActions;
 
         private Camera _mainCamera;
 
@@ -21,7 +22,7 @@ namespace Blizzard.Input
         {
             inputActions = new PlayerInputActions();
             inputActions.Player.Enable(); // Enabled by default
-            BindInteractionInputs();
+            inputActions.UI.Enable();     // ^^
         }
 
         public void Initialize()
@@ -36,28 +37,6 @@ namespace Blizzard.Input
         public Camera GetMainCamera()
         {
             return _mainCamera;
-        }
-
-
-        private void BindInteractionInputs()
-        {
-            BLog.Log("Bound interaction inputs!");
-            inputActions.Player.Interact1.performed += OnPrimaryInteractionInput;
-            inputActions.Player.Interact2.performed += OnSecondaryInteractionInput;
-        }
-
-        private void OnPrimaryInteractionInput(InputAction.CallbackContext ctx)
-        {
-            var pointerOverCollider = InputAssistant.GetColliderUnderPointer(_mainCamera);
-            if (pointerOverCollider == null) return;
-
-            var interactable = pointerOverCollider.GetComponent<IInteractable>();
-            interactable?.OnPrimaryInteract();
-        }
-
-        private void OnSecondaryInteractionInput(InputAction.CallbackContext ctx)
-        {
-            // TODO
         }
     }
 }

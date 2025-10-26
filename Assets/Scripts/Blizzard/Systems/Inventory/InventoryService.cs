@@ -83,7 +83,7 @@ namespace Blizzard.Inventory
         /// </summary>
         public static bool Empty(this InventorySlot slot)
         {
-            return slot.Item == null || slot.Amount == 0;
+            return !slot.Item || slot.Amount == 0;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Blizzard.Inventory
         /// </summary>
         public static bool CanAdd(this InventorySlot slot, ItemData item, int amount)
         {
-            return slot.Item == null
+            return !slot.Item
                 ? amount <= item.stackSize
                 : slot.Amount + amount <= item.stackSize && item == slot.Item;
         }
@@ -105,7 +105,7 @@ namespace Blizzard.Inventory
         {
             if (!slot.CanAdd(item, amount)) return false;
 
-            if (slot.Item == null)
+            if (!slot.Item)
             {
                 slot.SetItemQuiet(item); // Only trigger event once
                 if (quiet) slot.SetAmountQuiet(amount);
@@ -127,7 +127,7 @@ namespace Blizzard.Inventory
         /// <returns>Amount successfully removed</returns>
         public static int Remove(this InventorySlot slot, int amount, bool drain = true, bool quiet = false)
         {
-            if (amount <= 0 || slot.Amount <= 0 || (drain == false && slot.Amount < amount)) return 0;
+            if (amount <= 0 || slot.Amount <= 0 || (!drain && slot.Amount < amount)) return 0;
 
             var canRemove = Math.Min(amount, slot.Amount);
             if (canRemove == slot.Amount)
@@ -332,7 +332,7 @@ namespace Blizzard.Inventory
 
             var slot = inventorySlots[slotIndex];
 
-            if (slot.Item == null) return 0; // No items to remove
+            if (!slot.Item) return 0; // No items to remove
             if (!drain && slot.Amount < amount) return 0; // Not enough to remove
 
             var amountToRemove = Math.Min(slot.Amount, amount);
@@ -401,7 +401,7 @@ namespace Blizzard.Inventory
             UnequipItem();
 
             equippedItem = inventorySlots[slotIndex].Item;
-            if (equippedItem != null) equippedItem.Equip(new EquipData { slotIndex = slotIndex });
+            if (equippedItem) equippedItem.Equip(new EquipData { slotIndex = slotIndex });
         }
 
 
@@ -410,7 +410,7 @@ namespace Blizzard.Inventory
         /// </summary>
         public void UnequipItem()
         {
-            if (equippedItem == null) return;
+            if (!equippedItem) return;
 
             equippedItem.Unequip();
             equippedItem = null;

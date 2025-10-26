@@ -5,6 +5,7 @@ using Zenject;
 using Sirenix.OdinInspector;
 using Blizzard.Temperature;
 using System.Linq;
+using Blizzard.Input;
 using Blizzard.Inventory;
 using Blizzard.Obstacles;
 using Blizzard.UI.Core;
@@ -26,13 +27,13 @@ namespace Blizzard.Utilities
         [Inject] private UIService _uiService;
         [Inject] private TemperatureService _temperatureService;
         [Inject] private ObstacleGridService _obstacleGridService;
+        [Inject] private InputService _inputService;
 
         [FoldoutGroup("UI")] [SerializeField] private int[] _startupUI;
 
         [FoldoutGroup("UI")]
         [Button]
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void InitUI(int id)
         {
             _uiService.InitUI(id);
@@ -40,8 +41,7 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("UI")]
         [Button]
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void CloseUI(int id)
         {
             _uiService.CloseUI(id);
@@ -52,8 +52,7 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Inventory")]
         [Button]
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void InventoryAddItem(ItemData item, int amount, bool fill = true)
         {
             var added = _inventoryService.TryAddItem(item, amount, fill);
@@ -62,8 +61,7 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Inventory")]
         [Button]
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void InventoryRemoveItem(ItemData item, int amount, bool drain = false)
         {
             BLog.Log(item == null);
@@ -73,8 +71,7 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Inventory")]
         [Button]
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void PrintInventoryContents()
         {
             var str = "--INVENTORY--\n";
@@ -90,8 +87,7 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Obstacles")]
         [Button]
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void PlaceObstacle(ObstaclePlacement placement)
         {
             _obstacleGridService.PlaceObstacleAt(placement.position, placement.obstacle);
@@ -99,8 +95,7 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Obstacles")]
         [Button]
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void RemoveObstacleAt(Vector2Int position)
         {
             _obstacleGridService.TryRemoveObstacleAt(position);
@@ -108,8 +103,7 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Obstacles")]
         [Button]
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void PrintLocationsOfObstaclesWithFlag(ObstacleFlags flags)
         {
             var str = "OBSTACLE POSITIONS:\n";
@@ -136,15 +130,13 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Input")]
         [LabelText("TAB to print collider under pointer")]
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void PrintColliderUnderPointer()
         {
             BLog.Log($"Collider under pointer: {InputAssistant.GetColliderUnderPointer(_camera)}");
         }
 
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void Start()
         {
             _camera = Camera.main;
@@ -154,10 +146,14 @@ namespace Blizzard.Utilities
 
             foreach (var placement in _initialObstacles)
                 _obstacleGridService.PlaceObstacleAt(placement.position, placement.obstacle);
+
+            _inputService.inputActions.UI.Cancel.performed += (ctx) =>
+            {
+                BLog.Log("UI Cancel input performed");
+            };
         }
 
-        [Conditional("DEVELOPMENT_BUILD")]
-        [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void Update()
         {
             if (_temperatureOverride)

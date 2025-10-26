@@ -1,4 +1,5 @@
 using System;
+using Blizzard.Input;
 using UnityEngine;
 using Zenject;
 using Blizzard.Inventory;
@@ -6,6 +7,7 @@ using Blizzard.Inventory.Crafting;
 using Blizzard.Obstacles.Concrete;
 using Blizzard.UI.Core;
 using Blizzard.UI.Inventory;
+using UnityEngine.InputSystem;
 
 namespace Blizzard.UI
 {
@@ -36,6 +38,7 @@ namespace Blizzard.UI
 
         [Inject] private InventoryService _inventoryService;
         [Inject] private UIService _uiService;
+        [Inject] private InputService _inputService; 
 
         public override void Setup(object args)
         {
@@ -53,11 +56,20 @@ namespace Blizzard.UI
             _resultSlotUi.LinkedSetup(furnaceArgs.resultSlot, false, true);
             _fuelSlotUi.LinkedSetup(furnaceArgs.fuelSlot, true, true);
             _linkedFurnaceState = furnaceArgs.furnaceState;
+
+            _inputService.inputActions.UI.Cancel.performed += OnUICancelInput;  // Bind UI input
         }
 
-        //private void OnCraft(CraftingRecipe recipe)
-        //{
+        public override void Close()
+        {
+            _inputService.inputActions.UI.Cancel.performed -= OnUICancelInput;  // Unbind UI input
+            base.Close();
+        }
 
-        //}
+
+        private void OnUICancelInput(InputAction.CallbackContext ctx)
+        {
+            Close();
+        }
     }
 }

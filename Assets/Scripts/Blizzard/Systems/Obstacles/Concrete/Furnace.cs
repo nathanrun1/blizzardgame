@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
@@ -6,6 +7,7 @@ using Blizzard.UI;
 using Blizzard.UI.Core;
 using Blizzard.Inventory.Crafting;
 using Blizzard.Utilities.Logging;
+using UnityEngine.EventSystems;
 
 namespace Blizzard.Obstacles.Concrete
 {
@@ -34,20 +36,19 @@ namespace Blizzard.Obstacles.Concrete
         /// <summary>
         /// Base time taken to smelt a single smelting recipe
         /// </summary>
-        [Header("Config")] private float _baseSmeltingTime = 5f;
-
-        private InventorySlot _ingredient = new();
-        private InventorySlot _result = new();
-        private InventorySlot _fuel = new();
+        private const float _baseSmeltingTime = 5f;
+        
+        private readonly InventorySlot _ingredient = new();
+        private readonly InventorySlot _result = new();
+        private readonly InventorySlot _fuel = new();
 
         /// <summary>
         /// Current state of the furnace
         /// </summary>
-        private State _state = new();
+        private readonly State _state = new();
 
         // Services & config
         [Inject] private UIService _uiService;
-
         [Inject] private SmeltingDatabase _smeltingDatabase;
 
 
@@ -88,7 +89,7 @@ namespace Blizzard.Obstacles.Concrete
         private void OnFurnaceSlotUpdate()
         {
             // Check if we can trigger a new smelt (e.g. prev smelt just finished or item has been added)
-            if (_ingredient.Item != null && !_state.isSmelting &&
+            if (_ingredient.Item && !_state.isSmelting &&
                 _smeltingDatabase.SmeltRecipeMap.TryGetValue(_ingredient.Item.id, out var recipe))
                 // Recipe matched to ingredient! Check if we can smelt
                 if (CanSmelt(recipe))

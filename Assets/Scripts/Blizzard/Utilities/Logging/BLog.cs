@@ -11,8 +11,9 @@ namespace Blizzard.Utilities.Logging
     {
         private const string infoColor = nameof(Color.white);
         private const string warningColor = nameof(Color.yellow);
-        private const string errorColor = nameof(Color.red);
+        private const string errorColor = nameof(Color.lightCoral);
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void Log(object message)
@@ -20,6 +21,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.Log(FormatMessage(infoColor, message));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void Log(string category, object message)
@@ -27,6 +29,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.Log(FormatMessageWithCategory(infoColor, category, message));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogFormat(string format, params object[] args)
@@ -34,6 +37,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.Log(FormatMessage(infoColor, string.Format(format, args)));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogFormat(string category, string format, params object[] args)
@@ -41,6 +45,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.Log(FormatMessageWithCategory(infoColor, category, string.Format(format, args)));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogWarning(object message)
@@ -48,6 +53,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.LogWarning(FormatMessage(warningColor, message));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogWarning(string category, object message)
@@ -55,6 +61,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.LogWarning(FormatMessageWithCategory(warningColor, category, message));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogWarningFormat(string format, params object[] args)
@@ -62,6 +69,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.LogWarningFormat(FormatMessage(warningColor, string.Format(format, args)));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogWarningFormat(string category, string format, params object[] args)
@@ -70,6 +78,7 @@ namespace Blizzard.Utilities.Logging
                 string.Format(format, args)));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogError(object message)
@@ -77,6 +86,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.LogError(FormatMessage(errorColor, message));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogError(string category, object message)
@@ -84,6 +94,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.LogError(FormatMessageWithCategory(errorColor, category, message));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogErrorFormat(string format, params object[] args)
@@ -91,6 +102,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.LogErrorFormat(FormatMessage(errorColor, string.Format(format, args)));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogErrorFormat(string category, string format, params object[] args)
@@ -99,6 +111,7 @@ namespace Blizzard.Utilities.Logging
                 string.Format(format, args)));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogException(Exception exception)
@@ -106,6 +119,7 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.LogError(FormatMessage(errorColor, exception.Message));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         [Conditional("UNITY_EDITOR")]
         [Conditional("DEVELOPMENT_BUILD")]
         public static void LogException(string category, Exception exception)
@@ -113,11 +127,13 @@ namespace Blizzard.Utilities.Logging
             UnityEngine.Debug.LogError(FormatMessageWithCategory(errorColor, category, exception.Message));
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         private static string FormatMessage(string color, object message)
         {
             return $"<color={color}>{message}</color>";
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         private static string FormatMessageWithCategory(string color, string category, object message)
         {
             return $"<color={color}><b>[{category}]</b> {message}</color>";

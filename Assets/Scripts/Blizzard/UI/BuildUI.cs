@@ -85,7 +85,7 @@ namespace Blizzard.UI
                 spriteRenderer.color *= _occupiedLocationColor;
         }
 
-        public override void Close(bool destroy = true)
+        public override void Close()
         {
             // Unbind input
             _inputService.inputActions.Player.Build.performed -= OnInputBuild;
@@ -94,7 +94,7 @@ namespace Blizzard.UI
             Destroy(_buildingPreview.gameObject);
             Destroy(_occupiedBuildingPreview.gameObject);
 
-            base.Close(destroy);
+            base.Close();
         }
 
         private void OnInputBuild(InputAction.CallbackContext _)
