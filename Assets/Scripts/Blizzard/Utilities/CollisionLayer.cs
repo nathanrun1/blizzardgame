@@ -1,6 +1,4 @@
 using System;
-using Unity.VisualScripting;
-using UnityEngine;
 
 namespace Blizzard.Utilities
 {
@@ -22,11 +20,11 @@ namespace Blizzard.Utilities
         /// <summary>
         /// What can be hit by a tool held by the player
         /// </summary>
-        public static CollisionLayer Hittable = CollisionLayer.Obstacle | CollisionLayer.Enemy;
+        public const CollisionLayer Hittable = CollisionLayer.Obstacle | CollisionLayer.Enemy;
 
         /// <summary>
         /// What will block enemy vision
         /// </summary>
-        public static CollisionLayer Visible = CollisionLayer.Obstacle | CollisionLayer.Player;
+        public const CollisionLayer Visible = CollisionLayer.Obstacle | CollisionLayer.Player;
     }
 }

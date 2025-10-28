@@ -4,7 +4,6 @@
 //using System;
 //using ModestTree;
 //using Blizzard.Inventory;
-//using NUnit.Framework;
 
 //namespace Blizzard.Obstacles
 //{

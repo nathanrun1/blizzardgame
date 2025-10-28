@@ -2,10 +2,10 @@ using System.Linq;
 using Blizzard.Constants;
 using Blizzard.Obstacles;
 using FlowFieldAI;
-using NUnit.Framework;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Assertions;
 using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Pathfinding

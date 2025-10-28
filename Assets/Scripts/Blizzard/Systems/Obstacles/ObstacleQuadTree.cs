@@ -1,15 +1,11 @@
 using NativeTrees;
-using NUnit.Framework;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Unity.Mathematics;
 using Blizzard.Grid;
 using System.Linq;
 using Blizzard.Constants;
-using Sirenix.OdinInspector.Editor.Validation;
 
 namespace Blizzard.Obstacles
 {
@@ -128,7 +124,7 @@ namespace Blizzard.Obstacles
         /// Initializes an ObstacleQuadTree
         /// </summary>
         /// <param name="obstacleGrid">Associated obstacle grid</param>
-        /// <param name="flags">Obstacle flag filters</param>
+        /// <param name="obstacleFlags">Obstacle flag filters</param>
         public ObstacleQuadTree(ISparseWorldGrid<Obstacle> obstacleGrid, ObstacleFlags obstacleFlags)
         {
             _obstacleGrid = obstacleGrid;
