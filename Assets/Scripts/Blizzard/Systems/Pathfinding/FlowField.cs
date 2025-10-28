@@ -10,18 +10,6 @@ using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Pathfinding
 {
-    internal enum NbrLocation
-    {
-        Up = 0,
-        Right = 1,
-        Down = 2,
-        Left = 3,
-        UpLeft = 4,
-        UpRight = 5,
-        DownRight = 6,
-        DownLeft = 7
-    }
-
     /// <summary>
     /// Represents a contained flow field region.
     /// </summary>
@@ -72,7 +60,7 @@ namespace Blizzard.Pathfinding
                     .GetValidPositionsInRange(minBounds, maxBounds);
                 foreach (var pos in inRange)
                 {
-                    var obstacle = obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                    var obstacle = obstacleGridService.GetMainGrid()
                         .GetAt(pos);
                     Assert.IsNotNull(obstacle, "Failed to construct flow field chunk, queried a null obstacle!");
 
@@ -163,25 +151,25 @@ namespace Blizzard.Pathfinding
                     _nativeFlowField = new NativeFlowField(width, height, useTravelCosts: true);
 
                 // Default initialize to float.MinValue (i.e. "Walkable")
-                var inFieldArr = Enumerable.Repeat(float.MinValue, width * height).ToArray();
-                var travelCostsArr = Enumerable.Repeat(0f, width * height).ToArray();
+                float[] inFieldArr = Enumerable.Repeat(float.MinValue, width * height).ToArray();
+                float[] travelCostsArr = Enumerable.Repeat(0f, width * height).ToArray();
 
                 var inRange = _obstacleGridService.GetQuadtree((ObstacleFlags)0)
                     .GetValidPositionsInRange(min, max);
                 //BLog.Log($"Obstacles in range: {inRange.Count}");
                 foreach (var pos in inRange)
                 {
-                    var obstacle = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                    var obstacle = _obstacleGridService.GetMainGrid()
                         .GetAt(pos);
                     Assert.IsNotNull(obstacle, "Failed to construct flow field, queried a null obstacle!");
 
                     // Check if player built
-                    var isPlayerBuilt = (ObstacleFlags.PlayerBuilt & obstacle.ObstacleFlags) ==
-                                        ObstacleFlags.PlayerBuilt;
+                    bool isPlayerBuilt = (ObstacleFlags.PlayerBuilt & obstacle.ObstacleFlags) ==
+                                         ObstacleFlags.PlayerBuilt;
 
                     // TODO: improve weight calculation based on obstacle
-                    var weight = isPlayerBuilt ? 0f : float.MinValue; // Set no weight if not player built
-                    var travelCost =
+                    float weight = isPlayerBuilt ? 0f : float.MinValue; // Set no weight if not player built
+                    float travelCost =
                         (obstacle as Damageable)
                             ? (obstacle as Damageable)!.Health / 10f
                             : 0f; // TEMP: set travel cost to health/10, though this should depend on enemy's dps
@@ -201,7 +189,7 @@ namespace Blizzard.Pathfinding
                 {
                     Iterations = 100,
                     IterationsPerFrame = 0,
-                    DiagonalMovement = true,
+                    DiagonalMovement = false,
                     ComputeQueueType = ComputeQueueType.Background
                 });
                 rq.WaitForCompletion();

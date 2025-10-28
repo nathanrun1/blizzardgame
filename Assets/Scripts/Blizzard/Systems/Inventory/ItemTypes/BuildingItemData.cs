@@ -26,7 +26,7 @@ namespace Blizzard.Inventory.ItemTypes
         public override void Equip(EquipData equipData)
         {
             BLog.Log($"Equipping {this}");
-            _uiService.InitUI("build", new BuildUI.Args
+            _uiService.InitUI(UIID.Build, new BuildUI.Args
             {
                 buildingData = buildingData,
                 itemSlot = equipData.slotIndex
@@ -36,7 +36,7 @@ namespace Blizzard.Inventory.ItemTypes
         public override void Unequip()
         {
             BLog.Log($"Unequipping {this}");
-            _uiService.CloseUI("build");
+            _uiService.CloseUI(UIID.Build);
         }
     }
 }

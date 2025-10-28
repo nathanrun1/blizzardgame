@@ -80,10 +80,10 @@ namespace Blizzard.Obstacles
         }
 
         /// <summary>
-        /// Invoked when health reaches 0
+        /// Invoked when health reaches 0 as a result of being damaged
         /// </summary>
-        /// <param name="damageFlags"></param>
-        /// <param name="sourcePosition"></param>
+        /// <param name="damageFlags">Damage flags associated with damage source</param>
+        /// <param name="sourcePosition">World position of the damage source</param>
         protected virtual void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition)
         {
         }

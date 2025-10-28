@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Blizzard.Constants;
+using Blizzard.Grid;
 using UnityEngine;
 
 namespace Blizzard.Obstacles
@@ -11,9 +12,9 @@ namespace Blizzard.Obstacles
         /// <summary>
         /// Cache mapping obstacle flags to list of valid positions with that flag
         /// </summary>
-        private static Dictionary<ObstacleFlags, List<Vector2Int>> _flagQueryCache = new();
+        private static readonly Dictionary<ObstacleFlags, List<Vector2Int>> _flagQueryCache = new();
 
-        private static System.Random _rand = new();
+        private static readonly System.Random _rand = new();
 
         public static IEnumerable<Obstacle> GetAllObstaclesWithFlags(this ObstacleGridService obstacleGridService,
             ObstacleFlags obstacleFlags, ObstacleLayer obstacleLayer = ObstacleConstants.MainObstacleLayer)
@@ -54,6 +55,15 @@ namespace Blizzard.Obstacles
             return obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
                 .GetAt(_flagQueryCache[obstacleFlags][
                     _rand.Next(_flagQueryCache[obstacleFlags].Count)]); // Guaranteed to be valid
+        }
+
+        /// <summary>
+        /// Retrieves grid of main obstacle layer
+        /// </summary>
+        /// <param name="obstacleGridService"></param>
+        public static ISparseWorldGrid<Obstacle> GetMainGrid(this ObstacleGridService obstacleGridService)
+        {
+            return obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer];
         }
     }
 }

@@ -1,11 +1,7 @@
-using ModestTree;
 using System;
 using Blizzard.Input;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using DG.Tweening;
-using Blizzard.Inventory;
 using Blizzard.Obstacles;
 using Blizzard.UI.Core;
 using UnityEngine.InputSystem;
@@ -37,6 +33,11 @@ namespace Blizzard.UI
         [Header("GameObject References")] 
         [SerializeField] private TextMeshProUGUI _text;
 
+        /// <summary>
+        /// Offset of interact info UI position from mouse position (pixel coords)
+        /// </summary>
+        [Header("Config")] 
+        [SerializeField] private Vector2 _mousePositionOffset;
         [Inject] private InputService _inputService;
 
         public override void Setup(object args)
@@ -52,7 +53,22 @@ namespace Blizzard.UI
             }
             
             SetupText(interactInfoArgs.interactable);
-            transform.position = _inputService.GetMainCamera().WorldToScreenPoint(interactInfoArgs.interactablePosition);
+            //transform.position = _inputService.GetMainCamera().WorldToScreenPoint(interactInfoArgs.interactablePosition); // To interactable pos
+            MoveToMousePos();
+        }
+
+        private void Update()
+        {
+            MoveToMousePos();
+        }
+
+        /// <summary>
+        /// Moves the UI to the mouse's position (with offset)
+        /// </summary>
+        private void MoveToMousePos()
+        {
+            // To mouse pos
+            transform.position = Mouse.current.position.ReadValue() + _mousePositionOffset;
         }
 
         /// <summary>

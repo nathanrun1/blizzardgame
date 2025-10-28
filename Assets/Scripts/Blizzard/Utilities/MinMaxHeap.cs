@@ -31,15 +31,14 @@ namespace Blizzard.Utilities
         /// <param name="value">Value of element to add</param>
         public void Add(T value)
         {
-            if (_elementCount.ContainsKey(value))
+            // Increment count
+            if (!_elementCount.TryAdd(value, 1))
             {
-                // Already in MinMaxHeap, increase count
                 _elementCount[value]++;
-                return;
             }
 
+            if (_elementCount[value] > 1) return;
             // New value, add to MinMaxHeap
-            _elementCount.Add(value, 1);
             _elementLocation.Add(value, _elements.Count);
             _elements.Add(value);
             BubbleUp(_elements.Count - 1);

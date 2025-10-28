@@ -48,7 +48,7 @@ namespace Blizzard.Obstacles
         {
             BLog.Log("Interactable pointer enter");
             _curTargetInteractable = _interactable as IInteractable;
-            _uiService.InitUI("interact_info", new InteractInfoUI.Args(
+            _uiService.InitUI(UIID.InteractInfo, new InteractInfoUI.Args(
                 interactable: _interactable as IInteractable, 
                 interactablePosition: transform.position));
         }
@@ -58,7 +58,7 @@ namespace Blizzard.Obstacles
             BLog.Log("Interactable pointer exit");
             if (_curTargetInteractable != (_interactable as IInteractable)) return; // Has already been reassigned to other interactable
             _curTargetInteractable = null;
-            _uiService.CloseUI("interact_info");
+            _uiService.CloseUI(UIID.InteractInfo);
         }
 
         

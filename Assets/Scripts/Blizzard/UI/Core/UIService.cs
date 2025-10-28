@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Blizzard.Obstacles;
 using UnityEngine;
@@ -64,10 +65,10 @@ namespace Blizzard.UI.Core
         /// First instantiates it, then parents it to the appropriate canvas, then calls the Setup() method with provided args.
         /// </summary>
         /// <returns>Reference to instantiated instance of the UI prefab</returns>
-        public UIBase InitUI(int id, object args = null)
+        public UIBase InitUI(UIID id, object args = null)
         {
             UIData uiData;
-            if (_intDict.TryGetValue(id, out var value)) uiData = value;
+            if (_intDict.TryGetValue((int)id, out var value)) uiData = value;
             else
                 throw new KeyNotFoundException("No UI prefab exists with this id: " + id);
 
@@ -75,45 +76,31 @@ namespace Blizzard.UI.Core
         }
 
         /// <summary>
-        /// Initializes UI prefab of given string id.
-        /// First instantiates it, then parents it to the appropriate canvas, then calls the Setup() method with provided args.
-        /// </summary>
-        /// <returns>Reference to instantiated instance of the UI prefab</returns>
-        public UIBase InitUI(string stringId, object args = null)
-        {
-            UIData uiData;
-            if (_strDict.TryGetValue(stringId, out var value)) uiData = value;
-            else
-                throw new KeyNotFoundException("No UI prefab exists with this id: " + stringId);
-
-            return InitUI(uiData, args);
-        }
-
-        /// <summary>
         /// Closes UI of given id, if it is a singleton UI and there is an active instance of it
         /// </summary>
-        public void CloseUI(int id)
+        public void CloseUI(UIID id)
         {
-            if (!_activeUI.TryGetValue(id, out var uiObj)) return;
+            if (!_activeUI.TryGetValue((int)id, out var uiObj)) return;
 
             uiObj.Close();
         }
 
         /// <summary>
-        /// Closes UI of given string id, if it is a singleton UI and there is an active instance of it
+        /// If no instance of the UI of given id is active, initializes an instance of it with given args.
+        /// If an instance is active, closes it.
         /// </summary>
-        public void CloseUI(string stringId)
+        public void ToggleUI(UIID id, object args = null)
         {
-            var id = _strDict[stringId].id;
-            CloseUI(id);
+            if (IsUIActive(id)) CloseUI(id);
+            else InitUI(id, args);
         }
 
         /// <summary>
         /// Fetches a reference to a singleton UI instance. Returns it if it exists.
         /// </summary>
-        public UIBase GetSingletonUI(int id)
+        public UIBase GetSingletonUI(UIID id)
         {
-            if (!_activeUI.TryGetValue(id, out var uiObj))
+            if (!_activeUI.TryGetValue((int)id, out var uiObj))
             {
                 BLog.LogError(
                     $"Attempted to get singleton instance of UI (id {id}), but not open or isSingle set to false");
@@ -124,14 +111,12 @@ namespace Blizzard.UI.Core
         }
 
         /// <summary>
-        /// Fetches a reference to a singleton UI instance. Returns it if it exists.
+        /// Determines if there exists an active UI instance of the given id.
         /// </summary>
-        public UIBase GetSingletonUI(string stringId)
+        public bool IsUIActive(UIID id)
         {
-            var id = _strDict[stringId].id;
-            return GetSingletonUI(id);
+            return _activeUI.ContainsKey((int)id);
         }
-
 
         private UIBase InitUI(UIData uiData, object args)
         {
@@ -180,6 +165,43 @@ namespace Blizzard.UI.Core
                 _intDict.Add(uiData.id, uiData);
                 _strDict.Add(uiData.stringId, uiData);
             }
+        }
+        
+        
+        /// <summary>
+        /// Fetches a reference to a singleton UI instance. Returns it if it exists.
+        /// </summary>
+        [Obsolete]
+        public UIBase GetSingletonUI(string stringId)
+        {
+            var id = _strDict[stringId].id;
+            return GetSingletonUI((UIID)id);
+        }
+        
+        /// <summary>
+        /// Closes UI of given string id, if it is a singleton UI and there is an active instance of it
+        /// </summary>
+        [Obsolete]
+        public void CloseUI(string stringId)
+        {
+            var id = _strDict[stringId].id;
+            CloseUI((UIID)id);
+        }
+        
+        /// <summary>
+        /// Initializes UI prefab of given string id.
+        /// First instantiates it, then parents it to the appropriate canvas, then calls the Setup() method with provided args.
+        /// </summary>
+        /// <returns>Reference to instantiated instance of the UI prefab</returns>
+        [Obsolete]
+        public UIBase InitUI(string stringId, object args = null)
+        {
+            UIData uiData;
+            if (_strDict.TryGetValue(stringId, out var value)) uiData = value;
+            else
+                throw new KeyNotFoundException("No UI prefab exists with this id: " + stringId);
+
+            return InitUI(uiData, args);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Blizzard.UI
         /// </summary>
         public static void ItemGain(this UIService uiService, ItemData item, int amount, Vector3 collectPosition)
         {
-            uiService.InitUI("item_gain", new ItemGainUI.Args
+            uiService.InitUI(UIID.ItemGain, new ItemGainUI.Args
             {
                 item = item,
                 amount = amount,
@@ -44,7 +44,7 @@ namespace Blizzard.UI
                 var capturedNext = next;
                 Action temp = () =>
                 {
-                    uiService.InitUI("item_gain", new ItemGainUI.Args
+                    uiService.InitUI(UIID.ItemGain, new ItemGainUI.Args
                     {
                         item = itemAmountPair.item,
                         amount = itemAmountPair.amount,

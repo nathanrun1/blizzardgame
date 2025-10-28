@@ -29,12 +29,12 @@ namespace Blizzard.Utilities
         [Inject] private ObstacleGridService _obstacleGridService;
         [Inject] private InputService _inputService;
 
-        [FoldoutGroup("UI")] [SerializeField] private int[] _startupUI;
+        [FoldoutGroup("UI")] [SerializeField] private UIID[] _startupUI;
 
         [FoldoutGroup("UI")]
         [Button]
         [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
-        private void InitUI(int id)
+        private void InitUI(UIID id)
         {
             _uiService.InitUI(id);
         }
@@ -42,7 +42,7 @@ namespace Blizzard.Utilities
         [FoldoutGroup("UI")]
         [Button]
         [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
-        private void CloseUI(int id)
+        private void CloseUI(UIID id)
         {
             _uiService.CloseUI(id);
         }

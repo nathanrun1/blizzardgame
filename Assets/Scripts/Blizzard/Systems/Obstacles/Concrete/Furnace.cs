@@ -8,6 +8,7 @@ using Blizzard.UI.Core;
 using Blizzard.Inventory.Crafting;
 using Blizzard.Utilities.Logging;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 namespace Blizzard.Obstacles.Concrete
 {
@@ -77,7 +78,7 @@ namespace Blizzard.Obstacles.Concrete
 
         public void OnPrimaryInteract()
         {
-            _uiService.InitUI("furnace", new FurnaceUI.Args
+            _uiService.InitUI(UIID.Furnace, new FurnaceUI.Args
             {
                 ingredientSlot = _ingredient,
                 resultSlot = _result,

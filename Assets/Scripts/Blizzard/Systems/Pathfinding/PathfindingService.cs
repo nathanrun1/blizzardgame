@@ -14,6 +14,10 @@ namespace Blizzard.Pathfinding
     public class PathfindingService : IInitializable
     {
         private FlowField _flowField;
+        /// <summary>
+        /// Whether flow field is valid. If false, will be as if flow field is empty.
+        /// </summary>
+        private bool _flowFieldValid;
 
         [Inject] private ObstacleGridService _obstacleGridService;
 
@@ -41,7 +45,7 @@ namespace Blizzard.Pathfinding
         public bool TryGetNextTargetPosition(Vector2 navigatorPos, out Vector2 nextTargetPos,
             out Obstacle targetObstacle)
         {
-            var gridPosition = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+            var gridPosition = _obstacleGridService.GetMainGrid()
                 .WorldToCellPos(navigatorPos);
             if (!TryGetNextTargetGridPosition(gridPosition, out var nextGridPosition, out targetObstacle))
             {
@@ -50,7 +54,7 @@ namespace Blizzard.Pathfinding
                 return false;
             }
 
-            nextTargetPos = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+            nextTargetPos = _obstacleGridService.GetMainGrid()
                 .CellToWorldPosCenter(gridPosition);
             return true;
         }
@@ -65,7 +69,7 @@ namespace Blizzard.Pathfinding
         public bool TryGetNextTargetGridPosition(Vector2Int navigatorGridPos, out Vector2Int nextTargetGridPos,
             out Obstacle targetObstacle)
         {
-            if (!_flowField.TryGetNextPos(navigatorGridPos, out nextTargetGridPos))
+            if (!_flowFieldValid || !_flowField.TryGetNextPos(navigatorGridPos, out nextTargetGridPos))
             {
                 targetObstacle = null;
                 nextTargetGridPos = default;
@@ -73,7 +77,6 @@ namespace Blizzard.Pathfinding
             }
 
             _obstacleGridService.TryGetObstacleAt(nextTargetGridPos, out targetObstacle);
-            // BLog.Log($"Next pos is {nextTargetGridPos}, this pos is {navigatorGridPos} obstacle?: {targetObstacle}");
             return true;
         }
 
@@ -93,7 +96,12 @@ namespace Blizzard.Pathfinding
                 else _outerMostBoundsPlayerBuilt.Remove(pos);
             }
 
-            if (_outerMostBoundsPlayerBuilt.IsEmpty()) return; // No player built obstacles, no need for flow field
+            if (_outerMostBoundsPlayerBuilt.IsEmpty())
+            {
+                // No player built obstacles, no need for flow field
+                _flowFieldValid = false;
+                return;
+            } 
 
             // Add padding to min/max bounds so that enemies near (within padding) player built objects can still
             //  pathfind to them
@@ -104,26 +112,9 @@ namespace Blizzard.Pathfinding
                 _outerMostBoundsPlayerBuilt.MinBound.x + PathfindingConstants.ffPadding,
                 _outerMostBoundsPlayerBuilt.MinBound.y + PathfindingConstants.ffPadding);
 
-            //BLog.Log($"Building flow field with bounds {paddedMin} -> {paddedMax}");
             _flowField.BuildFlowField(paddedMin, paddedMax);
+            _flowFieldValid = true;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void GetFullFlowFieldBounds()
-        {
-        }
-
-        //public NativeFlowField GetFlowField(Vector2Int source, Vector2Int target)
-        //{
-        //    // TODO: flowfield cache
-
-        //    // Flow field will cover a square centered on target, side length 2 * largest
-        //    //   of x or y distance from source to target.
-        //    // This ensures flow field 
-        //    int halfSideLength = Math.Max(Math.Abs(source.x - target.x), Math.Abs(source.y - target.y));
-        //}\
     }
 }
 
