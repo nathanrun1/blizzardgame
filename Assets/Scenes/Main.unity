@@ -2944,10 +2944,8 @@ MonoBehaviour:
     amount: 1
   - item: {fileID: 11400000, guid: 143031de987ad274e97c79399a46dba3, type: 2}
     amount: 1
-  - item: {fileID: 11400000, guid: 11687069685bd354dab749a57e5e029e, type: 2}
-    amount: 2
   - item: {fileID: 11400000, guid: 643576cc368137a47b60c8a5e5568ec1, type: 2}
-    amount: 3
+    amount: 20
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}
     position: {x: 0, y: 5}

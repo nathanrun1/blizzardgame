@@ -10,19 +10,20 @@ using Blizzard.Player;
 using Blizzard.Player.Tools;
 using Blizzard.Utilities;
 using Blizzard.UI.Core;
+using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Obstacles.Harvestables
 {
     /// <summary>
     /// An obstacle that is harvestable by a tool, providing resources when harvested (destroyed)
     /// </summary>
-    public class Harvestable : Damageable
+    public class Harvestable : Damageable, IHittable
     {
         /// <summary>
         /// Type of tool(s) that can harvest this harvestable, interpreted as bit field.
         /// </summary>
-        [Header("Harvestable properties")] [SerializeField]
-        public ToolType ToolTypes;
+        [Header("Harvestable properties")] 
+        [SerializeField] public ToolType ToolTypes;
 
         /// <summary>
         /// Resources given to the player when harvested
@@ -33,6 +34,14 @@ namespace Blizzard.Obstacles.Harvestables
         [Inject] private EnvPrefabService _envPrefabService;
         [Inject] private PlayerService _playerService;
         [Inject] private UIService _uiService;
+
+        public void Hit(int damage, ToolType toolType, out bool death)
+        {
+            // If hit by correct tool type, apply damage.
+            death = false;
+            if (toolType.HasFlag(ToolTypes))
+                Damage(damage, DamageFlags.Player, _playerService.PlayerPosition, out death);
+        }
 
         protected override void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition)
         {
@@ -69,23 +78,6 @@ namespace Blizzard.Obstacles.Harvestables
                 }
 
             HarvestAnim(Destroy);
-        }
-
-        /// <summary>
-        /// Feedback for the harvestable being damaged by a tool
-        /// </summary>
-        private IEnumerator DamageAnim(Vector3 sourcePosition)
-        {
-            if (Health <= 0) yield break;
-            var hitDirection = (transform.position - sourcePosition).normalized;
-            var startPos = transform.position;
-            var endPos = startPos + hitDirection * 0.05f;
-            var sequence = DOTween.Sequence();
-            sequence.Append(transform.DOMove(endPos, 0.1f));
-            sequence.Append(transform.DOMove(startPos, 0.1f));
-
-            sequence.Play();
-            yield return null;
         }
 
         /// <summary>

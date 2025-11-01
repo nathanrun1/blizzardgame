@@ -83,10 +83,9 @@ namespace Blizzard.Player.Tools.Concrete
             var hitObjects = AxeDetectHit();
 
             foreach (var obj in hitObjects)
-                // Get 'Harvestable' component of object, or ignore if it doesn't exist
-                if (obj.TryGetComponent(out Harvestable harvestable))
-                    Harvest(harvestable, CalculateDamage());
-            // TODO: handle enemies
+                // Get 'IHittable' component of object, or ignore if it doesn't exist
+                if (obj.TryGetComponent(out IHittable hittable))
+                    ApplyHit(hittable, CalculateDamage(), out _);
         }
 
         private int CalculateDamage()

@@ -34,16 +34,11 @@ namespace Blizzard.Player.Tools
 
 
         /// <summary>
-        /// Apply damage to (or "harvest") a harvestable
+        /// Apply damage to a harvestable
         /// </summary>
-        protected virtual void Harvest(Harvestable harvestable, int damage = -1)
+        protected void ApplyHit(IHittable hittable, int damage, out bool death)
         {
-            if ((harvestable.ToolTypes & _toolType) == 0) return; // Tool type does not match
-
-            var damageToApply = damage == -1 ? _baseDamage : damage;
-
-            //BLog.Log($"Hit a {harvestable.name}! Applying damage: " + damageToApply);
-            harvestable.Damage(damageToApply, DamageFlags.Player, transform.position, out _);
+            hittable.Hit(damage, _toolType, out death);
         }
     }
 }
