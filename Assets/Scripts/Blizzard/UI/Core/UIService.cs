@@ -47,7 +47,7 @@ namespace Blizzard.UI.Core
         private readonly Transform _canvasTop;
 
 
-        public UIService(UIDatabase uiDatabase, RectTransform uiParent)
+        public UIService(RectTransform uiParent)
         {
             BLog.Log("DI Container: " + _diContainer);
             _uiParent = uiParent;
@@ -56,8 +56,17 @@ namespace Blizzard.UI.Core
             _canvasTop = new GameObject("CanvasTop").transform;
             _canvasTop.SetParent(_uiParent);
             _canvasTop.SetAsLastSibling();
-
-            InitDictionaries(uiDatabase);
+        }
+        
+        [Inject]
+        private void InitDictionaries(UIDatabase uiDatabase)
+        {
+            BLog.Log("Initializing UI prefab dictionaries");
+            foreach (var uiData in uiDatabase.uiDatas)
+            {
+                _intDict.Add(uiData.id, uiData);
+                _strDict.Add(uiData.stringId, uiData);
+            }
         }
 
         /// <summary>
@@ -157,17 +166,6 @@ namespace Blizzard.UI.Core
             return uiObj;
         }
 
-        private void InitDictionaries(UIDatabase uiDatabase)
-        {
-            BLog.Log("Initializing UI prefab dictionaries");
-            foreach (var uiData in uiDatabase.uiDatas)
-            {
-                _intDict.Add(uiData.id, uiData);
-                _strDict.Add(uiData.stringId, uiData);
-            }
-        }
-        
-        
         /// <summary>
         /// Fetches a reference to a singleton UI instance. Returns it if it exists.
         /// </summary>

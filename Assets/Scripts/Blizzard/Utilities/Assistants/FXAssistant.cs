@@ -19,7 +19,7 @@ namespace Blizzard.Utilities
             float duration = 0.2f)
         {
             var initialColors = new Color[spriteRenderers.Length];
-            for (var i = 0; i < spriteRenderers.Length; ++i)
+            for (int i = 0; i < spriteRenderers.Length; ++i)
             {
                 initialColors[i] = spriteRenderers[i].color;
                 spriteRenderers[i].color *= targetColor;
@@ -27,7 +27,13 @@ namespace Blizzard.Utilities
 
             yield return new WaitForSeconds(duration);
 
-            for (var i = 0; i < spriteRenderers.Length; ++i) spriteRenderers[i].color = initialColors[i];
+            for (int i = 0; i < spriteRenderers.Length; ++i) spriteRenderers[i].color = initialColors[i];
+        }
+
+        public static IEnumerator TintSequenceCoroutine(SpriteRenderer spriteRenderer, Color targetColor,
+            float duration = 0.2f)
+        {
+            return TintSequenceCoroutine(new[] { spriteRenderer }, targetColor, duration);
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace Blizzard.Obstacles
     /// <summary>
     /// Wrapper for QuadTree storing obstacles
     /// </summary>
-    public class ObstacleQuadTree
+    public class ObstacleQuadtree
     {
         #region QT Structs
 
@@ -124,7 +124,7 @@ namespace Blizzard.Obstacles
         /// </summary>
         /// <param name="obstacleGrid">Associated obstacle grid</param>
         /// <param name="obstacleFlags">Obstacle flag filters</param>
-        public ObstacleQuadTree(ISparseWorldGrid<Obstacle> obstacleGrid, ObstacleFlags obstacleFlags)
+        public ObstacleQuadtree(ISparseWorldGrid<Obstacle> obstacleGrid, ObstacleFlags obstacleFlags)
         {
             _obstacleGrid = obstacleGrid;
             _obstacleFlags = obstacleFlags;
@@ -288,11 +288,11 @@ namespace Blizzard.Obstacles
                 if ((float)position.y > maxPos.y) maxPos = new float2(maxPos.x, (float)position.y);
             }
 
-            var boundsWidth = maxPos.x - minPos.x;
-            var boundsHeight = maxPos.y - minPos.y;
+            float boundsWidth = maxPos.x - minPos.x;
+            float boundsHeight = maxPos.y - minPos.y;
 
-            var horizontalPadding = boundsWidth * ObstacleConstants.QTBoundsPadding;
-            var verticalPadding = boundsHeight * ObstacleConstants.QTBoundsPadding;
+            float horizontalPadding = boundsWidth * ObstacleConstants.QTBoundsPadding;
+            float verticalPadding = boundsHeight * ObstacleConstants.QTBoundsPadding;
 
             minPos = new float2(minPos.x - horizontalPadding, minPos.y - verticalPadding);
             maxPos = new float2(maxPos.x + horizontalPadding, maxPos.y + verticalPadding);

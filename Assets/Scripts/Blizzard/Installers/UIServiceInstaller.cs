@@ -8,7 +8,6 @@ namespace Blizzard.Installers
 {
     public class UIServiceInstaller : MonoInstaller
     {
-        [SerializeField] private UIDatabase _uiDatabase;
         [SerializeField] private RectTransform _uiParent;
 
         public override void InstallBindings()
@@ -16,7 +15,7 @@ namespace Blizzard.Installers
             Container.Bind<UIService>()
                 .FromNew()
                 .AsSingle()
-                .WithArguments(_uiDatabase, _uiParent);
+                .WithArguments(_uiParent);
 
             BLog.Log("Installed UI Service");
         }

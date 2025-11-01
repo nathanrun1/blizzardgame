@@ -31,7 +31,7 @@ namespace Blizzard.Obstacles
         /// QuadTrees for querying obstacles with different ObstacleFlags on main obstacle layer.
         /// Must be initialized with InitQuadTree()
         /// </summary>
-        public Dictionary<ObstacleFlags, ObstacleQuadTree> QuadTrees { get; private set; } = new();
+        public Dictionary<ObstacleFlags, ObstacleQuadtree> QuadTrees { get; private set; } = new();
 
         [Inject] private TemperatureService _temperatureService;
 
@@ -133,15 +133,15 @@ namespace Blizzard.Obstacles
         public void InitQuadTree(ObstacleFlags obstacleFlags)
         {
             if (QuadTrees.ContainsKey(obstacleFlags)) return; // Already exists
-            ObstacleQuadTree quadTree = new(Grids[ObstacleConstants.MainObstacleLayer], obstacleFlags);
-            QuadTrees.Add(obstacleFlags, quadTree);
+            ObstacleQuadtree quadtree = new(Grids[ObstacleConstants.MainObstacleLayer], obstacleFlags);
+            QuadTrees.Add(obstacleFlags, quadtree);
         }
 
         /// <summary>
         /// Retrieves ObstacleQuadTree with the given obstacleFlags as filter.
         /// Initializes it if it doesn't already exist.
         /// </summary>
-        public ObstacleQuadTree GetQuadtree(ObstacleFlags obstacleFlags)
+        public ObstacleQuadtree GetQuadtree(ObstacleFlags obstacleFlags)
         {
             InitQuadTree(obstacleFlags);
             return QuadTrees[obstacleFlags];
