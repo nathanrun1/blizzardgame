@@ -25,10 +25,19 @@ namespace Blizzard.UI.Inventory
         [SerializeField] private Image _itemPreviewIcon;
         
         // Item Dragging
-        [SerializeField]
-        private Image _itemIconDrag; // Item icon & count used to show an item being dragged from the slot
+
+        /// <summary>
+        /// Item icon used to show an item being dragged from the slot
+        /// </summary>
+        [SerializeField] private Image _itemIconDrag;
+        /// <summary>
+        /// Item count used to show an item being dragged from the slot
+        /// </summary>
         [SerializeField] private TextMeshProUGUI _itemCountDrag;
-        [SerializeField] private RectTransform _dragParent; // Parent to drag-dedicated icon & count, to move them together
+        /// <summary>
+        /// Parent to drag-dedicated icon & count, to move them together
+        /// </summary>
+        [SerializeField] private RectTransform _dragParent; 
 
         [Inject] private InputService _inputService;
         [Inject] private UIService _uiService;
@@ -244,14 +253,16 @@ namespace Blizzard.UI.Inventory
             }
 
             // Same items or other slot empty, move as much as possible
-            var amountInDestination = destination._linkedSlot.Item ? 0 : destination._linkedSlot.Amount;
-            var amountToMove =
+            int amountInDestination = !destination._linkedSlot.Item ? 0 : destination._linkedSlot.Amount;
+            int amountToMove =
                 Math.Min(_linkedSlot.Item.stackSize - amountInDestination,
                     amount); // Can move at most as much as there is space in other slot
+            if (amountToMove < 0) return 0; // No space at all
+            BLog.Log($"Can move {amountToMove} to other slot. Other slot has {amountInDestination}, stack size is {_linkedSlot.Item.stackSize}");
             if (amountToMove > _linkedSlot.Amount)
             {
-                BLog.LogWarning(
-                    $"[InventorySlotCtrl] TryMoveItemsOut() Attempted to move out more items than in slot!\n" +
+                BLog.LogError("InventorySlotCtrl",
+                    $"Attempted to move out more items than in slot!\n" +
                     $"amountToMove = {amountToMove}, _linkedSlot.Amount = {_linkedSlot.Amount}");
                 return 0;
             }
