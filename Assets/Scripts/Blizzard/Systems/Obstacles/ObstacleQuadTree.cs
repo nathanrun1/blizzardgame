@@ -93,8 +93,7 @@ namespace Blizzard.Obstacles
         }
 
         #endregion QT Structs
-
-
+        
         /// <summary>
         /// Underlying QuadTree implementation
         /// </summary>
@@ -106,18 +105,18 @@ namespace Blizzard.Obstacles
         /// Set of coordinates that have been inserted into the underlying quadtree,
         /// yet the associated obstacle has been removed.
         /// </summary>
-        private HashSet<Vector2Int> _invalidPositions = new();
+        private readonly HashSet<Vector2Int> _invalidPositions = new();
 
         /// <summary>
         /// Associated obstacle grid, will cross-reference obstacles from within
         /// for queries.
         /// </summary>
-        private ISparseWorldGrid<Obstacle> _obstacleGrid;
+        private readonly ISparseWorldGrid<Obstacle> _obstacleGrid;
 
         /// <summary>
         /// Obstacle flags used as a filter when refreshing the QuadTree
         /// </summary>
-        private ObstacleFlags _obstacleFlags;
+        private readonly ObstacleFlags _obstacleFlags;
 
 
         /// <summary>
@@ -151,7 +150,7 @@ namespace Blizzard.Obstacles
 
             _nativeQuadTree.InsertPoint(
                 new QTObstacleData(obstaclePosition),
-                new float2((float)obstaclePosition.x, (float)obstaclePosition.y)
+                new float2(obstaclePosition.x, obstaclePosition.y)
             );
         }
 

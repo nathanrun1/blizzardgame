@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections;
+using System.Diagnostics;
 using Blizzard.Input;
 using Blizzard.Obstacles.Harvestables;
 using Blizzard.Utilities;
@@ -13,22 +14,22 @@ namespace Blizzard.Player.Tools.Concrete
 {
     public class AxeTool : ToolBehaviour
     {
-        [Header("GameObjects")] [SerializeField]
-        private GameObject _axeHitbox;
-
+        [Header("GameObjects")] 
+        [SerializeField] private GameObject _axeHitbox;
         [SerializeField] private GameObject _axeStationary;
         [SerializeField] private GameObject _axeSwing;
 
-        [Header("Behavior Config")] [SerializeField]
-        private float _baseSwingCooldown = 0.5f;
+        [Header("Behavior Config")] 
+        [SerializeField] private float _baseSwingCooldown = 0.5f;
 
-        [Header("Style Config")] [SerializeField]
-        private float _animDuration = 0.15f;
-
+        [Header("Style Config")] 
+        [SerializeField] private float _animDuration = 0.15f;
         [SerializeField] private float _swingAnimOffset = 0.35f;
         [SerializeField] private float _swingAnimStartLocalX = 0.35f;
         [SerializeField] private float _swingAnimEndLocalX = -0.25f;
-        [Header("Testing")] [SerializeField] private bool _visualizeHitbox = false;
+        
+        [Header("Testing")] 
+        [SerializeField] private bool _visualizeHitbox = false;
 
         [Inject] private InputService _inputService;
 
@@ -82,7 +83,7 @@ namespace Blizzard.Player.Tools.Concrete
             var hitObjects = AxeDetectHit();
 
             foreach (var obj in hitObjects)
-                // Get 'Harvestable' component of object, or ignore if doesn't exist
+                // Get 'Harvestable' component of object, or ignore if it doesn't exist
                 if (obj.TryGetComponent(out Harvestable harvestable))
                     Harvest(harvestable, CalculateDamage());
             // TODO: handle enemies
@@ -124,7 +125,7 @@ namespace Blizzard.Player.Tools.Concrete
             Vector2 bottomLeft = _axeHitbox.transform.position - halfX - halfY;
             Vector2 topRight = _axeHitbox.transform.position + halfX + halfY;
 
-            var hitList = Physics2D.OverlapAreaAll(bottomLeft, topRight, (int)CollisionAssistant.Hittable);
+            Collider2D[] hitList = Physics2D.OverlapAreaAll(bottomLeft, topRight, (int)CollisionAssistant.Hittable);
 
             if (_visualizeHitbox) StartCoroutine(VisualizeAxeHitbox(bottomLeft, topRight));
 
