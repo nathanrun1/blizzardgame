@@ -8,13 +8,14 @@ using Blizzard.Obstacles;
 using Blizzard.Player;
 using Blizzard.Grid;
 using Blizzard.Pathfinding;
+using Blizzard.Player.Tools;
 using ModestTree;
 using Assert = UnityEngine.Assertions.Assert;
 
 
 namespace Blizzard.Enemies
 {
-    public class ZombieBehaviour : MonoBehaviour
+    public class ZombieBehaviour : MonoBehaviour, IHittable
     {
         [System.Serializable]
         public class BehaviourConfig
@@ -348,8 +349,13 @@ namespace Blizzard.Enemies
 
         #endregion
 
-        [Header("Zombie Config")] [SerializeField]
-        private BehaviourConfig _behaviour;
+        public int Health;
+
+        [Header("Zombie Config")] 
+        [SerializeField] private int _startingHealth = 100;
+        [SerializeField] private BehaviourConfig _behaviour;
+        [Header("References")]
+        [SerializeField] private SpriteRenderer _spriteRenderer;
 
         private StateMachine _stateMachine;
 
@@ -357,8 +363,26 @@ namespace Blizzard.Enemies
         [Inject] private PlayerService _playerService;
         [Inject] private PathfindingService _pathfindingService;
 
+
+        public void Hit(int damage, ToolType toolType, out bool death)
+        {
+            Health -= damage;
+
+            StartCoroutine(FXAssistant.TintSequenceCoroutine(_spriteRenderer, Color.darkRed));
+            
+            death = Health < 0;
+            if (death)
+            {
+                OnDeath();
+                Health = 0;
+            }
+        }
+
+
         private void Awake()
         {
+            Health = _startingHealth;
+            
             _behaviour.CalculateSquareRanges();
 
             var stateContext = new ZombieContext
@@ -380,6 +404,11 @@ namespace Blizzard.Enemies
         private void FixedUpdate()
         {
             _stateMachine.Update(Time.fixedDeltaTime);
+        }
+
+        private void OnDeath()
+        {
+            gameObject.SetActive(false); // TODO
         }
     }
 }
