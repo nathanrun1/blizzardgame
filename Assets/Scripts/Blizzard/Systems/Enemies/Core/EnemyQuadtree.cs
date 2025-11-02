@@ -7,6 +7,8 @@ using Unity.Mathematics;
 using Blizzard.Grid;
 using System.Linq;
 using Blizzard.Constants;
+using Blizzard.Utilities.Logging;
+using Unity.Collections;
 
 namespace Blizzard.Enemies.Core
 {
@@ -41,11 +43,11 @@ namespace Blizzard.Enemies.Core
         /// </summary>
         private struct QTKNearestEnemyVisitor : IQuadtreeNearestVisitor<QTEnemyData>
         {
-            public readonly List<GameObject> kNearest;
+            public readonly List<EnemyBehaviour> kNearest;
 
             private readonly int _k;
-            private readonly List<GameObject> _enemies;
-            private readonly HashSet<GameObject> _inactiveEnemies;
+            private readonly List<EnemyBehaviour> _enemies;
+            private readonly HashSet<EnemyBehaviour> _inactiveEnemies;
 
             /// <summary>
             /// Amount of invalid queried elements so far
@@ -63,9 +65,9 @@ namespace Blizzard.Enemies.Core
                 return kNearest.Count < _k && _invalidCount < EnemyConstants.QTMaxNearestInvalid;
             }
 
-            public QTKNearestEnemyVisitor(int k, List<GameObject> enemies, HashSet<GameObject> inactiveEnemies)
+            public QTKNearestEnemyVisitor(int k, List<EnemyBehaviour> enemies, HashSet<EnemyBehaviour> inactiveEnemies)
             {
-                kNearest = new List<GameObject>();
+                kNearest = new List<EnemyBehaviour>();
 
                 _enemies = enemies;
                 _inactiveEnemies = inactiveEnemies;
@@ -78,12 +80,12 @@ namespace Blizzard.Enemies.Core
         /// <summary>
         /// Underlying Quadtree A
         /// </summary>
-        private NativeQuadtree<QTEnemyData> _quadtreeA = new();
+        private NativeQuadtree<QTEnemyData> _quadtreeA = new(GameConstants.MapBounds, Allocator.Persistent);
 
         /// <summary>
         /// Underlying Quadtree B
         /// </summary>
-        private NativeQuadtree<QTEnemyData> _quadtreeB = new();
+        private NativeQuadtree<QTEnemyData> _quadtreeB = new(GameConstants.MapBounds, Allocator.Persistent);
 
         /// <summary>
         /// Whether quadtree A is the active quadtree.
@@ -92,28 +94,28 @@ namespace Blizzard.Enemies.Core
         private bool _quadtreeAIsActive = true;
 
         /// <summary>
-        /// Enemy GameObjects that have been added
+        /// Enemies that have been added
         /// </summary>
-        private List<GameObject> _enemies;
+        private readonly List<EnemyBehaviour> _enemies = new();
 
         private int _curEnemyIndex = 0;
         /// <summary>
-        /// Newly inactive enemy GameObjects
+        /// Newly inactive enemies
         /// </summary>
-        private HashSet<GameObject> _inactiveEnemies;
+        private readonly HashSet<EnemyBehaviour> _inactiveEnemies = new();
 
         /// <summary>
         /// Indices in the enemy list that were excluded in this cycle, to be removed from enemies in next cycle.
         /// </summary>
         private readonly SortedSet<int> _excludedIndices = new();
-
-        public void Add(GameObject enemy)
+        
+        public void Add(EnemyBehaviour enemy)
         {
             // Add to list of enemies, will be added to quadtree during this cycle
             _enemies.Add(enemy);
         }
 
-        public void Remove(GameObject enemy)
+        public void Remove(EnemyBehaviour enemy)
         {
             // Add to inactive set, will be removed at start of next cycle
             _inactiveEnemies.Add(enemy);
@@ -134,11 +136,12 @@ namespace Blizzard.Enemies.Core
                     yield return null;
                     continue;
                 }
-                if (_curEnemyIndex > _enemies.Count)
+                if (_curEnemyIndex >= _enemies.Count)
                 {
                     // All enemies updated in inactive quadtree, swap!
                     _quadtreeAIsActive = !_quadtreeAIsActive;
-                    GetInactiveQuadtree() = new NativeQuadtree<QTEnemyData>();  // Reset newly inactive quadtree.
+                    // Reset newly inactive quadtree.
+                    GetInactiveQuadtree() = new NativeQuadtree<QTEnemyData>(GameConstants.MapBounds, Allocator.Persistent);  
                     
                     // Reset index for new cycle
                     _curEnemyIndex = 0;
@@ -149,9 +152,13 @@ namespace Blizzard.Enemies.Core
                     {
                         _enemies.RemoveAt(excludedIndex);
                     }
+                    
+                    // After swap wait until next tick (since _enemies has changed, index may be invalid)
+                    yield return null;
+                    continue;
                 }
-
-                GameObject curEnemy = _enemies[_curEnemyIndex];
+                
+                EnemyBehaviour curEnemy = _enemies[_curEnemyIndex];
                 if (curEnemy && !_inactiveEnemies.Contains(curEnemy))
                 {
                     // Only insert currently valid enemies
@@ -181,9 +188,9 @@ namespace Blizzard.Enemies.Core
         /// <param name="k">Amount of nearest enemies to retrieve</param>
         /// <param name="maxDistance">Maximum distance of retrieved enemy</param>
         /// <returns>List of up to k nearest enemies, ordered nearest to farthest</returns>
-        public List<GameObject> GetKNearestEnemies(Vector2 position, int k, float maxDistance)
+        public List<EnemyBehaviour> GetKNearestEnemies(Vector2 position, int k, float maxDistance)
         {
-            var visitor = new QTKNearestEnemyVisitor();
+            var visitor = new QTKNearestEnemyVisitor(k, _enemies, _inactiveEnemies);
             GetActiveQuadtree().Nearest(position, maxDistance, ref visitor, 
                 new NativeQuadtreeExtensions.AABBDistanceSquaredProvider<QTEnemyData>());
             return visitor.kNearest;

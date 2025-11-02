@@ -15,6 +15,7 @@ namespace Blizzard.Installers
         [SerializeField] private ComputeShader _heatDiffusionShader;
         [Header("Config")] [SerializeField] private bool _simulationIsActive = true;
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
             var mainGrid = new FullHashWorldGrid<TemperatureCell>(CELL_SIDE_LENGTH, CELL_SIDE_LENGTH);

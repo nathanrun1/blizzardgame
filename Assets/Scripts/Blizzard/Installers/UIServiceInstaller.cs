@@ -10,6 +10,7 @@ namespace Blizzard.Installers
     {
         [SerializeField] private RectTransform _uiParent;
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
             Container.Bind<UIService>()

@@ -11,10 +11,10 @@ namespace Blizzard.Enemies.Core
         /// <summary>
         /// Unique ID of enemy type
         /// </summary>
-        public int id;
+        public int ID;
         /// <summary>
         /// Enemy prefab
         /// </summary>
-        public GameObject enemyPrefab;
+        public EnemyBehaviour enemyPrefab;
     }
 }

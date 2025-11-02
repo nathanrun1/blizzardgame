@@ -14,6 +14,7 @@ namespace Blizzard.Installers
 
         [SerializeField] private Transform _obstaclesParent;
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
             // Create one grid per obstacle layer

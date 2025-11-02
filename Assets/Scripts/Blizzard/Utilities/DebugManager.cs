@@ -1,13 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 using Zenject;
 using Sirenix.OdinInspector;
 using Blizzard.Temperature;
 using System.Linq;
+using Blizzard.Enemies;
+using Blizzard.Enemies.Core;
 using Blizzard.Input;
 using Blizzard.Inventory;
 using Blizzard.Obstacles;
+using Blizzard.Player;
 using Blizzard.UI.Core;
 using Blizzard.Utilities.Assistants;
 using Blizzard.Utilities.Logging;
@@ -28,7 +32,28 @@ namespace Blizzard.Utilities
         [Inject] private TemperatureService _temperatureService;
         [Inject] private ObstacleGridService _obstacleGridService;
         [Inject] private InputService _inputService;
+        [Inject] private EnemyService _enemyService;
+        [Inject] private PlayerService _playerService;
 
+        [FoldoutGroup("Enemies")]
+        [Button]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        private void SpawnEnemy(EnemyID enemyID, Vector2 position)
+        {
+            _enemyService.SpawnEnemy(enemyID, position);
+        }
+
+        [FoldoutGroup("Enemies")]
+        [Button]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        private void PrintNearestEnemyToPlayer()
+        {
+            List<EnemyBehaviour> kNearest = _enemyService.Quadtree.GetKNearestEnemies(_playerService.PlayerPosition, 1, float.MaxValue);
+            if (kNearest.Count == 0) BLog.Log("Debug","Query returned no enemies!");
+            else BLog.Log("Debug",$"Nearest enemy to player: {kNearest[0]} at {kNearest[0].transform.position}");
+        }
+        
+        
         [FoldoutGroup("UI")] [SerializeField] private UIID[] _startupUI;
 
         [FoldoutGroup("UI")]
@@ -56,7 +81,7 @@ namespace Blizzard.Utilities
         private void InventoryAddItem(ItemData item, int amount, bool fill = true)
         {
             var added = _inventoryService.TryAddItem(item, amount, fill);
-            BLog.Log($"Successfully added {added}x {item.displayName}");
+            BLog.Log("Debug",$"Successfully added {added}x {item.displayName}");
         }
 
         [FoldoutGroup("Inventory")]
@@ -66,7 +91,7 @@ namespace Blizzard.Utilities
         {
             BLog.Log(item == null);
             var removed = _inventoryService.TryRemoveItem(item, amount, drain);
-            BLog.Log($"Successfully removed {removed}x {item.displayName}");
+            BLog.Log("Debug",$"Successfully removed {removed}x {item.displayName}");
         }
 
         [FoldoutGroup("Inventory")]
@@ -79,7 +104,7 @@ namespace Blizzard.Utilities
                 if (slot.Empty()) str += "[EMPTY]\n";
                 else str += $"[{slot.Amount}x {slot.Item.displayName}]\n";
 
-            BLog.Log(str);
+            BLog.Log("Debug",str);
         }
 
         [FoldoutGroup("Obstacles")] [SerializeField]
@@ -110,7 +135,7 @@ namespace Blizzard.Utilities
             foreach (var o in _obstacleGridService.GetAllObstaclesWithFlags(flags))
                 str += o.name + " at " + o.transform.position + '\n';
 
-            BLog.Log(str);
+            BLog.Log("Debug",str);
         }
 
 
@@ -133,7 +158,7 @@ namespace Blizzard.Utilities
         [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void PrintColliderUnderPointer()
         {
-            BLog.Log($"Collider under pointer: {InputAssistant.GetColliderUnderPointer(_camera)}");
+            BLog.Log("Debug",$"Collider under pointer: {InputAssistant.GetColliderUnderPointer(_camera)}");
         }
 
         [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
@@ -149,7 +174,7 @@ namespace Blizzard.Utilities
 
             _inputService.inputActions.UI.Cancel.performed += (ctx) =>
             {
-                BLog.Log("UI Cancel input performed");
+                BLog.Log("Debug","UI Cancel input performed");
             };
         }
 

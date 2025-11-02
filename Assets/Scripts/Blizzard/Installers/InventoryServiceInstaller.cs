@@ -9,6 +9,7 @@ namespace Blizzard.Installers
     {
         [SerializeField] private int slotAmount = 36; // TEMP, MOVE TO CONFIG!
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
             Container.Bind<InventoryService>()

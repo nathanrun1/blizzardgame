@@ -10,6 +10,7 @@ namespace Blizzard.Installers
     {
         [SerializeField] private List<ScriptableObject> scriptableObjects;
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
             BLog.Log("Injecting into SOs");

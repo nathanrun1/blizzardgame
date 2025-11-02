@@ -10,6 +10,7 @@ namespace Blizzard.Installers
         [SerializeField] private EnvironmentDatabase _environmentDatabase;
         [SerializeField] private Transform _environmentParent;
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
             Container.Bind<EnvPrefabService>()

@@ -6,6 +6,7 @@
 // {
 //     public class InteractionServiceInstaller : MonoInstaller
 //     {
+//         // ReSharper disable Unity.PerformanceAnalysis
 //         public override void InstallBindings()
 //         {
 //             Container.BindInterfacesAndSelfTo<InteractionService>()

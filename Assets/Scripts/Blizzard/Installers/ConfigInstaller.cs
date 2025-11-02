@@ -1,3 +1,4 @@
+using Blizzard.Enemies.Core;
 using Blizzard.Inventory.Crafting;
 using Blizzard.UI.Core;
 using UnityEngine;
@@ -15,7 +16,9 @@ namespace Blizzard.Installers
         [SerializeField] private CraftingDatabase _craftingDatabase;
         [SerializeField] private SmeltingDatabase _smeltingDatabase;
         [SerializeField] private UIDatabase _uiDatabase;
+        [SerializeField] private EnemyDatabase _enemyDatabase;
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
             // Crafting database
@@ -26,6 +29,9 @@ namespace Blizzard.Installers
             
             // UI database
             Container.BindInstance(_uiDatabase).AsSingle();
+            
+            // Enemy database
+            Container.BindInstance(_enemyDatabase).AsSingle();
 
             BLog.Log("Installed Configs");
         }

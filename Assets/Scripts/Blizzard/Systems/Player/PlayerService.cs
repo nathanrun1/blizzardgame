@@ -40,12 +40,6 @@ namespace Blizzard.Player
             _initialize = null;
         }
 
-        public void DamagePlayer(int damage)
-        {
-            // TODO: implement
-            // BLog.Log("Inflicted " + damage + " damage to player!");
-        }
-
         /// <summary>
         /// Initializes player object in the scene
         /// </summary>
@@ -61,7 +55,12 @@ namespace Blizzard.Player
 
             cinemachineCamera.Target.TrackingTarget = PlayerCtrl.transform; // Set camera tracking target to player
         }
-
+        
+        public void DamagePlayer(int damage)
+        {
+            // TODO: implement
+            // BLog.Log("Inflicted " + damage + " damage to player!");
+        }
 
         // -- Helpers --
 

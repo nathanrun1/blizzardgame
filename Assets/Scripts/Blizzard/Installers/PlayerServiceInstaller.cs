@@ -12,6 +12,7 @@ namespace Blizzard.Installers
         [SerializeField] private Transform _environment;
         [SerializeField] private CinemachineCamera _cinemachineCamera;
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
             Container.BindInterfacesAndSelfTo<PlayerService>()

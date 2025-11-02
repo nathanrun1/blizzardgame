@@ -6,6 +6,7 @@ namespace Blizzard.Installers
 {
     public class InputServiceInstaller : MonoInstaller
     {
+        // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
             Container.BindInterfacesAndSelfTo<InputService>()

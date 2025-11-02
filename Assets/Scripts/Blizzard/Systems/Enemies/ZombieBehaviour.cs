@@ -15,7 +15,7 @@ using Assert = UnityEngine.Assertions.Assert;
 
 namespace Blizzard.Enemies
 {
-    public class ZombieBehaviour : MonoBehaviour, IHittable
+    public class ZombieBehaviour : EnemyBehaviour
     {
         [System.Serializable]
         public class BehaviourConfig
@@ -349,8 +349,6 @@ namespace Blizzard.Enemies
 
         #endregion
 
-        public int Health;
-
         [Header("Zombie Config")] 
         [SerializeField] private int _startingHealth = 100;
         [SerializeField] private BehaviourConfig _behaviour;
@@ -362,22 +360,6 @@ namespace Blizzard.Enemies
         [Inject] private ObstacleGridService _obstacleGridService;
         [Inject] private PlayerService _playerService;
         [Inject] private PathfindingService _pathfindingService;
-
-
-        public void Hit(int damage, ToolType toolType, out bool death)
-        {
-            Health -= damage;
-
-            StartCoroutine(FXAssistant.TintSequenceCoroutine(_spriteRenderer, Color.darkRed));
-            
-            death = Health < 0;
-            if (death)
-            {
-                OnDeath();
-                Health = 0;
-            }
-        }
-
 
         private void Awake()
         {
@@ -406,9 +388,11 @@ namespace Blizzard.Enemies
             _stateMachine.Update(Time.fixedDeltaTime);
         }
 
-        private void OnDeath()
+        public override void Hit(int damage, ToolType toolType, out bool death)
         {
-            gameObject.SetActive(false); // TODO
+            // Enemy hit animation
+            StartCoroutine(FXAssistant.TintSequenceCoroutine(_spriteRenderer, Color.red));
+            base.Hit(damage, toolType, out death);
         }
     }
 }
