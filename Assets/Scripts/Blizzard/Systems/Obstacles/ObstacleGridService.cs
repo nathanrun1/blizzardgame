@@ -28,10 +28,10 @@ namespace Blizzard.Obstacles
         public readonly Dictionary<ObstacleLayer, ISparseWorldGrid<Obstacle>> Grids;
 
         /// <summary>
-        /// QuadTrees for querying obstacles with different ObstacleFlags on main obstacle layer.
-        /// Must be initialized with InitQuadTree()
+        /// Quadtrees for querying obstacles with different ObstacleFlags on main obstacle layer.
+        /// Must be initialized with InitQuadtree()
         /// </summary>
-        public Dictionary<ObstacleFlags, ObstacleQuadtree> QuadTrees { get; private set; } = new();
+        public Dictionary<ObstacleFlags, ObstacleQuadtree> Quadtrees { get; private set; } = new();
 
         [Inject] private TemperatureService _temperatureService;
 
@@ -100,12 +100,12 @@ namespace Blizzard.Obstacles
             if (obstacleData.obstacleLayer == ObstacleConstants.MainObstacleLayer)
             {
                 UpdateTemperatureSimData(gridPosition, obstacle);
-                foreach (var flagCombo in QuadTrees.Keys)
+                foreach (var flagCombo in Quadtrees.Keys)
                 {
                     BLog.Log($"Checking flag combo {flagCombo} against obstacle's {obstacleData.obstacleFlags}");
                     if (obstacleData.obstacleFlags.HasFlag(flagCombo))
                         // Add obstacle to relevant QuadTree
-                        QuadTrees[flagCombo].Add(gridPosition);
+                        Quadtrees[flagCombo].Add(gridPosition);
                 }
             }
 
@@ -130,11 +130,11 @@ namespace Blizzard.Obstacles
         /// 
         /// If already initialized, does nothing.
         /// </summary>
-        public void InitQuadTree(ObstacleFlags obstacleFlags)
+        public void InitQuadtree(ObstacleFlags obstacleFlags)
         {
-            if (QuadTrees.ContainsKey(obstacleFlags)) return; // Already exists
+            if (Quadtrees.ContainsKey(obstacleFlags)) return; // Already exists
             ObstacleQuadtree quadtree = new(Grids[ObstacleConstants.MainObstacleLayer], obstacleFlags);
-            QuadTrees.Add(obstacleFlags, quadtree);
+            Quadtrees.Add(obstacleFlags, quadtree);
         }
 
         /// <summary>
@@ -143,8 +143,8 @@ namespace Blizzard.Obstacles
         /// </summary>
         public ObstacleQuadtree GetQuadtree(ObstacleFlags obstacleFlags)
         {
-            InitQuadTree(obstacleFlags);
-            return QuadTrees[obstacleFlags];
+            InitQuadtree(obstacleFlags);
+            return Quadtrees[obstacleFlags];
         }
 
 
@@ -160,10 +160,10 @@ namespace Blizzard.Obstacles
                 if (obstacleLayer == ObstacleConstants.MainObstacleLayer)
                 {
                     UpdateTemperatureSimData(gridPosition, null);
-                    foreach (var flagCombo in QuadTrees.Keys)
+                    foreach (var flagCombo in Quadtrees.Keys)
                         if ((flagCombo & obstacle.ObstacleFlags) == flagCombo)
                             // Add obstacle to relevant QuadTree
-                            QuadTrees[flagCombo].Remove(gridPosition);
+                            Quadtrees[flagCombo].Remove(gridPosition);
                 }
             }
 
