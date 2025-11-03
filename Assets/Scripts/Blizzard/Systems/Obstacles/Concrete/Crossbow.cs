@@ -46,13 +46,9 @@ namespace Blizzard.Obstacles.Concrete
 
         private EnemyBehaviour _currentTarget;
 
-        /// <summary>
-        /// Adjusts animations to align with config
-        /// </summary>
-        private void ConfigureAnimations()
+        private void Awake()
         {
-            // Adjust animation speed based on cooldown
-            _animator.speed = _fireAnimationClip.length / _fireCooldown;
+            ConfigureAnimations();
         }
 
         private void FixedUpdate()
@@ -68,6 +64,15 @@ namespace Blizzard.Obstacles.Concrete
             }
             
             _animator.SetBool(StandbyAnimProperty, !_currentTarget);
+        }
+        
+        /// <summary>
+        /// Adjusts animations to align with config
+        /// </summary>
+        private void ConfigureAnimations()
+        {
+            // Adjust animation speed based on cooldown
+            _animator.speed = _fireAnimationClip.length / _fireCooldown;
         }
 
         /// <summary>
@@ -93,7 +98,7 @@ namespace Blizzard.Obstacles.Concrete
         private void OnCrossbowFire()
         {
             BLog.Log("Crossbow","FIRE!");
-            _currentTarget.Strike(_damage, out _);
+            _currentTarget?.Strike(_damage, out _);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Blizzard.Constants;
 using UnityEngine;
@@ -12,6 +13,7 @@ using Blizzard.Player.Tools;
 using Blizzard.Utilities.Assistants;
 using ModestTree;
 using Assert = UnityEngine.Assertions.Assert;
+using Random = UnityEngine.Random;
 
 
 namespace Blizzard.Enemies
@@ -351,10 +353,7 @@ namespace Blizzard.Enemies
         #endregion
 
         [Header("Zombie Config")] 
-        [SerializeField] private int _startingHealth = 100;
         [SerializeField] private BehaviourConfig _behaviour;
-        [Header("References")]
-        [SerializeField] private SpriteRenderer _spriteRenderer;
 
         private StateMachine _stateMachine;
 
@@ -362,10 +361,8 @@ namespace Blizzard.Enemies
         [Inject] private PlayerService _playerService;
         [Inject] private PathfindingService _pathfindingService;
 
-        private void Awake()
+        protected override void Awake()
         {
-            Health = _startingHealth;
-            
             _behaviour.CalculateSquareRanges();
 
             var stateContext = new ZombieContext
@@ -381,19 +378,18 @@ namespace Blizzard.Enemies
             };
             _stateMachine = new StateMachine(stateContext);
 
+            base.Awake();
+        }
+
+        protected override void OnEnable()
+        {
             _stateMachine.ChangeState(new IdleState());
+            base.OnEnable();
         }
 
         private void FixedUpdate()
         {
             _stateMachine.Update(Time.fixedDeltaTime);
-        }
-
-        protected override void TakeDamage(int damage, out bool death)
-        {
-            // Enemy hit animation
-            StartCoroutine(FXAssistant.TintSequenceCoroutine(_spriteRenderer, Color.red));
-            base.TakeDamage(damage, out death);
         }
     }
 }

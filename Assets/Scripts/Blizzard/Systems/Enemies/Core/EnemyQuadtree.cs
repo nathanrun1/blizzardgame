@@ -56,6 +56,7 @@ namespace Blizzard.Enemies.Core
 
             public bool OnVist(QTEnemyData obj)
             {
+                BLog.Log("EnemyQuadtree",$"Checking query of enemy index {obj.index} with {_enemies.Count} enemies");
                 if (_enemies[obj.index] && !_inactiveEnemies.Contains(_enemies[obj.index]))
                     kNearest.Add(_enemies[obj.index]);
                 else 
@@ -76,6 +77,11 @@ namespace Blizzard.Enemies.Core
             }
         }
         #endregion
+
+        /// <summary>
+        /// Lock to be used when updating quadtree state or querying the quadtree
+        /// </summary>
+        private readonly object _qtUpdateLock = new object();
         
         /// <summary>
         /// Underlying Quadtree A
@@ -138,24 +144,29 @@ namespace Blizzard.Enemies.Core
                 }
                 if (_curEnemyIndex >= _enemies.Count)
                 {
-                    // All enemies updated in inactive quadtree, swap!
-                    _quadtreeAIsActive = !_quadtreeAIsActive;
-                    // Reset newly inactive quadtree.
-                    GetInactiveQuadtree() = new NativeQuadtree<QTEnemyData>(GameConstants.MapBounds, Allocator.Persistent);  
-                    
-                    // Reset index for new cycle
-                    _curEnemyIndex = 0;
-                    
-                    // Clear excluded enemies from most recent cycle
-                    // _excludedIndices is sorted, go in descending order to avoid invalidating later indices during removal
-                    foreach (int excludedIndex in _excludedIndices.Reverse())
+                    lock (_qtUpdateLock)
                     {
-                        _enemies.RemoveAt(excludedIndex);
-                    }
+                        // All enemies updated in inactive quadtree, swap!
+                        _quadtreeAIsActive = !_quadtreeAIsActive;
+                        // Reset newly inactive quadtree.
+                        GetInactiveQuadtree() = new NativeQuadtree<QTEnemyData>(GameConstants.MapBounds, Allocator.Persistent);  
                     
-                    // After swap wait until next tick (since _enemies has changed, index may be invalid)
-                    yield return null;
-                    continue;
+                        // Reset index for new cycle
+                        _curEnemyIndex = 0;
+                    
+                        // Clear excluded enemies from most recent cycle
+                        // _excludedIndices is sorted, go in descending order to avoid invalidating later indices during removal
+                        foreach (int excludedIndex in _excludedIndices.Reverse())
+                        {
+                            BLog.Log("EnemyQuadtree", $"Removing index {excludedIndex} from enemy list");
+                            _enemies.RemoveAt(excludedIndex);
+                        }
+                        _excludedIndices.Clear();
+                    
+                        // After swap wait until next tick (since _enemies has changed, index may be invalid)
+                        yield return null;
+                        continue;
+                    }
                 }
                 
                 EnemyBehaviour curEnemy = _enemies[_curEnemyIndex];
@@ -190,10 +201,13 @@ namespace Blizzard.Enemies.Core
         /// <returns>List of up to k nearest enemies, ordered nearest to farthest</returns>
         public List<EnemyBehaviour> GetKNearestEnemies(Vector2 position, int k, float maxDistance)
         {
-            var visitor = new QTKNearestEnemyVisitor(k, _enemies, _inactiveEnemies);
-            GetActiveQuadtree().Nearest(position, maxDistance, ref visitor, 
-                new NativeQuadtreeExtensions.AABBDistanceSquaredProvider<QTEnemyData>());
-            return visitor.kNearest;
+            lock (_qtUpdateLock)
+            {
+                var visitor = new QTKNearestEnemyVisitor(k, _enemies, _inactiveEnemies);
+                GetActiveQuadtree().Nearest(position, maxDistance, ref visitor, 
+                    new NativeQuadtreeExtensions.AABBDistanceSquaredProvider<QTEnemyData>());
+                return visitor.kNearest;
+            }
         }
         
         /// <summary>

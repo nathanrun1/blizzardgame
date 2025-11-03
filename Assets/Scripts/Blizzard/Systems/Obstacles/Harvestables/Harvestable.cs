@@ -48,8 +48,7 @@ namespace Blizzard.Obstacles.Harvestables
         protected override void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition)
         {
             if (Health > 0)
-                StartCoroutine(FXAssistant.DamageAnim(transform, sourcePosition,
-                    () => Health <= 0));
+                FXAssistant.DamageAnim(transform, sourcePosition);
         }
 
         protected override void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition)

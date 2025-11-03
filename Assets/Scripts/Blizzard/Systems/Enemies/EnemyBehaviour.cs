@@ -2,6 +2,7 @@
 using Blizzard.Interfaces;
 using Blizzard.Player.Tools;
 using Blizzard.Utilities;
+using Blizzard.Utilities.Assistants;
 using UnityEngine;
 
 namespace Blizzard.Enemies
@@ -11,6 +12,13 @@ namespace Blizzard.Enemies
     /// </summary>
     public abstract class EnemyBehaviour : MonoBehaviour, IHittable, IStrikeable
     {
+        [Header("EnemyBehaviour References")] 
+        [SerializeField] private SpriteRenderer[] _spriteRenderers;
+        [Header("EnemyBehaviour Config")]
+        [SerializeField] private int _startingHealth;
+
+        private Color[] _spriteRendererInitialColors;
+        
         /// <summary>
         /// The enemy's health
         /// </summary>
@@ -31,18 +39,43 @@ namespace Blizzard.Enemies
             TakeDamage(damage, out death);
         }
 
+        protected virtual void Awake()
+        {
+            // Store initial colors to reset visuals on enable
+            _spriteRendererInitialColors = new Color[_spriteRenderers.Length];
+            for (int i = 0; i < _spriteRenderers.Length; ++i)
+            {
+                _spriteRendererInitialColors[i] = _spriteRenderers[i].color;
+            }
+        }
+
+        protected virtual void OnEnable()
+        {
+            // Reset health
+            Health = _startingHealth;
+            // Reset colors
+            for (int i = 0; i < _spriteRenderers.Length; ++i)
+            {
+                _spriteRenderers[i].color = _spriteRendererInitialColors[i];
+            }
+        }
+
         /// <summary>
-        /// Take some amount of damage. If health goes below 0, causes death.
+        /// Take some amount of damage. If health reaches 0, causes death.
         /// </summary>
         protected virtual void TakeDamage(int damage, out bool death)
         {
             Health -= damage;
             
-            death = Health < 0;
+            death = Health <= 0;
             if (death)
             {
                 Death();
                 Health = 0;
+            }
+            else
+            {
+                FXAssistant.TintSequence(_spriteRenderers, Color.red);
             }
         }
 
@@ -51,7 +84,7 @@ namespace Blizzard.Enemies
         /// </summary>
         protected virtual void Death()
         {
-            gameObject.SetActive(false); // TODO
+            gameObject.SetActive(false);
             OnDeath?.Invoke();
         }
     }

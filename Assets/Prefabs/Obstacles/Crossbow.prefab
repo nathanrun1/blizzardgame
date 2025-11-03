@@ -188,7 +188,8 @@ MonoBehaviour:
   _animator: {fileID: 1572557053590242117}
   _fireAnimationClip: {fileID: 7400000, guid: 224e50324d5e7314a8eddd05c532d5e0, type: 2}
   _maxRange: 100
-  _fireCooldown: 0.5
+  _fireCooldown: 0.25
+  _damage: 20
 --- !u!95 &1572557053590242117
 Animator:
   serializedVersion: 7

@@ -141,6 +141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f1ff380c30dc34e96a2a5c18f7a9c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spriteRenderers:
+  - {fileID: 3823765924476577408}
   _startingHealth: 100
   _behaviour:
     walkSpeed: 1
@@ -153,7 +155,6 @@ MonoBehaviour:
     idleUpdateDelay: 0.25
     attackRangeSqr: 0
     playerAgroRangeSqr: 0
-  _spriteRenderer: {fileID: 3823765924476577408}
 --- !u!50 &8849110296705609942
 Rigidbody2D:
   serializedVersion: 5
