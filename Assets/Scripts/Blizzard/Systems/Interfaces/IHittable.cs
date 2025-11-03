@@ -1,4 +1,6 @@
-﻿namespace Blizzard.Player.Tools
+﻿using Blizzard.Player.Tools;
+
+namespace Blizzard.Interfaces
 {
     /// <summary>
     /// A GameObject that is "hittable" by a tool. GameObjects with this interface

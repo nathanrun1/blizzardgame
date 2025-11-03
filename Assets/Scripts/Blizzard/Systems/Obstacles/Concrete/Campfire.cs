@@ -7,13 +7,11 @@ namespace Blizzard.Obstacles.Concrete
 {
     public class Campfire : Structure
     {
-        [Header("References")] [SerializeField]
-        private Animator _animator;
-
+        [Header("References")] 
+        [SerializeField] private Animator _animator;
         [SerializeField] private Light2D _light2D;
-
-        [Header("Campfire Config")] [SerializeField]
-        private int _fuelLevelAmount = 3;
+        [Header("Campfire Config")] 
+        [SerializeField] private int _fuelLevelAmount = 3;
 
         /// <summary>
         /// Light intensity by fuel level

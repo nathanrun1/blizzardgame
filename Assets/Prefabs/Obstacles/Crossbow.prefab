@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3989951527430796683}
   - component: {fileID: 3645967852482406556}
   - component: {fileID: 1617569336249688283}
+  - component: {fileID: 1572557053590242117}
   m_Layer: 6
   m_Name: Crossbow
   m_TagString: Untagged
@@ -184,7 +185,32 @@ MonoBehaviour:
   - {fileID: 245448152275529829}
   - {fileID: 5529829978261534475}
   _crossbowBody: {fileID: 7832845973825687442}
+  _animator: {fileID: 1572557053590242117}
+  _fireAnimationClip: {fileID: 7400000, guid: 224e50324d5e7314a8eddd05c532d5e0, type: 2}
   _maxRange: 100
+  _fireCooldown: 0.5
+--- !u!95 &1572557053590242117
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7478012713066497398}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f7e7c928790291d449b9c288747277da, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7832845973825687442
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,8 +289,8 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 0bbcf4aa1e7e84b47a561f1edd5baa8f, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 21300000, guid: 5fb1ca37521ae44e8b4f2ba57d60779c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

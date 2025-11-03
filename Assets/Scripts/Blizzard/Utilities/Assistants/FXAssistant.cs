@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using UnityEngine;
 using DG.Tweening;
+using UnityEngine;
 
-namespace Blizzard.Utilities
+namespace Blizzard.Utilities.Assistants
 {
     /// <summary>
     /// Helper class for effects

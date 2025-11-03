@@ -87,9 +87,9 @@ namespace Blizzard.Obstacles
 
             var obstacle = obstacleData.CreateObstacle(obstaclePosition);
 
-            // Set sorting order of obstacle based on layer
+            // Set sorting order of obstacle based on layer (we assume current order is relative to layer's order & add)
             foreach (var renderer in obstacle.GetComponentsInChildren<Renderer>(obstacle))
-                renderer.sortingOrder = ObstacleConstants.ObstacleLayerSortingLayers[obstacleData.obstacleLayer];
+                renderer.sortingOrder += ObstacleConstants.ObstacleLayerSortingLayers[obstacleData.obstacleLayer];
 
             obstacle.OnDestroy += () => OnObstacleDestroyed(gridPosition, obstacleData.obstacleLayer);
             obstacle.TemperatureDataUpdated += () => UpdateTemperatureSimData(gridPosition, obstacle);

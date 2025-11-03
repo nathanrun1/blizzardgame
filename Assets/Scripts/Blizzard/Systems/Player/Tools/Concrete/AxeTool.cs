@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Diagnostics;
 using Blizzard.Input;
+using Blizzard.Interfaces;
 using Blizzard.Obstacles.Harvestables;
 using Blizzard.Utilities;
 using Blizzard.Utilities.Assistants;

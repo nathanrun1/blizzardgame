@@ -1,5 +1,6 @@
 using UnityEngine;
 using Blizzard.Utilities;
+using Blizzard.Utilities.Assistants;
 
 namespace Blizzard.Obstacles
 {

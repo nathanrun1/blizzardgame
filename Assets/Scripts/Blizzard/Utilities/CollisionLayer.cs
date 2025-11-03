@@ -21,6 +21,11 @@ namespace Blizzard.Utilities
         /// What can be hit by a tool held by the player
         /// </summary>
         public const CollisionLayer Hittable = CollisionLayer.Obstacle | CollisionLayer.Enemy;
+        
+        /// <summary>
+        /// What can be struck by a player-sided weapon
+        /// </summary>
+        public const CollisionLayer Strikeable = CollisionLayer.Enemy;
 
         /// <summary>
         /// What will block enemy vision

@@ -9,6 +9,7 @@ using Blizzard.Player;
 using Blizzard.Grid;
 using Blizzard.Pathfinding;
 using Blizzard.Player.Tools;
+using Blizzard.Utilities.Assistants;
 using ModestTree;
 using Assert = UnityEngine.Assertions.Assert;
 
@@ -388,11 +389,11 @@ namespace Blizzard.Enemies
             _stateMachine.Update(Time.fixedDeltaTime);
         }
 
-        public override void Hit(int damage, ToolType toolType, out bool death)
+        protected override void TakeDamage(int damage, out bool death)
         {
             // Enemy hit animation
             StartCoroutine(FXAssistant.TintSequenceCoroutine(_spriteRenderer, Color.red));
-            base.Hit(damage, toolType, out death);
+            base.TakeDamage(damage, out death);
         }
     }
 }

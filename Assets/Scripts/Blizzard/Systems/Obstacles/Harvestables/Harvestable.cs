@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using Blizzard.Environment;
+using Blizzard.Interfaces;
 using Blizzard.Inventory;
 using Blizzard.Player;
 using Blizzard.Player.Tools;
 using Blizzard.Utilities;
 using Blizzard.UI.Core;
+using Blizzard.Utilities.Assistants;
 using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Obstacles.Harvestables
