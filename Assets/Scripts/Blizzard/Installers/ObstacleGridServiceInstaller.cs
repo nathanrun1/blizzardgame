@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Blizzard.Constants;
 using UnityEngine;
 using Zenject;
 using Blizzard.Grid;
@@ -10,8 +11,6 @@ namespace Blizzard.Installers
 {
     public class ObstacleGridServiceInstaller : MonoInstaller
     {
-        private const float CELL_SIDE_LENGTH = 0.5f;
-
         [SerializeField] private Transform _obstaclesParent;
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -20,7 +19,7 @@ namespace Blizzard.Installers
             // Create one grid per obstacle layer
             Dictionary<ObstacleLayer, ISparseWorldGrid<Obstacle>> grids = new();
             foreach (ObstacleLayer layer in Enum.GetValues(typeof(ObstacleLayer)))
-                grids.Add(layer, new HashWorldGrid<Obstacle>(CELL_SIDE_LENGTH, CELL_SIDE_LENGTH));
+                grids.Add(layer, new HashWorldGrid<Obstacle>(GameConstants.CellSideLength, GameConstants.CellSideLength));
 
             Container.Bind<ObstacleGridService>()
                 .FromNew()

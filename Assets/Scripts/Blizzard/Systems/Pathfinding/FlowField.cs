@@ -189,7 +189,7 @@ namespace Blizzard.Pathfinding
                 {
                     Iterations = 100,
                     IterationsPerFrame = 0,
-                    DiagonalMovement = false,
+                    DiagonalMovement = true,
                     ComputeQueueType = ComputeQueueType.Background
                 });
                 rq.WaitForCompletion();

@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7175631586686968687
 Transform:
   m_ObjectHideFlags: 0
@@ -141,7 +141,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f1ff380c30dc34e96a2a5c18f7a9c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health: 0
   _startingHealth: 100
   _behaviour:
     walkSpeed: 1
@@ -151,7 +150,7 @@ MonoBehaviour:
     playerAgroRange: 10
     targetListSize: 10
     maxTargetDistance: 100
-    idleUpdateDelay: 1
+    idleUpdateDelay: 0.25
     attackRangeSqr: 0
     playerAgroRangeSqr: 0
   _spriteRenderer: {fileID: 3823765924476577408}

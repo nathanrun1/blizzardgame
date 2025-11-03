@@ -1547,6 +1547,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 11687069685bd354dab749a57e5e029e, type: 2}
   - {fileID: 11400000, guid: 70d5e986641afcb48a7859411d26e654, type: 2}
   - {fileID: 11400000, guid: 84187f0e590b26748874eba8c07d6f27, type: 2}
+  - {fileID: 11400000, guid: 216fc2853a879ac47acedc94ccbc2a53, type: 2}
+  - {fileID: 11400000, guid: 6e644328d0773f54fa5e3babb552f474, type: 2}
+  - {fileID: 11400000, guid: a230f68d2ae7dfe4d8fb5b6dfed53f70, type: 2}
 --- !u!1 &821977788
 GameObject:
   m_ObjectHideFlags: 0
@@ -1639,6 +1642,7 @@ MonoBehaviour:
   _craftingDatabase: {fileID: 11400000, guid: 6ccbfd302f8e60d46af8d79ffe871c99, type: 2}
   _smeltingDatabase: {fileID: 11400000, guid: a62f9a0638785284c8939311104434a4, type: 2}
   _uiDatabase: {fileID: 11400000, guid: cbb2252776dfff947b48d82fdbeedad2, type: 2}
+  _enemyDatabase: {fileID: 11400000, guid: 6b4a77d30ad63cd4b96a27dbb646c496, type: 2}
 --- !u!1 &925979586
 GameObject:
   m_ObjectHideFlags: 0
@@ -2992,6 +2996,8 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 643576cc368137a47b60c8a5e5568ec1, type: 2}
     amount: 20
   - item: {fileID: 11400000, guid: 11687069685bd354dab749a57e5e029e, type: 2}
+    amount: 1
+  - item: {fileID: 11400000, guid: 216fc2853a879ac47acedc94ccbc2a53, type: 2}
     amount: 1
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}
@@ -5538,6 +5544,10 @@ PrefabInstance:
     - target: {fileID: 6310151239790000219, guid: d9cf37f1f6174f04e8a7cf826b6c833e, type: 3}
       propertyPath: m_Name
       value: Zombie
+      objectReference: {fileID: 0}
+    - target: {fileID: 6310151239790000219, guid: d9cf37f1f6174f04e8a7cf826b6c833e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7175631586686968687, guid: d9cf37f1f6174f04e8a7cf826b6c833e, type: 3}
       propertyPath: m_LocalPosition.x
