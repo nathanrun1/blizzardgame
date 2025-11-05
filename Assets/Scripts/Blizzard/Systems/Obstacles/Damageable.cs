@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics;
+using Blizzard.Utilities.Assistants;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Blizzard.Utilities.Logging;
+using DG.Tweening;
 
 namespace Blizzard.Obstacles
 {
@@ -33,8 +35,15 @@ namespace Blizzard.Obstacles
             BLog.Log(Health);
         }
 
-        [Header("Damageable Properties")] [SerializeField]
-        private int _startingHealth = 100;
+        [Header("Damageable References")]
+        [SerializeField] private SpriteRenderer[] _spriteRenderers;
+        [Header("Damageable Properties")] 
+        [SerializeField] private int _startingHealth = 100;
+
+        /// <summary>
+        /// Sequence for the damaged animation
+        /// </summary>
+        private Sequence _damagedSequence;
 
         public override void Init(ObstacleData obstacleData)
         {
@@ -52,9 +61,16 @@ namespace Blizzard.Obstacles
         [Button]
         public void Damage(int damage, DamageFlags damageFlags, Vector3 sourcePosition, out bool death)
         {
+            if (Health <= 0)
+            {
+                // Already dead
+                death = true;
+                return;
+            }
+            
             Health -= damage;
 
-            // BLog.Log("Taking " + damage + " damage, health is now " + Health);
+            BLog.Log("Taking " + damage + " damage, health is now " + Health);
             OnDamage(damage, damageFlags, sourcePosition);
 
             if (Health <= 0)
@@ -77,6 +93,17 @@ namespace Blizzard.Obstacles
         /// <param name="sourcePosition">World position of the damage source</param>s
         protected virtual void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition)
         {
+            if (Health > 0 && (_damagedSequence == null || !_damagedSequence.IsPlaying()))
+            {
+                // Damage animation
+                _damagedSequence = DOTween.Sequence();
+                if (damageFlags.HasFlag(DamageFlags.Enemy))
+                    _damagedSequence.Join(FXAssistant.DOColorTint(_spriteRenderers, Color.red));
+                //StartCoroutine(FXAssistant.TintSequenceCoroutine(_spriteRenderers, Color.red));
+                _damagedSequence.Join(FXAssistant.DODamageBounce(transform, sourcePosition));
+                _damagedSequence.SetLink(gameObject);
+                _damagedSequence.Play();
+            }
         }
 
         /// <summary>

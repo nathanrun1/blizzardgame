@@ -45,12 +45,6 @@ namespace Blizzard.Obstacles.Harvestables
                 Damage(damage, DamageFlags.Player, _playerService.PlayerPosition, out death);
         }
 
-        protected override void OnDamage(int damage, DamageFlags damageFlags, Vector3 sourcePosition)
-        {
-            if (Health > 0)
-                FXAssistant.DamageAnim(transform, sourcePosition);
-        }
-
         protected override void OnDeath(DamageFlags damageFlags, Vector3 sourcePosition)
         {
             if (damageFlags.HasFlag(DamageFlags.Player)) Harvest();

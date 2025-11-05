@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Blizzard.Constants;
 using DG.Tweening;
 using UnityEngine;
 
@@ -10,7 +11,11 @@ namespace Blizzard.Utilities.Assistants
     /// </summary>
     public static class FXAssistant
     {
-        public static void TintSequence(SpriteRenderer[] spriteRenderers, Color targetColor, float duration = 0.2f)
+        /// <summary>
+        /// Applies an immediate color tint to given sprite renderers for a given duration,
+        /// and then resets them to the color they were before the tint began
+        /// </summary>
+        public static Sequence DOColorTint(SpriteRenderer[] spriteRenderers, Color tintColor, float duration = 0.2f)
         {
             var sequence = DOTween.Sequence();
             for (int i = 0; i < spriteRenderers.Length; ++i)
@@ -26,7 +31,7 @@ namespace Blizzard.Utilities.Assistants
                     {
                         spriteRenderers[ind].color = color;
                     },
-                    targetColor,
+                    tintColor,
                     0.0f
                 ));
                 // Reset to initial color after given duration
@@ -43,74 +48,34 @@ namespace Blizzard.Utilities.Assistants
                 sequence.Join(colorSequence);  // Join to main sequence
             }
 
-            sequence.Play();
+            return sequence;
         }
-        
+
         /// <summary>
-        /// Applies an immediate red tint to given sprite renderers for a given duration,
-        /// and then resets them to their original color.
+        /// Applies an immediate color tint to given sprite renderer for a given duration,
+        /// and then resets it to the color it was before the tint began
         /// </summary>
-        /// <returns></returns>
-        public static IEnumerator TintSequenceCoroutine(SpriteRenderer[] spriteRenderers, Color targetColor,
-            float duration = 0.2f)
+        public static Sequence DOColorTint(SpriteRenderer spriteRenderer, Color tintColor, float duration = 0.2f)
         {
-            var initialColors = new Color[spriteRenderers.Length];
-            for (int i = 0; i < spriteRenderers.Length; ++i)
-            {
-                initialColors[i] = spriteRenderers[i].color;
-                spriteRenderers[i].color *= targetColor;
-            }
-
-            yield return new WaitForSeconds(duration);
-
-            for (int i = 0; i < spriteRenderers.Length; ++i) spriteRenderers[i].color = initialColors[i];
-        }
-
-        public static IEnumerator TintSequenceCoroutine(SpriteRenderer spriteRenderer, Color targetColor,
-            float duration = 0.2f)
-        {
-            return TintSequenceCoroutine(new[] { spriteRenderer }, targetColor, duration);
+            return DOColorTint(new[] {spriteRenderer}, tintColor, duration);
         }
 
         /// <summary>
-        /// Applies a "damage" animation to an object that has it bounce away from the damage source.
+        /// A "damage" animation applied to a transform that has it bounce away from the damage source.
         /// </summary>
         /// <param name="transform">Transform of the object to animate</param>
         /// <param name="sourcePosition">Damage source position</param>
-        public static void DamageAnim(Transform transform, Vector3 sourcePosition)
+        /// <param name="duration">Duration of animation</param>
+        public static Sequence DODamageBounce(Transform transform, Vector3 sourcePosition, float duration = 0.2f)
         {
-            var hitDirection = (transform.position - sourcePosition).normalized;
-            var startPos = transform.position;
-            var endPos = startPos + hitDirection * 0.05f;
-            var sequence = DOTween.Sequence();
-            sequence.Append(transform.DOMove(endPos, 0.1f));
-            sequence.Append(transform.DOMove(startPos, 0.1f));
+            Vector3 hitDirection = (transform.position - sourcePosition).normalized;
+            Vector3 startPos = transform.position;
+            Vector3 endPos = startPos + hitDirection * FXConstants.DamageBounceDistance;
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(transform.DOMove(endPos, duration / 2f));
+            sequence.Append(transform.DOMove(startPos, duration / 2f));
 
-            sequence.SetLink(transform.gameObject);
-
-            sequence.Play();
+            return sequence;
         }
-
-        // /// <summary>
-        // /// Coroutine that applies a "damage" animation to an object
-        // /// that has it bounce away from the damage source.
-        // /// </summary>
-        // /// <param name="transform">Transform of the object to animate</param>
-        // /// <param name="sourcePosition">Damage source position</param>
-        // /// <param name="breakCondition">If result is true, ends the animation early</param>
-        // public static IEnumerator DamageAnim(Transform transform, Vector3 sourcePosition, Func<bool> breakCondition)
-        // {
-        //     if (breakCondition()) yield break;
-        //
-        //     var hitDirection = (transform.position - sourcePosition).normalized;
-        //     var startPos = transform.position;
-        //     var endPos = startPos + hitDirection * 0.05f;
-        //     var sequence = DOTween.Sequence();
-        //     sequence.Append(transform.DOMove(endPos, 0.1f));
-        //     sequence.Append(transform.DOMove(startPos, 0.1f));
-        //
-        //     sequence.Play();
-        //     yield return null;
-        // }
     }
 }

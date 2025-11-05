@@ -320,8 +320,7 @@ namespace Blizzard.Enemies
             public override void Enter(IStateContext ctx)
             {
                 base.Enter(ctx);
-                Assert.IsTrue(
-                    stateContext.targetObstacle as Damageable); // Sanity check, target must be damageable
+                Assert.IsTrue(stateContext.targetObstacle as Damageable); // Sanity check, target must be damageable
             }
 
             public override void Update(float deltaTime)
@@ -339,12 +338,12 @@ namespace Blizzard.Enemies
             {
                 Damageable target = stateContext.targetObstacle;
                 bool targetDestroyed = true;  // Default to true, thus considered destroyed if target is null
-                if (target)
+                BLog.Log($"Attacking target {target}");
+                if (target && target.gameObject)
                 {
-                    target.Damage(stateContext.behaviourConfig.attackDamage, DamageFlags.Enemy,
+                    target?.Damage(stateContext.behaviourConfig.attackDamage, DamageFlags.Enemy,
                         stateContext.gameObject.transform.position, out targetDestroyed);
                 }
-
                 if (targetDestroyed)
                     stateContext.StateMachine.ChangeState(new IdleState()); // Target obstacle destroyed, return to idle
             }

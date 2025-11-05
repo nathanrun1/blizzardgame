@@ -1,8 +1,8 @@
 ﻿using System;
 using Blizzard.Interfaces;
 using Blizzard.Player.Tools;
-using Blizzard.Utilities;
 using Blizzard.Utilities.Assistants;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Blizzard.Enemies
@@ -18,6 +18,7 @@ namespace Blizzard.Enemies
         [SerializeField] private int _startingHealth;
 
         private Color[] _spriteRendererInitialColors;
+        private Sequence _damagedSequence;
         
         /// <summary>
         /// The enemy's health
@@ -47,13 +48,17 @@ namespace Blizzard.Enemies
             {
                 _spriteRendererInitialColors[i] = _spriteRenderers[i].color;
             }
+            // Setup damage animation
+            _damagedSequence = FXAssistant.DOColorTint(_spriteRenderers, Color.red);
+            _damagedSequence.SetLink(gameObject);
+            _damagedSequence.SetAutoKill(false);
         }
 
         protected virtual void OnEnable()
         {
             // Reset health
             Health = _startingHealth;
-            // Reset colors
+            // Reset colors (animation may have been interrupted)... or maybe not tho TODO check
             for (int i = 0; i < _spriteRenderers.Length; ++i)
             {
                 _spriteRenderers[i].color = _spriteRendererInitialColors[i];
@@ -75,7 +80,12 @@ namespace Blizzard.Enemies
             }
             else
             {
-                FXAssistant.TintSequence(_spriteRenderers, Color.red);
+                // Damaged animation
+                if (!_damagedSequence.IsPlaying())
+                {
+                    _damagedSequence.Restart();
+                    _damagedSequence.Play();
+                }
             }
         }
 

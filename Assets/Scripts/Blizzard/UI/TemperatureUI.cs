@@ -28,11 +28,11 @@ namespace Blizzard.UI
         private void FixedUpdate()
         {
             _bodyTemperature.text =
-                "Body: " + Math.Round(_playerService.PlayerTemperature.BodyTemperature, 2).ToString() + '�';
+                "Body: " + Math.Round(_playerService.PlayerTemperature.BodyTemperature, 2).ToString() + '°';
             _areaTemperature.text = "Area: " +
                                     Math.Round(
                                         _temperatureService.GetTemperatureAtWorldPos(_playerService.PlayerCtrl.transform
-                                            .position), 2).ToString() + '�';
+                                            .position), 2).ToString() + '°';
         }
     }
 }
