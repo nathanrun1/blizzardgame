@@ -1,6 +1,7 @@
 ﻿using Blizzard.Config;
 using Blizzard.Grid;
 using Blizzard.Temperature;
+using Blizzard.Utilities.DataTypes;
 using UnityEngine;
 using Zenject;
 
@@ -15,11 +16,19 @@ namespace Blizzard.Player
         [Inject] private TemperatureService _temperatureService;
         [Inject] private PlayerTemperatureConfig _config;
         
+        /// <summary>
+        /// Player's body temperature
+        /// </summary>
         public float BodyTemperature { get; private set; }
+        /// <summary>
+        /// Player's body insulation. Body temperature change as affected by external temperature
+        /// is multiplied by (1 - this value)
+        /// </summary>
         public float BodyInsulation { get; set; }
 
         
         private float _bodyHeat;
+        private float _temperatureDamageClock;
 
         public void Initialize()
         {
@@ -39,6 +48,13 @@ namespace Blizzard.Player
             _temperatureService.WindowOffset =
                 _temperatureService.Grid.WorldToCellPos(_playerService.PlayerPosition) -
                 new Vector2Int(16, 16); // TEMP: place player at center of window
+
+            _temperatureDamageClock += Time.fixedDeltaTime;
+            if (_temperatureDamageClock > _config.temperatureDamageDelay)
+            {
+                _temperatureDamageClock -= _config.temperatureDamageDelay;
+                InflictTemperatureDamage();
+            }
         }
         
         private void UpdateBodyTemperature(float deltaTime)
@@ -51,6 +67,20 @@ namespace Blizzard.Player
         private float GetExternalTemperature()
         {
             return _temperatureService.GetTemperatureAtWorldPos(_playerService.PlayerPosition);
+        }
+
+        private void InflictTemperatureDamage()
+        {
+            int damageToInflict = 0;
+            for (int i = 0; i < _config.temperatureDamageLevels.Length; ++i)
+            {
+                if (BodyTemperature >= _config.temperatureDamageLevels[i].threshold) break;
+                damageToInflict = Mathf.CeilToInt(
+                    _config.temperatureDamageLevels[i].damagePerSecond * _config.temperatureDamageDelay);
+            }
+
+            if (damageToInflict == 0) return;
+            _playerService.DamagePlayer(damageToInflict, DamageFlags.Cold);
         }
     }
 }

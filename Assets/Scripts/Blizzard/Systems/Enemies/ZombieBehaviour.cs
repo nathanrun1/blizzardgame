@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Blizzard.Constants;
 using UnityEngine;
 using Zenject;
 using Blizzard.Utilities.Logging;
@@ -9,9 +6,7 @@ using Blizzard.Obstacles;
 using Blizzard.Player;
 using Blizzard.Grid;
 using Blizzard.Pathfinding;
-using Blizzard.Player.Tools;
-using Blizzard.Utilities.Assistants;
-using ModestTree;
+using Blizzard.Utilities.DataTypes;
 using Assert = UnityEngine.Assertions.Assert;
 using Random = UnityEngine.Random;
 

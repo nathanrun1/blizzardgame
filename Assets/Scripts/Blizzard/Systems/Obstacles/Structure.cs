@@ -1,7 +1,5 @@
 using UnityEngine;
-using Blizzard.Utilities;
-using Blizzard.Utilities.Assistants;
-using DG.Tweening;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Obstacles
 {

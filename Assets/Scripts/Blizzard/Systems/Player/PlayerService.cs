@@ -4,11 +4,11 @@ using Unity.Cinemachine;
 using UnityEngine;
 using Zenject;
 using Blizzard.Inventory.Itemtypes;
-using Blizzard.Obstacles;
 using Blizzard.Player.Tools;
 using Blizzard.UI;
 using Blizzard.UI.Core;
 using Blizzard.Utilities.Logging;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Player
 {
@@ -77,9 +77,11 @@ namespace Blizzard.Player
             PlayerHealth -= damage;
             
             // Color flash FX
-            var colorFlashArgs = new ColorFlashUI.Args();
-            colorFlashArgs.color = Color.darkRed;
-            colorFlashArgs.duration = 0.2f;
+            var colorFlashArgs = new ColorFlashUI.Args
+            {
+                color = FXConstants.DamageFlashColor[damageFlags],
+                duration = 0.2f
+            };
             _uiService.InitUI(UIID.ColorFlash, colorFlashArgs);
         }
 

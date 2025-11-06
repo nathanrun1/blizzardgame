@@ -1,4 +1,8 @@
-﻿namespace Blizzard.Constants
+﻿using System.Collections.Generic;
+using Blizzard.Utilities.DataTypes;
+using UnityEngine;
+
+namespace Blizzard.Constants
 {
     public class FXConstants
     {
@@ -7,5 +11,11 @@
         /// tween.
         /// </summary>
         public static float DamageBounceDistance = 0.05f;
+
+        public static readonly Dictionary<DamageFlags, Color> DamageFlashColor = new Dictionary<DamageFlags, Color>
+        {
+            { DamageFlags.Enemy, Color.darkRed },
+            { DamageFlags.Cold, Color.darkCyan }
+        };
     }
 }

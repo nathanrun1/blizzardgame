@@ -1,23 +1,13 @@
-using System;
 using System.Diagnostics;
-using Blizzard.Utilities.Assistants;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using Blizzard.Utilities.Logging;
 using DG.Tweening;
+using Blizzard.Utilities.Assistants;
+using Blizzard.Utilities.Logging;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Obstacles
 {
-    /// <summary>
-    /// Describes the source of damage
-    /// </summary>
-    [Flags]
-    public enum DamageFlags
-    {
-        Player = 1 << 0,
-        Enemy = 1 << 1
-    }
-
     /// <summary>
     /// An obstacle that has health
     /// </summary>

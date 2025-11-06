@@ -1,6 +1,4 @@
-using DG.Tweening;
 using Sirenix.Utilities;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
@@ -11,8 +9,7 @@ using Blizzard.Player;
 using Blizzard.Player.Tools;
 using Blizzard.Utilities;
 using Blizzard.UI.Core;
-using Blizzard.Utilities.Assistants;
-using Blizzard.Utilities.Logging;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Obstacles.Harvestables
 {
