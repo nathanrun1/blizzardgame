@@ -11,6 +11,7 @@
         Build = 3,
         Furnace = 4,
         Temperature = 5,
-        InteractInfo = 6
+        InteractInfo = 6,
+        ColorFlash = 7
     }
 }

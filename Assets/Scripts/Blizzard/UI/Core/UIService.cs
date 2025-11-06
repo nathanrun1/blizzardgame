@@ -79,7 +79,7 @@ namespace Blizzard.UI.Core
             UIData uiData;
             if (_intDict.TryGetValue((int)id, out var value)) uiData = value;
             else
-                throw new KeyNotFoundException("No UI prefab exists with this id: " + id);
+                throw new KeyNotFoundException("No UI prefab exists with this id: " + (int)id);
 
             return InitUI(uiData, args);
         }

@@ -156,11 +156,11 @@ namespace Blizzard.Enemies
                 _clock -= stateContext.behaviourConfig.idleUpdateDelay;
 
                 // TEMP: disable player targeting
-                // if (TryGetPlayerTarget()) 
-                // {
-                //     stateContext.stateMachine.ChangeState(new NavPlayerState());
-                //     return;
-                // }
+                if (TryGetPlayerTarget()) 
+                {
+                    stateContext.StateMachine.ChangeState(new NavPlayerState());
+                    return;
+                }
 
                 // No player target, navigate to obstacle.
                 stateContext.StateMachine.ChangeState(new NavObstacleState());
@@ -214,7 +214,7 @@ namespace Blizzard.Enemies
                     // Out of attack range, back to navigation
                     stateContext.StateMachine.ChangeState(new NavPlayerState());
 
-                stateContext.playerService.DamagePlayer(stateContext.behaviourConfig.attackDamage);
+                stateContext.playerService.DamagePlayer(stateContext.behaviourConfig.attackDamage, DamageFlags.Enemy);
             }
         }
 
@@ -232,9 +232,8 @@ namespace Blizzard.Enemies
                     // Reset clock with slight random offset to avoid synchronizing with other enemies.
                     _clock -= stateContext.behaviourConfig.idleUpdateDelay + Random.Range(-0.5f, 0.5f);
                     
-                    // TEMP: disable player targeting
-                    // if (TryGetPlayerTarget())
-                    //     stateContext.stateMachine.ChangeState(new NavPlayerState()); // Prioritize player as target
+                    if (TryGetPlayerTarget())
+                        stateContext.StateMachine.ChangeState(new NavPlayerState()); // Prioritize player as target
 
                     if (_nextGridPos == _curGridPos)
                         // Try getting new target
@@ -283,7 +282,7 @@ namespace Blizzard.Enemies
                     if (!TryGetDamageableTarget())
                     {
                         // No damageable obstacles at all, just navigate to the player.
-                        //stateContext.stateMachine.ChangeState(new NavPlayerState());
+                        stateContext.StateMachine.ChangeState(new NavPlayerState());
                         _nextGridPos = _curGridPos; // TEMP
                         return;
                     }
@@ -330,6 +329,8 @@ namespace Blizzard.Enemies
                 stateContext.rigidBody.angularVelocity = 0f;
 
                 if (_clock <= stateContext.behaviourConfig.attackDelay) return;
+                if (TryGetPlayerTarget())
+                    stateContext.StateMachine.ChangeState(new NavPlayerState()); // Prioritize player as target
                 _clock -= stateContext.behaviourConfig.attackDelay;
                 AttackTarget();
             }

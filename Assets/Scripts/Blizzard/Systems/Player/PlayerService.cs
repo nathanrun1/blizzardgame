@@ -1,9 +1,13 @@
 using System;
+using Blizzard.Constants;
 using Unity.Cinemachine;
 using UnityEngine;
 using Zenject;
 using Blizzard.Inventory.Itemtypes;
+using Blizzard.Obstacles;
 using Blizzard.Player.Tools;
+using Blizzard.UI;
+using Blizzard.UI.Core;
 using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Player
@@ -13,21 +17,30 @@ namespace Blizzard.Player
     /// </summary>
     public class PlayerService : IInitializable
     {
+        [Inject] private DiContainer _diContainer;
+        [Inject] private UIService _uiService;
+        
         public PlayerCtrl PlayerCtrl;
         public PlayerMovement PlayerMovement;
         public PlayerTemperature PlayerTemperature;
 
+        /// <summary>
+        /// Currently equipped tool instance
+        /// </summary>
         public ToolBehaviour EquippedTool { get; private set; }
-
+        /// <summary>
+        /// Player's current position
+        /// </summary>
         public Vector2 PlayerPosition => PlayerCtrl.transform.position;
-
+        /// <summary>
+        /// Player's current health
+        /// </summary>
+        public int PlayerHealth { get; private set; }
+        
         /// <summary>
         /// To invoke on initializations
         /// </summary>
         private Action _initialize;
-
-
-        [Inject] private DiContainer _diContainer;
 
         public PlayerService(PlayerCtrl playerPrefab, Transform environment, CinemachineCamera cinemachineCamera)
         {
@@ -45,21 +58,31 @@ namespace Blizzard.Player
         /// </summary>
         private void InitPlayer(PlayerCtrl playerPrefab, Transform environment, CinemachineCamera cinemachineCamera)
         {
-            // BLog.Log(playerPrefab);
-
+            // Get references to player components
             PlayerCtrl =
                 _diContainer.InstantiatePrefabForComponent<PlayerCtrl>(playerPrefab,
                     environment); // Initialize player obj
             PlayerMovement = PlayerCtrl.GetComponent<PlayerMovement>();
             PlayerTemperature = PlayerCtrl.GetComponent<PlayerTemperature>();
 
-            cinemachineCamera.Target.TrackingTarget = PlayerCtrl.transform; // Set camera tracking target to player
+            // Set camera tracking target to player
+            cinemachineCamera.Target.TrackingTarget = PlayerCtrl.transform; 
+            
+            // Set initial player health
+            PlayerHealth = PlayerConstants.PlayerStartHealth;
         }
         
-        public void DamagePlayer(int damage)
+        public void DamagePlayer(int damage, DamageFlags damageFlags)
         {
             // TODO: implement
-            // BLog.Log("Inflicted " + damage + " damage to player!");
+            BLog.Log("Inflicted " + damage + " damage to player!");
+            PlayerHealth -= damage;
+            
+            // Color flash FX
+            var colorFlashArgs = new ColorFlashUI.Args();
+            colorFlashArgs.color = Color.red;
+            colorFlashArgs.duration = 0.2f;
+            _uiService.InitUI(UIID.ColorFlash, colorFlashArgs);
         }
 
         // -- Helpers --
