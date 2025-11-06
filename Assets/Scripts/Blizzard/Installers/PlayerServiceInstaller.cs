@@ -20,7 +20,11 @@ namespace Blizzard.Installers
                 .AsSingle()
                 .WithArguments(_playerPrefab, _environment, _cinemachineCamera);
 
-            BLog.Log("Installed Player Service");
+            Container.BindInterfacesAndSelfTo<PlayerTemperatureService>()
+                .FromNew()
+                .AsSingle();
+
+            BLog.Log("Installed Player Service and Player Temperature Service");
         }
     }
 }

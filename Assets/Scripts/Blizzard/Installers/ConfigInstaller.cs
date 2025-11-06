@@ -1,3 +1,4 @@
+using Blizzard.Config;
 using Blizzard.Enemies.Core;
 using Blizzard.Inventory.Crafting;
 using Blizzard.UI.Core;
@@ -17,6 +18,7 @@ namespace Blizzard.Installers
         [SerializeField] private SmeltingDatabase _smeltingDatabase;
         [SerializeField] private UIDatabase _uiDatabase;
         [SerializeField] private EnemyDatabase _enemyDatabase;
+        [SerializeField] private PlayerTemperatureConfig _playerTemperatureConfig;
 
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
@@ -32,6 +34,9 @@ namespace Blizzard.Installers
             
             // Enemy database
             Container.BindInstance(_enemyDatabase).AsSingle();
+            
+            // Player temperature config
+            Container.BindInstance(_playerTemperatureConfig).AsSingle();
 
             BLog.Log("Installed Configs");
         }

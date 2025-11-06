@@ -53,6 +53,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -74,6 +76,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 50
@@ -135,7 +138,6 @@ GameObject:
   - component: {fileID: 5019785434969046845}
   - component: {fileID: 5394946729668643878}
   - component: {fileID: 5996225031606313502}
-  - component: {fileID: 8450210144983266425}
   - component: {fileID: 6625222498280692507}
   m_Layer: 3
   m_Name: Player
@@ -202,23 +204,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &8450210144983266425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4086231844008920989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bf8ad0f8a20d7c48ba6ae61867a23c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _config: {fileID: 11400000, guid: 22ec29e7558cefe42a2cb579f6e5c450, type: 2}
-  _bodyInsulation: 0
-  _timeScale: 1
-  _useTestExternalTemp: 0
-  _TESTExternalTemperature: 0
 --- !u!114 &6625222498280692507
 MonoBehaviour:
   m_ObjectHideFlags: 0

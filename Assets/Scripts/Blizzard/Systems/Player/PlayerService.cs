@@ -22,7 +22,6 @@ namespace Blizzard.Player
         
         public PlayerCtrl PlayerCtrl;
         public PlayerMovement PlayerMovement;
-        public PlayerTemperature PlayerTemperature;
 
         /// <summary>
         /// Currently equipped tool instance
@@ -63,7 +62,6 @@ namespace Blizzard.Player
                 _diContainer.InstantiatePrefabForComponent<PlayerCtrl>(playerPrefab,
                     environment); // Initialize player obj
             PlayerMovement = PlayerCtrl.GetComponent<PlayerMovement>();
-            PlayerTemperature = PlayerCtrl.GetComponent<PlayerTemperature>();
 
             // Set camera tracking target to player
             cinemachineCamera.Target.TrackingTarget = PlayerCtrl.transform; 
@@ -80,7 +78,7 @@ namespace Blizzard.Player
             
             // Color flash FX
             var colorFlashArgs = new ColorFlashUI.Args();
-            colorFlashArgs.color = Color.red;
+            colorFlashArgs.color = Color.darkRed;
             colorFlashArgs.duration = 0.2f;
             _uiService.InitUI(UIID.ColorFlash, colorFlashArgs);
         }
