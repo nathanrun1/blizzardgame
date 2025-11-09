@@ -58,13 +58,17 @@ namespace Blizzard.Enemies.Core
             EnemyBehaviour enemyInstance =_inactiveEnemies[enemyData.ID].Count > 0 ? 
                 _inactiveEnemies[enemyData.ID].Pop() :
                 _diContainer.InstantiatePrefabForComponent<EnemyBehaviour>(enemyData.enemyPrefab);
+            
             enemyInstance.transform.position = spawnPosition;
             enemyInstance.transform.SetParent(_enemyParent);
             Quadtree.Add(enemyInstance);
+            
             int enemyID = enemyData.ID;
             enemyInstance.OnDeath += () =>
             {
                 // On enemy death: Remove from quadtree and transfer to inactive pool
+                if (!enemyInstance.gameObject.activeInHierarchy) return; // Do nothing if already inactive
+                enemyInstance.gameObject.SetActive(false);
                 Quadtree.Remove(enemyInstance); 
                 _inactiveEnemies[enemyID].Push(enemyInstance);
             };

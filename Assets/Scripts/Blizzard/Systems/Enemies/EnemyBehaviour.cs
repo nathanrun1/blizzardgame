@@ -29,7 +29,7 @@ namespace Blizzard.Enemies
         /// Invoked when enemy dies (health reaches 0)
         /// </summary>
         public event Action OnDeath;
-        
+
         public virtual void Hit(int damage, ToolType toolType, out bool death)
         {
             TakeDamage(damage, out death);
@@ -81,11 +81,9 @@ namespace Blizzard.Enemies
             else
             {
                 // Damaged animation
-                if (!_damagedSequence.IsPlaying())
-                {
-                    _damagedSequence.Restart();
-                    _damagedSequence.Play();
-                }
+                if (_damagedSequence.IsPlaying()) return;
+                _damagedSequence.Restart();
+                _damagedSequence.Play();
             }
         }
 
@@ -94,7 +92,6 @@ namespace Blizzard.Enemies
         /// </summary>
         protected virtual void Death()
         {
-            gameObject.SetActive(false);
             OnDeath?.Invoke();
         }
     }
