@@ -15,5 +15,5 @@ MonoBehaviour:
   obstaclePrefab: {fileID: 6662974919912280181, guid: 8734c09141749f5468168f2ff8dbb4da, type: 3}
   startingHeat: 0
   startingInsulation: 0.5
-  obstacleFlags: 0
+  obstacleFlags: 2
   obstacleLayer: 0

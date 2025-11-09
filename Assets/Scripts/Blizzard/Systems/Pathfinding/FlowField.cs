@@ -164,9 +164,9 @@ namespace Blizzard.Pathfinding
                         .GetAt(pos);
                     Assert.IsNotNull(obstacle, "Failed to construct flow field, queried a null obstacle!");
 
-                    // Check if targetable (i.e. player built and not undetectable)
-                    bool isTargetable = obstacle.ObstacleFlags.HasFlag(ObstacleFlags.PlayerBuilt)
-                                        && !obstacle.ObstacleFlags.HasFlag(ObstacleFlags.Undetectable);
+                    // Check if targetable (i.e. player built and detectable)
+                    bool isTargetable =
+                        obstacle.ObstacleFlags.HasFlag(ObstacleFlags.PlayerBuilt | ObstacleFlags.Detectable);
 
                     // TODO: improve weight calculation based on obstacle
                     float weight = isTargetable ? 0f : float.MinValue; // Set no weight if not targetable

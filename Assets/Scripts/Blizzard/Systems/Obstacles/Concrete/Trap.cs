@@ -42,7 +42,7 @@ namespace Blizzard.Obstacles.Concrete
         {
             enemy.Strike(_damage, out _);
             _spriteRenderer.sprite = _triggeredSprite;
-            SetFlags(ObstacleFlags & ~ObstacleFlags.Undetectable); // Trap is detectable now, until repaired.
+            SetFlags(ObstacleFlags | ObstacleFlags.Detectable); // Trap is detectable now, until repaired.
             _ready = false;
         }
 
@@ -53,7 +53,7 @@ namespace Blizzard.Obstacles.Concrete
         {
             Assert.IsFalse(_ready);
             _spriteRenderer.sprite = _readySprite;
-            SetFlags(ObstacleFlags | ObstacleFlags.Undetectable); // Trap is now undetectable and ready to be triggered
+            SetFlags(ObstacleFlags & ~ObstacleFlags.Detectable); // Trap is now undetectable and ready to be triggered
             _ready = true;
         }
     }

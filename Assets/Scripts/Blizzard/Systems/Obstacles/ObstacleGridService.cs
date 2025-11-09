@@ -21,13 +21,13 @@ namespace Blizzard.Obstacles
         /// Invoked when an obstacle is added or removed from some location.
         /// Args: (Affected grid position, Affected Obstacle Layer, Flags of added/removed obstacle)
         /// </summary>
-        public event Action<Vector2Int, ObstacleLayer, ObstacleFlags> OnObstacleAddedOrRemoved;
+        public event Action<Vector2Int, ObstacleLayer, ObstacleFlags> ObstacleAddedOrRemoved;
 
         /// <summary>
-        /// Invoked when an ObstacleQuadtree is updated
-        /// Args: (ObstacleFlags of updated ObstacleQuadtree)
+        /// Invoked when an obstacle's flags are updated
+        /// Args: (Affected grid position, Affected Obstacle Layer, Flags of updated obstacle)
         /// </summary>
-        public event Action<ObstacleFlags> OnQuadtreeUpdate;
+        public event Action<Vector2Int, ObstacleLayer, ObstacleFlags> ObstacleFlagsUpdated;
 
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Blizzard.Obstacles
                 renderer.sortingOrder += ObstacleConstants.ObstacleLayerSortingLayers[obstacleData.obstacleLayer];
 
             obstacle.OnDestroy += () => OnObstacleDestroyed(gridPosition, obstacleData.obstacleLayer);
-            obstacle.Updated += (flagsChanged) => OnObstacleUpdated(gridPosition, obstacle, flagsChanged);
+            obstacle.Updated += (flagsChanged) => OnObstacleUpdated(gridPosition, obstacleData.obstacleLayer, obstacle, flagsChanged);
             if (_obstaclesParent) obstacle.transform.parent = _obstaclesParent;
 
             Grids[obstacleData.obstacleLayer].SetAt(gridPosition, obstacle);
@@ -110,7 +110,7 @@ namespace Blizzard.Obstacles
                 AddToQuadtrees(gridPosition, obstacle.ObstacleFlags);
             }
 
-            OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleData.obstacleLayer, obstacleData.obstacleFlags);
+            ObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleData.obstacleLayer, obstacleData.obstacleFlags);
         }
 
         /// <summary>
@@ -165,10 +165,10 @@ namespace Blizzard.Obstacles
                 }
             }
 
-            OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleLayer, obstacle.ObstacleFlags);
+            ObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleLayer, obstacle.ObstacleFlags);
         }
 
-        private void OnObstacleUpdated(Vector2Int gridPosition, Obstacle obstacle, bool flagsChanged)
+        private void OnObstacleUpdated(Vector2Int gridPosition, ObstacleLayer obstacleLayer, Obstacle obstacle, bool flagsChanged)
         {
             UpdateTemperatureSimData(gridPosition, obstacle);
             
@@ -177,6 +177,7 @@ namespace Blizzard.Obstacles
             // Obstacle flags have changed -> Update quadtree data
             RemoveFromQuadtrees(gridPosition);
             AddToQuadtrees(gridPosition, obstacle.ObstacleFlags);
+            ObstacleFlagsUpdated?.Invoke(gridPosition, obstacleLayer, obstacle.ObstacleFlags);
         }
 
         /// <summary>
@@ -209,10 +210,9 @@ namespace Blizzard.Obstacles
         /// </summary>
         private void AddToQuadtrees(Vector2Int gridPosition, ObstacleFlags obstacleFlags)
         {
-            foreach (var flagCombo in Quadtrees.Keys.Where(flagCombo => (flagCombo & obstacleFlags) == flagCombo))
+            foreach (ObstacleFlags flagCombo in Quadtrees.Keys.Where(flagCombo => (flagCombo & obstacleFlags) == flagCombo))
             {
                 Quadtrees[flagCombo].Add(gridPosition);
-                OnQuadtreeUpdate?.Invoke(flagCombo);
             }
         }
 
@@ -224,7 +224,6 @@ namespace Blizzard.Obstacles
             foreach (ObstacleFlags flagCombo in Quadtrees.Keys)
             {
                 Quadtrees[flagCombo].Remove(gridPosition);
-                OnQuadtreeUpdate?.Invoke(flagCombo);
             }
         }
     }

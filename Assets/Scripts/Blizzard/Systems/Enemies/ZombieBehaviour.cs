@@ -117,10 +117,10 @@ namespace Blizzard.Enemies
             /// <returns>True if target found and assigned, false otherwise</returns>
             protected bool TryGetDamageableTarget()
             {
-                stateContext.obstacleGridService.InitQuadtree(ObstacleFlags.PlayerBuilt); // Ensure PlayerBuilt buildings quadtree exists
                 var selfGridPos = stateContext.obstacleGridService.GetMainGrid()
                     .WorldToCellPos(stateContext.gameObject.transform.position);
-                var targetOptions = stateContext.obstacleGridService.Quadtrees[ObstacleFlags.PlayerBuilt]
+                var targetOptions = stateContext.obstacleGridService
+                    .GetQuadtree(ObstacleFlags.PlayerBuilt | ObstacleFlags.Detectable)
                     .GetKNearestObstacles
                     (
                         selfGridPos,

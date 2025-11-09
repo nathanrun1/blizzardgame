@@ -10,9 +10,9 @@ namespace Blizzard.Utilities.DataTypes
         /// </summary>
         PlayerBuilt = 1 << 0,
         /// <summary>
-        /// An obstacle undetectable by NPCs
+        /// An obstacle detectable by NPCs
         /// </summary>
-        Undetectable = 1 << 1,
+        Detectable = 1 << 1,
         /// <summary>
         /// An obstacle that can be passed through
         /// </summary>

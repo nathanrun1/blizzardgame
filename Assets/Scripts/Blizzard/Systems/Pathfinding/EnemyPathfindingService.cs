@@ -31,8 +31,8 @@ namespace Blizzard.Pathfinding
         {
             BLog.Log("Pathfinding Service Initialized");
 
-            _obstacleGridService.OnObstacleAddedOrRemoved += OnObstacleAddedOrRemoved;
-            _obstacleGridService.OnQuadtreeUpdate += OnQuadtreeUpdate;
+            _obstacleGridService.ObstacleAddedOrRemoved += ObstacleAddedOrRemoved;
+            _obstacleGridService.ObstacleFlagsUpdated += OnObstacleFlagsUpdated;
 
             _flowField = new FlowField(_obstacleGridService);
         }
@@ -84,9 +84,9 @@ namespace Blizzard.Pathfinding
 
 
         /// <summary>
-        /// Invoked with the obstacle grid service's identically named event
+        /// Invoked when an obstacle is added or removed from the obstacle grid 
         /// </summary>
-        private void OnObstacleAddedOrRemoved(Vector2Int pos, ObstacleLayer obstacleLayer, ObstacleFlags obstacleFlags)
+        private void ObstacleAddedOrRemoved(Vector2Int pos, ObstacleLayer obstacleLayer, ObstacleFlags obstacleFlags)
         {
             // TEMP: simply recalculate entire flow field
             var added = _obstacleGridService.IsOccupied(pos);
@@ -119,12 +119,10 @@ namespace Blizzard.Pathfinding
         }
 
         /// <summary>
-        /// Invoked with the obstacle grid service's identically named event
+        /// Invoked when an obstacle has its flags updated
         /// </summary>
-        private void OnQuadtreeUpdate(ObstacleFlags quadtreeObstacleFlags)
+        private void OnObstacleFlagsUpdated(Vector2Int pos, ObstacleLayer obstacleLayer, ObstacleFlags obstacleFlags)
         {
-            BLog.Log("EnemyPathfindingService",$"Quadtree update detected for flags {quadtreeObstacleFlags.ToString()}");
-            if (quadtreeObstacleFlags != ObstacleFlags.PlayerBuilt) return;  // Only relevant if player-built QT is updated
             // TEMP: simply recalculate entire flow field
             
             if (_outerMostBoundsPlayerBuilt.IsEmpty())
