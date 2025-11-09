@@ -5,13 +5,14 @@ using Zenject;
 using Blizzard.Obstacles;
 using Blizzard.Utilities;
 using Blizzard.Utilities.Logging;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Pathfinding
 {
     /// <summary>
-    /// Responsible for pathfinding to/around obstacles.
+    /// Service responsible for managing enemy pathfinding
     /// </summary>
-    public class PathfindingService : IInitializable
+    public class EnemyPathfindingService : IInitializable
     {
         private FlowField _flowField;
         /// <summary>
@@ -31,6 +32,7 @@ namespace Blizzard.Pathfinding
             BLog.Log("Pathfinding Service Initialized");
 
             _obstacleGridService.OnObstacleAddedOrRemoved += OnObstacleAddedOrRemoved;
+            _obstacleGridService.OnQuadtreeUpdate += OnQuadtreeUpdate;
 
             _flowField = new FlowField(_obstacleGridService);
         }
@@ -105,6 +107,33 @@ namespace Blizzard.Pathfinding
 
             // Add padding to min/max bounds so that enemies near (within padding) player built objects can still
             //  pathfind to them
+            Vector2Int paddedMin = new(
+                _outerMostBoundsPlayerBuilt.MinBound.x - PathfindingConstants.ffPadding,
+                _outerMostBoundsPlayerBuilt.MinBound.y - PathfindingConstants.ffPadding);
+            Vector2Int paddedMax = new(
+                _outerMostBoundsPlayerBuilt.MinBound.x + PathfindingConstants.ffPadding,
+                _outerMostBoundsPlayerBuilt.MinBound.y + PathfindingConstants.ffPadding);
+
+            _flowField.BuildFlowField(paddedMin, paddedMax);
+            _flowFieldValid = true;
+        }
+
+        /// <summary>
+        /// Invoked with the obstacle grid service's identically named event
+        /// </summary>
+        private void OnQuadtreeUpdate(ObstacleFlags quadtreeObstacleFlags)
+        {
+            BLog.Log("EnemyPathfindingService",$"Quadtree update detected for flags {quadtreeObstacleFlags.ToString()}");
+            if (quadtreeObstacleFlags != ObstacleFlags.PlayerBuilt) return;  // Only relevant if player-built QT is updated
+            // TEMP: simply recalculate entire flow field
+            
+            if (_outerMostBoundsPlayerBuilt.IsEmpty())
+            {
+                // No player built obstacles, no need for flow field
+                _flowFieldValid = false;
+                return;
+            }
+
             Vector2Int paddedMin = new(
                 _outerMostBoundsPlayerBuilt.MinBound.x - PathfindingConstants.ffPadding,
                 _outerMostBoundsPlayerBuilt.MinBound.y - PathfindingConstants.ffPadding);

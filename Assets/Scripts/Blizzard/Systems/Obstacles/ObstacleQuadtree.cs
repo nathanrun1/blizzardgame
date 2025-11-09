@@ -7,6 +7,7 @@ using Blizzard.Grid;
 using System.Linq;
 using Blizzard.Constants;
 using Blizzard.Utilities.Quadtree;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Obstacles
 {
@@ -95,6 +96,8 @@ namespace Blizzard.Obstacles
         /// Removes given obstacle coordinate from valid coordinates in QuadTree.
         /// This coordinate can still be queried until the QuadTree is refreshed, 
         /// returning a null Obstacle.
+        ///
+        /// Has no effect if coordinate is not in the quadtree.
         /// </summary>
         /// <param name="obstaclePosition"></param>
         public void Remove(Vector2Int obstaclePosition)

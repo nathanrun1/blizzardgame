@@ -15,3 +15,7 @@ MonoBehaviour:
   bodyTemperatureChangeRate: 0.0005
   neutralBodyTemperature: 36
   neutralExternalTemperature: 20
+  temperatureDamageDelay: 1
+  temperatureDamageLevels:
+  - threshold: 35
+    damagePerSecond: 5

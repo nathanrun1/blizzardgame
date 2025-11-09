@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Assertions;
 using Blizzard.Utilities.Logging;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Pathfinding
 {
@@ -142,8 +143,8 @@ namespace Blizzard.Pathfinding
         {
             lock (_ffBuildLock)
             {
-                var width = max.x - min.x + 1; // Add 1 because bounds are inclusive
-                var height = max.y - min.y + 1; // ^^
+                int width = max.x - min.x + 1; // Add 1 because bounds are inclusive
+                int height = max.y - min.y + 1; // ^^
                 BLog.Log($"Rebuilding flow field of size {width} * {height}!");
 
                 if (_nativeFlowField == null || _nativeFlowField.Width != width || _nativeFlowField.Height != height)
@@ -163,14 +164,14 @@ namespace Blizzard.Pathfinding
                         .GetAt(pos);
                     Assert.IsNotNull(obstacle, "Failed to construct flow field, queried a null obstacle!");
 
-                    // Check if player built
-                    bool isPlayerBuilt = (ObstacleFlags.PlayerBuilt & obstacle.ObstacleFlags) ==
-                                         ObstacleFlags.PlayerBuilt;
+                    // Check if targetable (i.e. player built and not undetectable)
+                    bool isTargetable = obstacle.ObstacleFlags.HasFlag(ObstacleFlags.PlayerBuilt)
+                                        && !obstacle.ObstacleFlags.HasFlag(ObstacleFlags.Undetectable);
 
                     // TODO: improve weight calculation based on obstacle
-                    float weight = isPlayerBuilt ? 0f : float.MinValue; // Set no weight if not player built
+                    float weight = isTargetable ? 0f : float.MinValue; // Set no weight if not targetable
                     float travelCost =
-                        (obstacle as Damageable)
+                        (obstacle as Damageable && !obstacle.ObstacleFlags.HasFlag(ObstacleFlags.NoCollision))
                             ? (obstacle as Damageable)!.Health / 10f
                             : 0f; // TEMP: set travel cost to health/10, though this should depend on enemy's dps
 

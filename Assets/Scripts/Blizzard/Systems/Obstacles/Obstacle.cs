@@ -3,15 +3,10 @@ using System;
 using Blizzard.Constants;
 using UnityEngine;
 using Blizzard.Utilities.Logging;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Obstacles
 {
-    [Flags]
-    public enum ObstacleFlags
-    {
-        PlayerBuilt = 1 << 0
-    }
-
     /// <summary>
     /// An object that occupies a grid space in the obstacle grid
     /// </summary>
@@ -20,14 +15,17 @@ namespace Blizzard.Obstacles
         public event Action OnDestroy;
 
         /// <summary>
-        /// Invoked whenever temperature sim data has been updated.
+        /// Invoked whenever the obstacle has been updated in some way that's relevant externally
+        /// E.g. temperature data or obstacle flags have changed
+        ///
+        /// Args: (Whether ObstacleFlags was changed)
         /// </summary>
-        public event Action TemperatureDataUpdated;
+        public event Action<bool> Updated;
+        
+        public float Heat { get; private set; } = TemperatureConstants.DefaultHeatValue;
+        public float Insulation { get; private set; } = TemperatureConstants.DefaultInsulationValue;
 
-        public float Heat { get; protected set; } = TemperatureConstants.DefaultHeatValue;
-        public float Insulation { get; protected set; } = TemperatureConstants.DefaultInsulationValue;
-
-        public ObstacleFlags ObstacleFlags { get; protected set; } = 0;
+        public ObstacleFlags ObstacleFlags { get; private set; } = 0;
 
 
         public virtual void Init(ObstacleData obstacleData)
@@ -44,7 +42,7 @@ namespace Blizzard.Obstacles
         {
             Assert.That(insulation is >= 0 and <= 1, "Insulation value must be between 0 and 1!");
             Insulation = insulation;
-            TemperatureDataUpdated?.Invoke();
+            Updated?.Invoke(false);
         }
 
         /// <summary>
@@ -53,7 +51,13 @@ namespace Blizzard.Obstacles
         protected void SetHeat(float heat)
         {
             Heat = heat;
-            TemperatureDataUpdated?.Invoke();
+            Updated?.Invoke(false);
+        }
+
+        protected void SetFlags(ObstacleFlags obstacleFlags)
+        {
+            ObstacleFlags = obstacleFlags;
+            Updated?.Invoke(true);
         }
 
         /// <summary>

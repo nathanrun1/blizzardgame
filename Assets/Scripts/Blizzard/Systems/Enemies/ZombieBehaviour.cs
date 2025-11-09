@@ -58,7 +58,7 @@ namespace Blizzard.Enemies
 
             public ObstacleGridService obstacleGridService;
             public PlayerService playerService;
-            public PathfindingService pathfindingService;
+            public EnemyPathfindingService enemyPathfindingService;
 
             public GameObject gameObject;
             public Rigidbody2D rigidBody;
@@ -268,7 +268,7 @@ namespace Blizzard.Enemies
             /// </summary>
             private void GetNextTarget()
             {
-                if (!stateContext.pathfindingService.TryGetNextTargetGridPosition(_curGridPos, out _nextGridPos,
+                if (!stateContext.enemyPathfindingService.TryGetNextTargetGridPosition(_curGridPos, out _nextGridPos,
                         out var targetObstacle))
                 {
                     BLog.Log("No next target position!");
@@ -354,7 +354,7 @@ namespace Blizzard.Enemies
 
         [Inject] private ObstacleGridService _obstacleGridService;
         [Inject] private PlayerService _playerService;
-        [Inject] private PathfindingService _pathfindingService;
+        [Inject] private EnemyPathfindingService _enemyPathfindingService;
 
         protected override void Awake()
         {
@@ -364,7 +364,7 @@ namespace Blizzard.Enemies
             {
                 obstacleGridService = _obstacleGridService,
                 playerService = _playerService,
-                pathfindingService = _pathfindingService,
+                enemyPathfindingService = _enemyPathfindingService,
                 gameObject = gameObject,
                 rigidBody = GetComponent<Rigidbody2D>(),
                 targetObstacle = null,

@@ -10,7 +10,7 @@ namespace Blizzard.Installers
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
-            Container.BindInterfacesAndSelfTo<PathfindingService>()
+            Container.BindInterfacesAndSelfTo<EnemyPathfindingService>()
                 .FromNew()
                 .AsSingle();
 

@@ -15,6 +15,7 @@ using Blizzard.Player;
 using Blizzard.UI.Core;
 using Blizzard.Utilities.Assistants;
 using Blizzard.Utilities.Logging;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Utilities
 {

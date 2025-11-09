@@ -3,6 +3,7 @@ using System.Linq;
 using Blizzard.Constants;
 using Blizzard.Grid;
 using UnityEngine;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Obstacles
 {

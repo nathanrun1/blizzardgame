@@ -18,8 +18,8 @@ namespace Blizzard.Constants
         /// </summary>
         public static readonly Dictionary<ObstacleLayer, int> ObstacleLayerSortingLayers = new()
         {
-            { ObstacleLayer.Main, 20 },
-            { ObstacleLayer.Floor, 0 }
+            { ObstacleLayer.Main, -20 },
+            { ObstacleLayer.Floor, -40 }
         };
 
         /// <summary>

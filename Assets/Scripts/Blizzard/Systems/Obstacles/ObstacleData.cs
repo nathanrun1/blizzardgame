@@ -1,10 +1,8 @@
 using UnityEngine;
 using UnityEngine.Assertions;
-using Blizzard.Obstacles;
-using Blizzard.Temperature;
-using System;
 using Blizzard.Constants;
 using Zenject;
+using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Obstacles
 {

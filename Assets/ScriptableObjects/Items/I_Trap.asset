@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32ad2e618ae935343ba026abde1a7421, type: 3}
+  m_Name: I_Trap
+  m_EditorClassIdentifier: 
+  id: 13
+  displayName: Trap
+  icon: {fileID: -4297483516808936553, guid: 14e0bd4a58f16de46b25b71844310b82, type: 3}
+  stackSize: 5
+  itemGainColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  buildingData: {fileID: 11400000, guid: b3303879b4efa3e4eb1a9dd900c43d1a, type: 2}

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5860e2f5e00e72f448d4f62c3309c4ad, type: 3}
-  m_Name: O_WoodenDoor
+  m_Name: O_Trap
   m_EditorClassIdentifier: 
-  obstaclePrefab: {fileID: 4374139578210925026, guid: c52bf62115e90c3449928679e0784c80, type: 3}
+  obstaclePrefab: {fileID: 5232610765318738253, guid: 03eedd3e3391112488bcb783147214de, type: 3}
   startingHeat: 0
-  startingInsulation: 0.7
-  obstacleFlags: -7
+  startingInsulation: 0
+  obstacleFlags: -1
   obstacleLayer: 0

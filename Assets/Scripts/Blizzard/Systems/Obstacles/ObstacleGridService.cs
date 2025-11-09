@@ -3,9 +3,11 @@ using UnityEngine.Assertions;
 using Blizzard.Grid;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Blizzard.Constants;
 using Blizzard.Temperature;
 using Blizzard.Utilities.Logging;
+using Blizzard.Utilities.DataTypes;
 using Zenject;
 
 namespace Blizzard.Obstacles
@@ -20,6 +22,12 @@ namespace Blizzard.Obstacles
         /// Args: (Affected grid position, Affected Obstacle Layer, Flags of added/removed obstacle)
         /// </summary>
         public event Action<Vector2Int, ObstacleLayer, ObstacleFlags> OnObstacleAddedOrRemoved;
+
+        /// <summary>
+        /// Invoked when an ObstacleQuadtree is updated
+        /// Args: (ObstacleFlags of updated ObstacleQuadtree)
+        /// </summary>
+        public event Action<ObstacleFlags> OnQuadtreeUpdate;
 
 
         /// <summary>
@@ -84,7 +92,6 @@ namespace Blizzard.Obstacles
                     $"Grid position {gridPosition} occupied on layer {obstacleData.obstacleLayer}!");
 
             Vector3 obstaclePosition = Grids[obstacleData.obstacleLayer].CellToWorldPosCenter(gridPosition);
-
             var obstacle = obstacleData.CreateObstacle(obstaclePosition);
 
             // Set sorting order of obstacle based on layer (we assume current order is relative to layer's order & add)
@@ -92,7 +99,7 @@ namespace Blizzard.Obstacles
                 renderer.sortingOrder += ObstacleConstants.ObstacleLayerSortingLayers[obstacleData.obstacleLayer];
 
             obstacle.OnDestroy += () => OnObstacleDestroyed(gridPosition, obstacleData.obstacleLayer);
-            obstacle.TemperatureDataUpdated += () => UpdateTemperatureSimData(gridPosition, obstacle);
+            obstacle.Updated += (flagsChanged) => OnObstacleUpdated(gridPosition, obstacle, flagsChanged);
             if (_obstaclesParent) obstacle.transform.parent = _obstaclesParent;
 
             Grids[obstacleData.obstacleLayer].SetAt(gridPosition, obstacle);
@@ -100,13 +107,7 @@ namespace Blizzard.Obstacles
             if (obstacleData.obstacleLayer == ObstacleConstants.MainObstacleLayer)
             {
                 UpdateTemperatureSimData(gridPosition, obstacle);
-                foreach (var flagCombo in Quadtrees.Keys)
-                {
-                    BLog.Log($"Checking flag combo {flagCombo} against obstacle's {obstacleData.obstacleFlags}");
-                    if (obstacleData.obstacleFlags.HasFlag(flagCombo))
-                        // Add obstacle to relevant QuadTree
-                        Quadtrees[flagCombo].Add(gridPosition);
-                }
+                AddToQuadtrees(gridPosition, obstacle.ObstacleFlags);
             }
 
             OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleData.obstacleLayer, obstacleData.obstacleFlags);
@@ -160,14 +161,22 @@ namespace Blizzard.Obstacles
                 if (obstacleLayer == ObstacleConstants.MainObstacleLayer)
                 {
                     UpdateTemperatureSimData(gridPosition, null);
-                    foreach (var flagCombo in Quadtrees.Keys)
-                        if ((flagCombo & obstacle.ObstacleFlags) == flagCombo)
-                            // Add obstacle to relevant QuadTree
-                            Quadtrees[flagCombo].Remove(gridPosition);
+                    RemoveFromQuadtrees(gridPosition);
                 }
             }
 
             OnObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleLayer, obstacle.ObstacleFlags);
+        }
+
+        private void OnObstacleUpdated(Vector2Int gridPosition, Obstacle obstacle, bool flagsChanged)
+        {
+            UpdateTemperatureSimData(gridPosition, obstacle);
+            
+            if (!flagsChanged) return;
+            BLog.Log("ObstacleGridService", $"ObstacleFlags changed on obstacle at {gridPosition}");
+            // Obstacle flags have changed -> Update quadtree data
+            RemoveFromQuadtrees(gridPosition);
+            AddToQuadtrees(gridPosition, obstacle.ObstacleFlags);
         }
 
         /// <summary>
@@ -193,6 +202,30 @@ namespace Blizzard.Obstacles
             }
 
             _temperatureService.Grid.SetAt(gridPosition, newTemperatureCell);
+        }
+
+        /// <summary>
+        /// Adds grid position to all quadtrees such that the given flags contain the flags in the quadtree
+        /// </summary>
+        private void AddToQuadtrees(Vector2Int gridPosition, ObstacleFlags obstacleFlags)
+        {
+            foreach (var flagCombo in Quadtrees.Keys.Where(flagCombo => (flagCombo & obstacleFlags) == flagCombo))
+            {
+                Quadtrees[flagCombo].Add(gridPosition);
+                OnQuadtreeUpdate?.Invoke(flagCombo);
+            }
+        }
+
+        /// <summary>
+        /// Removes grid position from all quadtrees (effectively only from those with the grid position)
+        /// </summary>
+        private void RemoveFromQuadtrees(Vector2Int gridPosition)
+        {
+            foreach (ObstacleFlags flagCombo in Quadtrees.Keys)
+            {
+                Quadtrees[flagCombo].Remove(gridPosition);
+                OnQuadtreeUpdate?.Invoke(flagCombo);
+            }
         }
     }
 }

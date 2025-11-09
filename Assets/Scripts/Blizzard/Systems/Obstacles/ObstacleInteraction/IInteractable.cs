@@ -12,6 +12,11 @@ namespace Blizzard.Obstacles
         /// Description of the primary interaction
         /// </summary>
         public string PrimaryInteractText { get; }
+        
+        /// <summary>
+        /// Whether the primary interaction can currently be activated
+        /// </summary>
+        public bool PrimaryInteractReady { get; }
 
         /// <summary>
         /// Invoked when the player triggers a primary interaction.
@@ -28,6 +33,11 @@ namespace Blizzard.Obstacles
         /// Description of the secondary interaction
         /// </summary>
         public string SecondaryInteractText { get; } 
+        
+        /// <summary>
+        /// Whether the secondary interaction can currently be activated
+        /// </summary>
+        public bool SecondaryInteractReady { get; }
         
         /// <summary>
         /// Invoked when the player triggers a secondary interaction

@@ -12,7 +12,8 @@ namespace Blizzard.Utilities
         Water = 1 << 4,
         UI = 1 << 5,
         Obstacle = 1 << 6,
-        Enemy = 1 << 7
+        Enemy = 1 << 7,
+        NoCollisionObstacle = 1 << 8
     }
 
     public static class CollisionAssistant
@@ -31,5 +32,10 @@ namespace Blizzard.Utilities
         /// What will block enemy vision
         /// </summary>
         public const CollisionLayer Visible = CollisionLayer.Obstacle | CollisionLayer.Player;
+
+        /// <summary>
+        /// What is considered an obstacle in the environment
+        /// </summary>
+        public const CollisionLayer AnyObstacle = CollisionLayer.Obstacle | CollisionLayer.NoCollisionObstacle;
     }
 }

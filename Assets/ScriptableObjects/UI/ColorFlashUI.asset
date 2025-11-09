@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8128e8049e55fe8449890840d1c555ee, type: 3}
   m_Name: ColorFlashUI
   m_EditorClassIdentifier: 
-  id: 5
-  stringId: temperature
-  uiPrefab: {fileID: 6112692792487892686, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
+  id: 7
+  stringId: color_flash
+  uiPrefab: {fileID: 500569381007407223, guid: 21172328cca04f54985a1cc5c9acf002, type: 3}
   isSingle: 1
   destroyOnClose: 0

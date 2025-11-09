@@ -40,7 +40,7 @@ namespace Blizzard.Obstacles
             _inputService = inputService;
             _uiService = uiService;
             
-            if (!_interactionInitialized) InitInteraction(_inputService);  // Init static functionality
+            if (!_interactionInitialized) InitInteraction(_inputService, uiService);  // Init static functionality
             Assert.IsTrue(_interactable is IInteractable, "Interactable script must inherit from IInteractable!");
         }
 
@@ -48,6 +48,7 @@ namespace Blizzard.Obstacles
         {
             BLog.Log("Interactable pointer enter");
             _curTargetInteractable = _interactable as IInteractable;
+            if (!_curTargetInteractable!.PrimaryInteractReady) return;  // Interaction must be ready
             _uiService.InitUI(UIID.InteractInfo, new InteractInfoUI.Args(
                 interactable: _interactable as IInteractable, 
                 interactablePosition: transform.position));
@@ -62,21 +63,31 @@ namespace Blizzard.Obstacles
         }
 
         
-        private static void InitInteraction(InputService inputService)
+        private static void InitInteraction(InputService inputService, UIService uiService)
         {
             // Bind input to interaction logic
-            inputService.inputActions.Player.Interact1.performed += OnPrimaryInteractionInput;
-            inputService.inputActions.Player.Interact2.performed += OnSecondaryInteractionInput;
+            inputService.inputActions.Player.Interact1.performed += (ctx) =>
+            {
+                OnPrimaryInteractionInput(uiService);
+            };
+            inputService.inputActions.Player.Interact2.performed += (ctx) =>
+            {
+                OnSecondaryInteractionInput(uiService);
+            };
             _interactionInitialized = true;
         }
         
-        private static void OnPrimaryInteractionInput(InputAction.CallbackContext ctx)
+        private static void OnPrimaryInteractionInput(UIService uiService)
         {
-            _curTargetInteractable?.OnPrimaryInteract();
+            if (_curTargetInteractable is { PrimaryInteractReady: true })
+                _curTargetInteractable.OnPrimaryInteract();
+            uiService.CloseUI(UIID.InteractInfo); // Reset UI in case interaction no longer ready 
         }
-        private static void OnSecondaryInteractionInput(InputAction.CallbackContext ctx)
+        private static void OnSecondaryInteractionInput(UIService uiService)
         {
-            (_curTargetInteractable as ISecondaryInteractable)?.OnSecondaryInteract();
+            if ((_curTargetInteractable as ISecondaryInteractable) is { SecondaryInteractReady: true})
+                (_curTargetInteractable as ISecondaryInteractable)!.OnSecondaryInteract();
+            uiService.CloseUI(UIID.InteractInfo);
         }
     }
 }
