@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zenject;
 using Blizzard.Enemies.Core;
+using Blizzard.Enemies.Spawning;
 using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
@@ -17,7 +18,11 @@ namespace Blizzard.Installers
                 .AsSingle()
                 .WithArguments(_enemiesParent);
 
-            BLog.Log("Installed Enemy Service");
+            Container.BindInterfacesAndSelfTo<EnemyWaveService>()
+                .FromNew()
+                .AsSingle();
+
+            BLog.Log("Installed Enemy Service and Enemy Wave Service");
         }
     }
 }

@@ -140,6 +140,16 @@ namespace Blizzard.Temperature
         }
 
         /// <summary>
+        /// Retrieves temperature at given grid position
+        /// </summary>
+        /// <param name="gridPosition"></param>
+        /// <returns></returns>
+        public float GetTemperatureAt(Vector2Int gridPosition)
+        {
+            return Grid.GetAt(gridPosition).temperature;
+        }
+
+        /// <summary>
         /// Sets compute shader float value, intended only for testing purposes
         /// </summary>
         public void SetComputeFloat(string nameId, float value)

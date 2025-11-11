@@ -8,6 +8,7 @@ using Blizzard.Temperature;
 using System.Linq;
 using Blizzard.Enemies;
 using Blizzard.Enemies.Core;
+using Blizzard.Enemies.Spawning;
 using Blizzard.Input;
 using Blizzard.Inventory;
 using Blizzard.Obstacles;
@@ -35,6 +36,7 @@ namespace Blizzard.Utilities
         [Inject] private InputService _inputService;
         [Inject] private EnemyService _enemyService;
         [Inject] private PlayerService _playerService;
+        [Inject] private EnemyWaveService _enemyWaveService;
 
         [FoldoutGroup("Enemies")]
         [Button]
@@ -52,6 +54,14 @@ namespace Blizzard.Utilities
             List<EnemyBehaviour> kNearest = _enemyService.Quadtree.GetKNearestEnemies(_playerService.PlayerPosition, 1, float.MaxValue);
             if (kNearest.Count == 0) BLog.Log("Debug","Query returned no enemies!");
             else BLog.Log("Debug",$"Nearest enemy to player: {kNearest[0]} at {kNearest[0].transform.position}");
+        }
+
+        [FoldoutGroup("Enemies")]
+        [Button]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        private void StartEnemyWave(EnemyWave enemyWave)
+        {
+            _enemyWaveService.StartEnemyWave(enemyWave);
         }
         
         

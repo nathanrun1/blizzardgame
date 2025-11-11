@@ -2,22 +2,29 @@
 using System.Collections.Generic;
 using Blizzard.Constants;
 using Blizzard.Enemies.Core;
+using Blizzard.Enemies.Spawning;
+using Blizzard.Grid;
+using Blizzard.Obstacles;
 using Blizzard.Utilities.Logging;
 using UnityEngine;
 using Zenject;
 
 namespace Blizzard.Enemies.Core
 {
+    /// <summary>
+    /// Service responsible for managing and spawning enemies
+    /// </summary>
     public class EnemyService : IFixedTickable
     {
         [Inject] private DiContainer _diContainer;
+        [Inject] private ObstacleGridService _obstacleGridService;
 
         /// <summary>
         /// Quadtree containing locations of all enemies. Can be used for enemy position queries.
         /// </summary>
         public readonly EnemyQuadtree Quadtree = new();
-        private IEnumerator _quadtreeTick;
         
+        private IEnumerator _quadtreeTick;
         /// <summary>
         /// Maps enemy id (int) to enemy data
         /// </summary>
@@ -26,7 +33,6 @@ namespace Blizzard.Enemies.Core
         /// Parent transform to spawned enemies
         /// </summary>
         private readonly Transform _enemyParent;
-
         /// <summary>
         /// Maps enemy id (int) to stack containing inactive instances. Prioritizes inactive
         /// instances of an enemy for spawning before instantiating.
@@ -49,6 +55,17 @@ namespace Blizzard.Enemies.Core
         public EnemyBehaviour SpawnEnemy(EnemyID enemyID, Vector3 spawnPosition)
         {
             return SpawnEnemy(_enemyDict[(int)enemyID], spawnPosition);
+        }
+
+        /// <summary>
+        /// Spawns enemy at given grid position
+        /// </summary>
+        /// <returns>Spawned enemy instance</returns>
+        public EnemyBehaviour SpawnEnemy(EnemyID enemyID, Vector2Int spawnPosition)
+        {
+            Vector3 spawnPositionWorld = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
+                .CellToWorldPosCenter(spawnPosition);
+            return SpawnEnemy(_enemyDict[(int)enemyID], spawnPositionWorld);
         }
         
         

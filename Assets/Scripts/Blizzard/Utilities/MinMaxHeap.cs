@@ -13,18 +13,18 @@ namespace Blizzard.Utilities
     /// <typeparam name="T">Hashable & Comparable type</typeparam>
     public class MinMaxHeap<T> where T : IComparable<T>
     {
-        private List<T> _elements = new();
+        private readonly List<T> _elements = new();
 
         /// <summary>
         /// Location of each value within _elements
         /// </summary>
-        private Dictionary<T, int> _elementLocation = new();
+        private readonly Dictionary<T, int> _elementLocation = new();
 
         /// <summary>
         /// Amount of each element in MinMaxHeap. An element is only removed once its amount
         /// reaches 0.
         /// </summary>
-        private Dictionary<T, int> _elementCount = new();
+        private readonly Dictionary<T, int> _elementCount = new();
 
         /// <summary>
         /// Adds an element
