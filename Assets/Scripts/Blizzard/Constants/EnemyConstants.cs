@@ -32,5 +32,10 @@
         /// Amount of enemy spawn range update ticks to run per tick
         /// </summary>
         public const int SpawnRangeUpdateIterationsPerTick = 20;
+
+        /// <summary>
+        /// Maximum amount of enemies that can spawn per tick
+        /// </summary>
+        public const int MaxEnemySpawnsPerTick = 5;
     }
 }

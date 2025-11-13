@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Blizzard.Constants;
 using Blizzard.Enemies.Core;
 using Blizzard.Obstacles;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace Blizzard.Enemies.Spawning
     }
 
     [Serializable]
-    public struct EnemyGroup
+    public class EnemyGroup
     {
         /// <summary>
         /// Type of enemy to spawn
@@ -53,7 +54,10 @@ namespace Blizzard.Enemies.Spawning
         private EnemySpawnRange _enemySpawnRange;
         private IEnumerator _enemySpawnRangeTick;
 
-        private readonly SortedDictionary<float, EnemyGroup> _enemyGroupsToSpawn = new();
+        /// <summary>
+        /// Enemy groups set to start spawning at a given time
+        /// </summary>
+        private readonly SortedDictionary<float, EnemyGroup> _readyEnemyGroups = new();
 
         public void Initialize()
         {
@@ -65,12 +69,7 @@ namespace Blizzard.Enemies.Spawning
         {
             // Keep enemy spawn range updated
             _enemySpawnRangeTick.MoveNext();
-
-            float currentTime = Time.realtimeSinceStartup;
-            if (_enemyGroupsToSpawn.Count == 0 || _enemyGroupsToSpawn.Keys.First() >= currentTime) return;
-            // Spawn first group that is ready to spawn (if multiple, will spawn on future frames)
-            SpawnEnemyGroup(_enemyGroupsToSpawn.Values.First());
-            _enemyGroupsToSpawn.Remove(_enemyGroupsToSpawn.Keys.First());
+            SpawnNextEnemy();
         }
 
         /// <summary>
@@ -84,19 +83,27 @@ namespace Blizzard.Enemies.Spawning
             {
                 // Spawn group after delays of all previous groups + wave delay
                 cumulativeDelay += enemyGroup.spawnDelay;
-                _enemyGroupsToSpawn.Add(currentTime + cumulativeDelay, enemyGroup);
+                _readyEnemyGroups.Add(currentTime + cumulativeDelay, enemyGroup);
             }
         }
 
-
-        private void SpawnEnemyGroup(EnemyGroup enemyGroup)
+        /// <summary>
+        /// Spawns next batch of enemies ready to spawn
+        /// </summary>
+        private void SpawnNextEnemy()
         {
-            for (int i = 0; i < enemyGroup.groupSize; ++i)
+            if (_readyEnemyGroups.Count == 0 || _readyEnemyGroups.Keys.First() >= Time.realtimeSinceStartup) return;
+            for (int i = 0; i < EnemyConstants.MaxEnemySpawnsPerTick; ++i)
             {
                 _enemyService.SpawnEnemy(
-                    enemyGroup.enemyId,
+                    _readyEnemyGroups.Values.First().enemyId,
                     _enemySpawnRange.GetRandomEnemySpawnLocation()
                 );
+                _readyEnemyGroups.Values.First().groupSize -= 1;  // Decrement group size
+                if (_readyEnemyGroups.Values.First().groupSize != 0) continue;
+                
+                _readyEnemyGroups.Remove(_readyEnemyGroups.Keys.First());
+                if (_readyEnemyGroups.Count == 0 || _readyEnemyGroups.Keys.First() >= Time.realtimeSinceStartup) return;
             }
         }
     }
