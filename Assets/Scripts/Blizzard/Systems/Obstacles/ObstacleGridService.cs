@@ -17,6 +17,9 @@ namespace Blizzard.Obstacles
     /// </summary>
     public class ObstacleGridService
     {
+        [Inject] private DiContainer _diContainer;
+        
+        
         /// <summary>
         /// Invoked when an obstacle is added or removed from some location.
         /// Args: (Affected grid position, Affected Obstacle Layer, Flags of added/removed obstacle)
@@ -92,7 +95,8 @@ namespace Blizzard.Obstacles
                     $"Grid position {gridPosition} occupied on layer {obstacleData.obstacleLayer}!");
 
             Vector3 obstaclePosition = Grids[obstacleData.obstacleLayer].CellToWorldPosCenter(gridPosition);
-            var obstacle = obstacleData.CreateObstacle(obstaclePosition);
+            Obstacle obstacle = InstantiateObstacle(obstacleData);
+            obstacle.transform.position = obstaclePosition;
 
             // Set sorting order of obstacle based on layer (we assume current order is relative to layer's order & add)
             foreach (var renderer in obstacle.GetComponentsInChildren<Renderer>(obstacle))
@@ -148,7 +152,20 @@ namespace Blizzard.Obstacles
             return Quadtrees[obstacleFlags];
         }
 
+        
+        /// <summary>
+        /// Instantiates an obstacle using given ObstacleData
+        /// </summary>
+        /// <returns></returns>
+        private Obstacle InstantiateObstacle(ObstacleData obstacleData)
+        {
+            Assert.IsTrue(obstacleData.obstaclePrefab, "obstaclePrefab not set!");
+            Obstacle obstacle = _diContainer.InstantiatePrefabForComponent<Obstacle>(obstacleData.obstaclePrefab);
+            obstacle.Initialize(obstacleData);
 
+            return obstacle;
+        }
+        
         /// <summary>
         /// Invoked when an obstacle at the given grid position is destroyed.
         /// Removes the obstacle from the Obstacle Grid at the given grid position if it exists
@@ -168,6 +185,9 @@ namespace Blizzard.Obstacles
             ObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleLayer, obstacle.ObstacleFlags);
         }
 
+        /// <summary>
+        /// Invoked whenever an obstacle's relevant data (to this service's functionality) is updated
+        /// </summary>
         private void OnObstacleUpdated(Vector2Int gridPosition, ObstacleLayer obstacleLayer, Obstacle obstacle, bool flagsChanged)
         {
             UpdateTemperatureSimData(gridPosition, obstacle);

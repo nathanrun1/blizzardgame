@@ -35,10 +35,10 @@ namespace Blizzard.Obstacles
         /// </summary>
         private Sequence _damagedSequence;
 
-        public override void Init(ObstacleData obstacleData)
+        public override void Initialize(ObstacleData obstacleData)
         {
             Health = _startingHealth;
-            base.Init(obstacleData);
+            base.Initialize(obstacleData);
         }
 
         /// <summary>

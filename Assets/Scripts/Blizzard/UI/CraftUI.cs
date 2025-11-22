@@ -100,7 +100,7 @@ namespace Blizzard.UI
                 var amountAdded = _inventoryService.TryAddItem(recipe.result, recipe.resultAmount, true);
 
                 _uiService.ItemGain(recipe.result, amountAdded,
-                    default); // TODO: somehow get player position (playerservice?)
+                    default);
 
                 if (amountAdded < recipe.resultAmount)
                     // Drop item on ground, not successfully added to inventory

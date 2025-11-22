@@ -37,7 +37,7 @@ namespace Blizzard.Enemies.Spawning
         /// <summary>
         /// Random number generator
         /// </summary>
-        private System.Random _rand = new System.Random();
+        private readonly System.Random _rand = new System.Random();
 
         public EnemySpawnRange()
         {

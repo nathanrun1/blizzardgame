@@ -10,7 +10,7 @@ namespace Blizzard.Obstacles
     public class ObstacleData : ScriptableObject
     {
         /// <summary>
-        /// Prefab of the obstacle's gameobject
+        /// Prefab of the obstacle's GameObject
         /// </summary>
         public Obstacle obstaclePrefab;
 
@@ -33,22 +33,5 @@ namespace Blizzard.Obstacles
         /// Which obstacle grid layer this obstacle is placed on
         /// </summary>
         public ObstacleLayer obstacleLayer;
-
-        [Inject] private DiContainer _diContainer;
-
-        /// <summary>
-        /// Creates an obstacle using 'obstaclePrefab'
-        /// </summary>
-        /// <param name="position">Global position to instantiate obstacle at</param>
-        public virtual Obstacle CreateObstacle(Vector3 position)
-        {
-            Assert.IsTrue(obstaclePrefab != null, "obstaclePrefab not provided!");
-
-            var obstacle = _diContainer.InstantiatePrefabForComponent<Obstacle>(obstaclePrefab);
-            obstacle.Init(this);
-            obstacle.transform.position = position;
-
-            return obstacle;
-        }
     }
 }

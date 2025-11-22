@@ -1,3 +1,4 @@
+using Blizzard.Utilities.Assistants;
 using UnityEngine;
 
 namespace Blizzard.Grid
@@ -9,9 +10,11 @@ namespace Blizzard.Grid
         /// </summary>
         public static Vector2Int WorldToCellPos<T>(this IWorldGrid<T> grid, Vector2 worldPosition)
         {
-            var gridPosition = new Vector2Int();
-            gridPosition.x = Mathf.FloorToInt(worldPosition.x / grid.CellWidth);
-            gridPosition.y = Mathf.FloorToInt(worldPosition.y / grid.CellHeight);
+            var gridPosition = new Vector2Int
+            {
+                x = Mathf.FloorToInt(worldPosition.x / grid.CellWidth),
+                y = Mathf.FloorToInt(worldPosition.y / grid.CellHeight)
+            };
 
             return gridPosition;
         }

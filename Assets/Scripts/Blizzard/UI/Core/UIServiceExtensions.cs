@@ -15,6 +15,7 @@ namespace Blizzard.UI
         /// </summary>
         public static void ItemGain(this UIService uiService, ItemData item, int amount, Vector3 collectPosition)
         {
+            // TODO: use a queue for overlapping item gains?
             uiService.InitUI(UIID.ItemGain, new ItemGainUI.Args
             {
                 item = item,

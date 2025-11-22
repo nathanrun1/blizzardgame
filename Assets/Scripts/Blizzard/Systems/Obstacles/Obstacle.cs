@@ -28,7 +28,7 @@ namespace Blizzard.Obstacles
         public ObstacleFlags ObstacleFlags { get; private set; } = 0;
 
 
-        public virtual void Init(ObstacleData obstacleData)
+        public virtual void Initialize(ObstacleData obstacleData)
         {
             ObstacleFlags = obstacleData.obstacleFlags;
             Heat = obstacleData.startingHeat;

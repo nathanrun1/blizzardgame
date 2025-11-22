@@ -1,3 +1,4 @@
+using Blizzard.Constants;
 using UnityEngine;
 using Zenject;
 using Blizzard.Grid;
@@ -18,14 +19,16 @@ namespace Blizzard.Installers
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
-            var mainGrid = new FullHashWorldGrid<TemperatureCell>(CELL_SIDE_LENGTH, CELL_SIDE_LENGTH);
-            mainGrid.DefaultCell = new TemperatureCell
-            {
-                temperature = 5,
-                heat = 0,
-                insulation = 0,
-                ambient = 1
-            };
+            var mainGrid = new FullHashWorldGrid<TemperatureCell>(GameConstants.CellSideLength,GameConstants.CellSideLength)
+                {
+                    DefaultCell = new TemperatureCell
+                    {
+                        temperature = 5,
+                        heat = 0,
+                        insulation = 0,
+                        ambient = 1
+                    }
+                };
 
             Container.BindInterfacesAndSelfTo<TemperatureService>()
                 .FromNew()
