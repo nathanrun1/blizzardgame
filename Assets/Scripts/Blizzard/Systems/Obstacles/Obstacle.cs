@@ -22,15 +22,16 @@ namespace Blizzard.Obstacles
         /// </summary>
         public event Action<bool> Updated;
         
+        public ObstacleData ObstacleData { get; private set; }
         public float Heat { get; private set; } = TemperatureConstants.DefaultHeatValue;
         public float Insulation { get; private set; } = TemperatureConstants.DefaultInsulationValue;
-
-        public ObstacleFlags ObstacleFlags { get; private set; } = 0;
+        public ObstacleFlags ObstacleFlags { get; private set; }
 
 
         public virtual void Initialize(ObstacleData obstacleData)
         {
-            ObstacleFlags = obstacleData.obstacleFlags;
+            ObstacleData = ObstacleData;
+            ObstacleFlags = obstacleData.initialObstacleFlags;
             Heat = obstacleData.startingHeat;
             Insulation = obstacleData.startingInsulation;
         }

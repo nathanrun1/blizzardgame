@@ -24,8 +24,6 @@ namespace Blizzard.Inventory
             set
             {
                 _item = value;
-                BLog.Log($"Updated item in slot: {_item}");
-                BLog.Log(OnUpdate != null ? OnUpdate.GetInvocationList().Length : "0");
                 OnUpdate?.Invoke();
             }
         }
@@ -41,8 +39,6 @@ namespace Blizzard.Inventory
             set
             {
                 _amount = value;
-                BLog.Log($"Updated amount in slot. {_amount}");
-                BLog.Log(OnUpdate != null ? OnUpdate.GetInvocationList().Length : "0");
                 OnUpdate?.Invoke();
             }
         }

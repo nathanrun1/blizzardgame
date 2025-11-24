@@ -3,6 +3,7 @@ using UnityEngine.Assertions;
 using Blizzard.Constants;
 using Zenject;
 using Blizzard.Utilities.DataTypes;
+using UnityEngine.Serialization;
 
 namespace Blizzard.Obstacles
 {
@@ -25,9 +26,10 @@ namespace Blizzard.Obstacles
         public float startingInsulation = TemperatureConstants.DefaultInsulationValue;
 
         /// <summary>
-        /// Obstacle flags
+        /// Initial obstacle flags
         /// </summary>
-        public ObstacleFlags obstacleFlags = 0;
+        [FormerlySerializedAs("obstacleFlags")] 
+        public ObstacleFlags initialObstacleFlags = 0;
 
         /// <summary>
         /// Which obstacle grid layer this obstacle is placed on

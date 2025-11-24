@@ -181,7 +181,8 @@ namespace Blizzard.Utilities
             _inventoryService.TryAddItems(_startingItems.ToList());
 
             foreach (var placement in _initialObstacles)
-                _obstacleGridService.PlaceObstacleAt(placement.position, placement.obstacle);
+                if (!_obstacleGridService.IsOccupied(placement.position))  
+                    _obstacleGridService.PlaceObstacleAt(placement.position, placement.obstacle);
 
             _inputService.inputActions.UI.Cancel.performed += (ctx) =>
             {

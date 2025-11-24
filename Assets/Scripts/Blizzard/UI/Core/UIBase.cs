@@ -43,7 +43,6 @@ namespace Blizzard.UI.Core
 
         public void SetParent(RectTransform parent)
         {
-            BLog.Log((transform as RectTransform)!.sizeDelta);
             transform.SetParent(parent, false);
             _parent = parent;
         }

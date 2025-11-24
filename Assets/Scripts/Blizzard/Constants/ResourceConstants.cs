@@ -3,13 +3,23 @@
     public class ResourceConstants
     {
         /// <summary>
-        /// Perlin noise representing resource density is set to the power of this value
+        /// Seed to use for resource generation
         /// </summary>
-        public const float ResourceNoiseExponent = 2f;
-
+        public const int ResourceGenerationSeed = 0;
+        
         /// <summary>
-        /// The maximum absolute offset value used on inputs to the Perlin noise generation
+        /// Whether to use the set seed for resource generation. If set to false, will instead use a random seed.
         /// </summary>
-        public const float PerlinInputRadius = 1000f;
+        public const bool SeededGeneration = false;
+        
+        /// <summary>
+        /// The maximum absolute offset value used on Perlin noise input coordinates
+        /// </summary>
+        public const float PerlinInputOffsetRadius = 1000f;
+        
+        /// <summary>
+        /// Maximum amount of points to attempt to place when placing the neighbor of an active point
+        /// </summary>
+        public const int MaxPoissonDiskRetries = 20;
     }
 }

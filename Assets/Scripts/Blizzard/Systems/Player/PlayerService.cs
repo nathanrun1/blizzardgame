@@ -105,10 +105,8 @@ namespace Blizzard.Player
         /// </summary>
         public void UnequipTool()
         {
-            BLog.Log("Unequipping currently equipped tool: " + EquippedTool);
             if (EquippedTool)
             {
-                BLog.Log("Tool exists");
                 MonoBehaviour.Destroy(EquippedTool.gameObject); // TODO: obj pooling
             }
         }
@@ -122,7 +120,6 @@ namespace Blizzard.Player
             var playerAngle =
                 Mathf.Deg2Rad *
                 (PlayerMovement.playerObj.transform.eulerAngles.z + 90); // 90 degrees is player sprite rotation offset
-            BLog.Log("Player angle: " + playerAngle);
 
             return new Vector2(Mathf.Cos(playerAngle), Mathf.Sin(playerAngle));
         }

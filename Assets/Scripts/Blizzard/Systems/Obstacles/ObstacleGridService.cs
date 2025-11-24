@@ -114,7 +114,7 @@ namespace Blizzard.Obstacles
                 AddToQuadtrees(gridPosition, obstacle.ObstacleFlags);
             }
 
-            ObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleData.obstacleLayer, obstacleData.obstacleFlags);
+            ObstacleAddedOrRemoved?.Invoke(gridPosition, obstacleData.obstacleLayer, obstacleData.initialObstacleFlags);
         }
 
         /// <summary>

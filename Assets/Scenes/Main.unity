@@ -3407,6 +3407,7 @@ MonoBehaviour:
   - {fileID: 21940094}
   - {fileID: 806827923}
   - {fileID: 448956295}
+  - {fileID: 1967642058}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -4736,6 +4737,7 @@ Transform:
   - {fileID: 475629234}
   - {fileID: 21940093}
   - {fileID: 259134156}
+  - {fileID: 1967642057}
   - {fileID: 846239565}
   m_Father: {fileID: 726068483}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4874,6 +4876,69 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1967642056
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1967642057}
+  - component: {fileID: 1967642058}
+  m_Layer: 0
+  m_Name: MapGenerationServiceInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1967642057
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967642056}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1912497461}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1967642058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967642056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 553fbd2d3ff7408f87a9ab1fdc2389bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blizzard::Blizzard.Installers.MapGenerationServiceInstaller
+  _resourcesToGenerate:
+  - obstacleData: {fileID: 11400000, guid: e392c1bffe605eb459745b3d9ee481af, type: 2}
+    minDensity: 0.05
+    maxDensity: 0.2
+    densityThreshold: 0.1
+    sparsity: 0.05
+    sharpness: 3
+  - obstacleData: {fileID: 11400000, guid: 676533bf72b4b5d44b7bb4a628fb0f11, type: 2}
+    minDensity: 0.001
+    maxDensity: 0.7
+    densityThreshold: 0
+    sparsity: 0.1
+    sharpness: 1
+  - obstacleData: {fileID: 11400000, guid: e571c11d345b61e4a820b01b07e9624a, type: 2}
+    minDensity: 0.1
+    maxDensity: 0.7
+    densityThreshold: 0.35
+    sparsity: 0.1
+    sharpness: 4
 --- !u!1 &2080685436
 GameObject:
   m_ObjectHideFlags: 0
