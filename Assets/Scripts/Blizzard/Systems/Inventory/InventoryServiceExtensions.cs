@@ -16,6 +16,9 @@ namespace Blizzard.Inventory
         /// Plays UI animation for each item successfully added on given UI service
         /// Post: Given list now holds remaining items that couldn't be added due to player inventory being full.
         /// </summary>
+        /// <param name="inventoryService">Inventory Service</param>
+        /// <param name="uiService">UI Service</param>
+        /// <param name="collectPosition">Position that the item was collected at</param>
         /// <param name="items">Items to add, modified during invocation to contain items that couldn't be added</param>
         public static void TryAddItemsWithAnim(this InventoryService inventoryService, UIService uiService,
             Vector3 collectPosition, List<ItemAmountPair> items)
@@ -61,8 +64,8 @@ namespace Blizzard.Inventory
             var dropObj = envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
 
             var plrFacingDirection = playerService.GetFacingDirection();
-            dropObj.transform.position = playerService.PlayerCtrl.transform.position +
-                                         new Vector3(plrFacingDirection.x, plrFacingDirection.y, 0) *
+            dropObj.transform.position = playerService.PlayerPosition +
+                                         new Vector2(plrFacingDirection.x, plrFacingDirection.y) *
                                          InventoryConstants.ItemDropDistance;
 
             dropObj.Setup(new ItemAmountPair

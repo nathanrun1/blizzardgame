@@ -37,6 +37,11 @@ namespace Blizzard.Obstacles
         }
 
         /// <summary>
+        /// Reset the state of this obstacle, as if it were newly instantiated.
+        /// </summary>
+        public virtual void Reset() {}
+
+        /// <summary>
         /// Sets insulation of this obstacle to given value
         /// </summary>
         protected void SetInsulation(float insulation)

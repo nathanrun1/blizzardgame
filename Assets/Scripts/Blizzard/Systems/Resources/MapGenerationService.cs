@@ -60,8 +60,6 @@ namespace Blizzard.Resources
                 };
                 ResourceLocationGenerator locationGenerator = new(rand.Next(), locationGenContext);
                     
-                BLog.Log($"Generating resource type: {resource.obstacleData}");
-                BLog.Log($"#Locations: {locationGenerator.ResourceSpawnLocations.Count}");
                 GenerateResourcesOfType(resource.obstacleData, resourceTypes, locationGenerator, competingLocations);
             }
 

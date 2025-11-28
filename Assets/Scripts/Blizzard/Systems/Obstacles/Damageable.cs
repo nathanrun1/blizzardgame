@@ -14,7 +14,7 @@ namespace Blizzard.Obstacles
     public class Damageable : Obstacle
     {
         /// <summary>
-        /// Health remaining, harvestable is destroyed (harvested) when health reaches 0
+        /// Health remaining
         /// </summary>
         public float Health { get; private set; }
 
@@ -39,6 +39,11 @@ namespace Blizzard.Obstacles
         {
             Health = _startingHealth;
             base.Initialize(obstacleData);
+        }
+
+        public override void Reset()
+        {
+            Health = _startingHealth;
         }
 
         /// <summary>

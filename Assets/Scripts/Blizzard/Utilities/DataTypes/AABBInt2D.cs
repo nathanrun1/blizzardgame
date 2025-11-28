@@ -1,4 +1,5 @@
-﻿using NativeTrees;
+﻿using System;
+using NativeTrees;
 using UnityEngine;
 
 namespace Blizzard.Utilities.DataTypes
@@ -6,6 +7,7 @@ namespace Blizzard.Utilities.DataTypes
     /// <summary>
     /// Defines a 2D bounding box in integer coordinates
     /// </summary>
+    [Serializable]
     public struct AABBInt2D
     {
         /// <summary>

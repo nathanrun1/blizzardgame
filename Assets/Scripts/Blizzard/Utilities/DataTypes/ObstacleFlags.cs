@@ -16,6 +16,11 @@ namespace Blizzard.Utilities.DataTypes
         /// <summary>
         /// An obstacle that can be passed through
         /// </summary>
-        NoCollision = 1 << 2
+        NoCollision = 1 << 2,
+        /// <summary>
+        /// Whether this obstacle is (virtually) destroyed when out of the "active" range of the player.
+        /// If false, obstacle is instead deactivated.
+        /// </summary>
+        IsChunked = 1 << 3
     }
 }

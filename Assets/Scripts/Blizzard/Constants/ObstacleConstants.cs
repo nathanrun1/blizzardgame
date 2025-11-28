@@ -48,5 +48,16 @@ namespace Blizzard.Constants
         /// Additional portion of space to add to bounds on QT Rebuild.
         /// </summary>
         public const float QTBoundsPadding = 0.25f;
+        
+        /// <summary>
+        /// Side length of an obstacle chunk
+        /// </summary>
+        public const int ChunkSideLength = 16;
+
+        /// <summary>
+        /// An obstacle chunk is considered active if it is within this (manhattan) distance from
+        /// the player's chunk
+        /// </summary>
+        public const int ActiveChunkRadius = 1;
     }
 }

@@ -17,6 +17,7 @@ using Blizzard.UI.Core;
 using Blizzard.Utilities.Assistants;
 using Blizzard.Utilities.Logging;
 using Blizzard.Utilities.DataTypes;
+using Blizzard.Utilities.Extensions;
 
 namespace Blizzard.Utilities
 {
@@ -147,6 +148,20 @@ namespace Blizzard.Utilities
                 str += o.name + " at " + o.transform.position + '\n';
 
             BLog.Log("Debug",str);
+        }
+        
+        [FoldoutGroup("Obstacles")]
+        [Button]
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        private void FillRange(AABBInt2D range, ObstacleData obstacleData)
+        {
+            foreach (Vector2Int point in range.GetPoints())
+            {
+                if (!_obstacleGridService.IsOccupied(point))
+                {
+                    _obstacleGridService.PlaceObstacleAt(point, obstacleData);
+                }
+            }
         }
 
 

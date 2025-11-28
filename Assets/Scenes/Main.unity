@@ -4929,7 +4929,7 @@ MonoBehaviour:
     sharpness: 3
   - obstacleData: {fileID: 11400000, guid: 676533bf72b4b5d44b7bb4a628fb0f11, type: 2}
     minDensity: 0.001
-    maxDensity: 0.7
+    maxDensity: 0.6
     densityThreshold: 0
     sparsity: 0.1
     sharpness: 1

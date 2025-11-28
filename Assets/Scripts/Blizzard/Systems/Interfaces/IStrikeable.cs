@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// A GameObject that is "Strikeable" by a general purpose player-sided weapon. GameObjects implementing
-    /// this interface should be a part of the "Strikeable" collision layer group.
+    /// this interface should be included in the "Strikeable" collision layer group.
     /// </summary>
     public interface IStrikeable
     {

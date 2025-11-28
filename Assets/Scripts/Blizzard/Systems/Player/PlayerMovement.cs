@@ -28,7 +28,7 @@ namespace Blizzard.Player
 
         private void UpdatePlayerVelocity()
         {
-            _rigidBody.MovePosition(_rigidBody.position + _movementVector * _walkSpeed * Time.fixedDeltaTime);
+            _rigidBody.MovePosition(_rigidBody.position + _movementVector * (_walkSpeed * Time.fixedDeltaTime));
             //    _rigidBody.AddForce(_movementVector - _rigidBody.linearVelocity, ForceMode.VelocityChange);
             //    _rigidBody.linearVelocity = _movementVector * _walkSpeed;
         }

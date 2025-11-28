@@ -59,14 +59,6 @@ namespace Blizzard.Resources
         /// </summary>
         public void ReconstructResourceSpawnPositions()
         {
-            // -- Perlin noise -> Spawn chance --
-            // ResourceSpawnLocations.Clear();
-            // foreach (Vector2Int gridPosition in _context.spawnRange.GetPoints())
-            // {
-            //     if (_rand.NextDouble() <= GetResourceDensity(gridPosition))
-            //         ResourceSpawnLocations.Add(gridPosition);
-            // }
-            
             // -- Perlin noise -> Poisson disk sampling disk radius --
             HashSet<Vector2Int> spawnLocationsSet = new();
             Queue<Vector2Int> activePoints = new();
@@ -117,7 +109,7 @@ namespace Blizzard.Resources
         /// <summary>
         /// Converts resource density to the minimum distance between resources within an area of that density.
         /// </summary>
-        private float DensityToMinDistance(float density)
+        private static float DensityToMinDistance(float density)
         {
             return 1f / density;
         }
