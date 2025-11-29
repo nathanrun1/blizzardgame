@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Blizzard.Enemies;
-using Blizzard.Enemies.Core;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
@@ -9,6 +7,8 @@ using Blizzard.Inventory;
 using Blizzard.UI;
 using Blizzard.UI.Core;
 using Blizzard.Inventory.Crafting;
+using Blizzard.NPCs;
+using Blizzard.NPCs.Core;
 using Blizzard.Player;
 using Blizzard.Utilities.Logging;
 using UnityEngine.EventSystems;
@@ -20,7 +20,7 @@ namespace Blizzard.Obstacles.Concrete
     {
         private static readonly int StandbyAnimProperty = Animator.StringToHash("Standby");
         
-        [Inject] private EnemyService _enemyService;
+        [Inject] private NPCService _npcService;
         [Inject] private PlayerService _playerService;
         
         /// <summary>
@@ -44,7 +44,7 @@ namespace Blizzard.Obstacles.Concrete
         /// </summary>
         [SerializeField] private int _damage = 10;
 
-        private EnemyBehaviour _currentTarget;
+        private NPCBehaviour _currentTarget;
 
         private void Awake()
         {
@@ -53,7 +53,7 @@ namespace Blizzard.Obstacles.Concrete
 
         private void FixedUpdate()
         {
-            if (TryGetClosestEnemy(out EnemyBehaviour closestEnemy))
+            if (TryGetClosestEnemy(out NPCBehaviour closestEnemy))
             {
                 _currentTarget = closestEnemy;
                 PointBodyAt(_currentTarget.transform.position);
@@ -79,10 +79,10 @@ namespace Blizzard.Obstacles.Concrete
         /// Gets the closest enemy to the crossbow within range, if any.
         /// </summary>
         /// <returns>Closest enemy or null if none in range</returns>
-        private bool TryGetClosestEnemy(out EnemyBehaviour closestEnemy)
+        private bool TryGetClosestEnemy(out NPCBehaviour closestNpc)
         {
-            List<EnemyBehaviour> nearest = _enemyService.Quadtree.GetKNearestEnemies(transform.position, 1, _maxRange);
-            closestEnemy = nearest.Count > 0 ? nearest[0] : null;
+            List<NPCBehaviour> nearest = _npcService.Quadtree.GetKNearestNPCs(transform.position, 1, _maxRange);
+            closestNpc = nearest.Count > 0 ? nearest[0] : null;
             return nearest.Count > 0;
         }
 

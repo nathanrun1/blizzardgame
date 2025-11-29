@@ -5,12 +5,12 @@ using Blizzard.Utilities.Assistants;
 using DG.Tweening;
 using UnityEngine;
 
-namespace Blizzard.Enemies
+namespace Blizzard.NPCs
 {
     /// <summary>
     /// Base class for enemy behaviour implementation
     /// </summary>
-    public abstract class EnemyBehaviour : MonoBehaviour, IHittable, IStrikeable
+    public abstract class NPCBehaviour : MonoBehaviour, IHittable, IStrikeable
     {
         [Header("EnemyBehaviour References")] 
         [SerializeField] private SpriteRenderer[] _spriteRenderers;

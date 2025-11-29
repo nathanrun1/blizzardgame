@@ -1,7 +1,7 @@
+using Blizzard.NPCs.Core;
+using Blizzard.NPCs.Spawning;
 using UnityEngine;
 using Zenject;
-using Blizzard.Enemies.Core;
-using Blizzard.Enemies.Spawning;
 using Blizzard.Utilities.Logging;
 
 namespace Blizzard.Installers
@@ -13,7 +13,7 @@ namespace Blizzard.Installers
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
-            Container.BindInterfacesAndSelfTo<EnemyService>()
+            Container.BindInterfacesAndSelfTo<NPCService>()
                 .FromNew()
                 .AsSingle()
                 .WithArguments(_enemiesParent);

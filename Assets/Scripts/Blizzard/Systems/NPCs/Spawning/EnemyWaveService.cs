@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Blizzard.Constants;
-using Blizzard.Enemies.Core;
+using Blizzard.NPCs.Core;
 using Blizzard.Obstacles;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
-namespace Blizzard.Enemies.Spawning
+namespace Blizzard.NPCs.Spawning
 {
     /// <summary>
     /// A wave of enemies (i.e. a collection of enemy groups spawned at intervals)
@@ -28,7 +29,7 @@ namespace Blizzard.Enemies.Spawning
         /// <summary>
         /// Type of enemy to spawn
         /// </summary>
-        public EnemyID enemyId;
+        [FormerlySerializedAs("enemyId")] public NPCID npcid;
         /// <summary>
         /// Amount of enemies per group
         /// </summary>
@@ -45,7 +46,7 @@ namespace Blizzard.Enemies.Spawning
     public class EnemyWaveService : IInitializable, IFixedTickable
     {
         [Inject] private DiContainer _diContainer;
-        [Inject] private EnemyService _enemyService;
+        [Inject] private NPCService _npcService;
         [Inject] private ObstacleGridService _obstacleGridService;
     
         /// <summary>
@@ -95,8 +96,8 @@ namespace Blizzard.Enemies.Spawning
             if (_readyEnemyGroups.Count == 0 || _readyEnemyGroups.Keys.First() >= Time.realtimeSinceStartup) return;
             for (int i = 0; i < EnemyConstants.MaxEnemySpawnsPerTick; ++i)
             {
-                _enemyService.SpawnEnemy(
-                    _readyEnemyGroups.Values.First().enemyId,
+                _npcService.SpawnEnemy(
+                    _readyEnemyGroups.Values.First().npcid,
                     _enemySpawnRange.GetRandomEnemySpawnLocation()
                 );
                 _readyEnemyGroups.Values.First().groupSize -= 1;  // Decrement group size

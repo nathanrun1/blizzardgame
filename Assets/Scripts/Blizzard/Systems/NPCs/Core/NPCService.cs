@@ -1,34 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Blizzard.Constants;
-using Blizzard.Enemies.Core;
-using Blizzard.Enemies.Spawning;
 using Blizzard.Grid;
 using Blizzard.Obstacles;
 using Blizzard.Utilities.Logging;
 using UnityEngine;
 using Zenject;
 
-namespace Blizzard.Enemies.Core
+namespace Blizzard.NPCs.Core
 {
     /// <summary>
-    /// Service responsible for managing and spawning enemies
+    /// Service responsible for managing and spawning NPCs
     /// </summary>
-    public class EnemyService : IFixedTickable
+    public class NPCService : IFixedTickable
     {
         [Inject] private DiContainer _diContainer;
         [Inject] private ObstacleGridService _obstacleGridService;
 
         /// <summary>
-        /// Quadtree containing locations of all enemies. Can be used for enemy position queries.
+        /// Quadtree containing locations of all NPCs. Can be used for enemy position queries.
         /// </summary>
-        public readonly EnemyQuadtree Quadtree = new();
+        public readonly NPCQuadtree Quadtree = new();
         
         private IEnumerator _quadtreeTick;
         /// <summary>
         /// Maps enemy id (int) to enemy data
         /// </summary>
-        private readonly Dictionary<int, EnemyData> _enemyDict = new();
+        private readonly Dictionary<int, NPCData> _enemyDict = new();
         /// <summary>
         /// Parent transform to spawned enemies
         /// </summary>
@@ -37,13 +35,13 @@ namespace Blizzard.Enemies.Core
         /// Maps enemy id (int) to stack containing inactive instances. Prioritizes inactive
         /// instances of an enemy for spawning before instantiating.
         /// </summary>
-        private readonly Dictionary<int, Stack<EnemyBehaviour>> _inactiveEnemies = new();
+        private readonly Dictionary<int, Stack<NPCBehaviour>> _inactiveEnemies = new();
 
         /// <summary>
         /// Initializes EnemyService
         /// </summary>
         /// <param name="enemyParent">Parent to spawned enemies</param>
-        public EnemyService(Transform enemyParent)
+        public NPCService(Transform enemyParent)
         {
             _enemyParent = enemyParent;
         }
@@ -52,52 +50,52 @@ namespace Blizzard.Enemies.Core
         /// Spawns enemy at given position
         /// </summary>
         /// <returns>Spawned enemy instance</returns>
-        public EnemyBehaviour SpawnEnemy(EnemyID enemyID, Vector3 spawnPosition)
+        public NPCBehaviour SpawnEnemy(NPCID npcid, Vector3 spawnPosition)
         {
-            return SpawnEnemy(_enemyDict[(int)enemyID], spawnPosition);
+            return SpawnEnemy(_enemyDict[(int)npcid], spawnPosition);
         }
 
         /// <summary>
         /// Spawns enemy at given grid position
         /// </summary>
         /// <returns>Spawned enemy instance</returns>
-        public EnemyBehaviour SpawnEnemy(EnemyID enemyID, Vector2Int spawnPosition)
+        public NPCBehaviour SpawnEnemy(NPCID npcid, Vector2Int spawnPosition)
         {
             Vector3 spawnPositionWorld = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
                 .CellToWorldPosCenter(spawnPosition);
-            return SpawnEnemy(_enemyDict[(int)enemyID], spawnPositionWorld);
+            return SpawnEnemy(_enemyDict[(int)npcid], spawnPositionWorld);
         }
         
         
-        private EnemyBehaviour SpawnEnemy(EnemyData enemyData, Vector3 spawnPosition)
+        private NPCBehaviour SpawnEnemy(NPCData npcData, Vector3 spawnPosition)
         {
             // Pull from pool if pool non-empty, else instantiate directly
-            EnemyBehaviour enemyInstance =_inactiveEnemies[enemyData.ID].Count > 0 ? 
-                _inactiveEnemies[enemyData.ID].Pop() :
-                _diContainer.InstantiatePrefabForComponent<EnemyBehaviour>(enemyData.enemyPrefab);
+            NPCBehaviour npcInstance =_inactiveEnemies[npcData.ID].Count > 0 ? 
+                _inactiveEnemies[npcData.ID].Pop() :
+                _diContainer.InstantiatePrefabForComponent<NPCBehaviour>(npcData.npcPrefab);
             
-            enemyInstance.transform.position = spawnPosition;
-            enemyInstance.transform.SetParent(_enemyParent);
-            Quadtree.Add(enemyInstance);
+            npcInstance.transform.position = spawnPosition;
+            npcInstance.transform.SetParent(_enemyParent);
+            Quadtree.Add(npcInstance);
             
-            int enemyID = enemyData.ID;
-            enemyInstance.OnDeath += () =>
+            int enemyID = npcData.ID;
+            npcInstance.OnDeath += () =>
             {
                 // On enemy death: Remove from quadtree and transfer to inactive pool
-                if (!enemyInstance.gameObject.activeInHierarchy) return; // Do nothing if already inactive
-                enemyInstance.gameObject.SetActive(false);
-                Quadtree.Remove(enemyInstance); 
-                _inactiveEnemies[enemyID].Push(enemyInstance);
+                if (!npcInstance.gameObject.activeInHierarchy) return; // Do nothing if already inactive
+                npcInstance.gameObject.SetActive(false);
+                Quadtree.Remove(npcInstance); 
+                _inactiveEnemies[enemyID].Push(npcInstance);
             };
-            enemyInstance.gameObject.SetActive(true);
-            return enemyInstance;
+            npcInstance.gameObject.SetActive(true);
+            return npcInstance;
         }
         
         [Inject]
-        private void Initialize(EnemyDatabase enemyDatabase)
+        private void Initialize(NPCDatabase npcDatabase)
         {
             BLog.Log("Initializing UI prefab dictionaries");
-            foreach (EnemyData enemyData in enemyDatabase.enemyDatas)
+            foreach (NPCData enemyData in npcDatabase.npcDatas)
             {
                 _enemyDict.Add(enemyData.ID, enemyData);
                 InitPool(enemyData);
@@ -109,17 +107,17 @@ namespace Blizzard.Enemies.Core
         /// <summary>
         /// Initializes starting inactive pool for given enemy type
         /// </summary>
-        /// <param name="enemyData"></param>
-        private void InitPool(EnemyData enemyData)
+        /// <param name="npcData"></param>
+        private void InitPool(NPCData npcData)
         {
-            _inactiveEnemies.Add(enemyData.ID, new Stack<EnemyBehaviour>());
-            enemyData.enemyPrefab.gameObject.SetActive(false);
+            _inactiveEnemies.Add(npcData.ID, new Stack<NPCBehaviour>());
+            npcData.npcPrefab.gameObject.SetActive(false);
             
             // Instantiate inactive enemies to fill pool
             for (int i = 0; i < EnemyConstants.StartInactivePoolSize; ++i)
             {
-                _inactiveEnemies[enemyData.ID].Push(
-                    _diContainer.InstantiatePrefabForComponent<EnemyBehaviour>(enemyData.enemyPrefab));
+                _inactiveEnemies[npcData.ID].Push(
+                    _diContainer.InstantiatePrefabForComponent<NPCBehaviour>(npcData.npcPrefab));
             }
         }
 

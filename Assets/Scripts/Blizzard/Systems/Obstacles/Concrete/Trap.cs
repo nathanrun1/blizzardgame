@@ -1,4 +1,4 @@
-using Blizzard.Enemies;
+using Blizzard.NPCs;
 using Blizzard.Utilities.DataTypes;
 using Unity.Assertions;
 using UnityEngine;
@@ -31,16 +31,16 @@ namespace Blizzard.Obstacles.Concrete
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!_ready) return;
-            EnemyBehaviour enemy = other.GetComponent<EnemyBehaviour>();
-            Trigger(enemy);
+            NPCBehaviour npc = other.GetComponent<NPCBehaviour>();
+            Trigger(npc);
         }
 
         /// <summary>
         /// Triggers the trap, damaging the given enemy
         /// </summary>
-        private void Trigger(EnemyBehaviour enemy)
+        private void Trigger(NPCBehaviour npc)
         {
-            enemy.Strike(_damage, out _);
+            npc.Strike(_damage, out _);
             _spriteRenderer.sprite = _triggeredSprite;
             SetFlags(ObstacleFlags | ObstacleFlags.Detectable); // Trap is detectable now, until repaired.
             _ready = false;

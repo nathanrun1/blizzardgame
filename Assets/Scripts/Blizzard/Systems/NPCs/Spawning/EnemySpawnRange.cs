@@ -1,17 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Blizzard.Constants;
 using Blizzard.Grid;
 using Blizzard.Obstacles;
 using Blizzard.Player;
 using Blizzard.Temperature;
 using Blizzard.Utilities.Assistants;
-using Sirenix.Utilities;
 using UnityEngine;
 using Zenject;
 
-namespace Blizzard.Enemies.Spawning
+namespace Blizzard.NPCs.Spawning
 {
     /// <summary>
     /// A range of coordinates that are valid for enemy spawning

@@ -1,10 +1,11 @@
 using Blizzard.Config;
-using Blizzard.Enemies.Core;
 using Blizzard.Inventory.Crafting;
+using Blizzard.NPCs.Core;
 using Blizzard.UI.Core;
 using UnityEngine;
 using Zenject;
 using Blizzard.Utilities.Logging;
+using UnityEngine.Serialization;
 
 namespace Blizzard.Installers
 {
@@ -17,7 +18,7 @@ namespace Blizzard.Installers
         [SerializeField] private CraftingDatabase _craftingDatabase;
         [SerializeField] private SmeltingDatabase _smeltingDatabase;
         [SerializeField] private UIDatabase _uiDatabase;
-        [SerializeField] private EnemyDatabase _enemyDatabase;
+        [FormerlySerializedAs("_enemyDatabase")] [SerializeField] private NPCDatabase npcDatabase;
         [SerializeField] private PlayerTemperatureConfig _playerTemperatureConfig;
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -33,7 +34,7 @@ namespace Blizzard.Installers
             Container.BindInstance(_uiDatabase).AsSingle();
             
             // Enemy database
-            Container.BindInstance(_enemyDatabase).AsSingle();
+            Container.BindInstance(npcDatabase).AsSingle();
             
             // Player temperature config
             Container.BindInstance(_playerTemperatureConfig).AsSingle();

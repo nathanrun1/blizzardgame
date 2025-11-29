@@ -6,11 +6,11 @@ using Zenject;
 using Sirenix.OdinInspector;
 using Blizzard.Temperature;
 using System.Linq;
-using Blizzard.Enemies;
-using Blizzard.Enemies.Core;
-using Blizzard.Enemies.Spawning;
 using Blizzard.Input;
 using Blizzard.Inventory;
+using Blizzard.NPCs;
+using Blizzard.NPCs.Core;
+using Blizzard.NPCs.Spawning;
 using Blizzard.Obstacles;
 using Blizzard.Player;
 using Blizzard.UI.Core;
@@ -34,16 +34,16 @@ namespace Blizzard.Utilities
         [Inject] private TemperatureService _temperatureService;
         [Inject] private ObstacleGridService _obstacleGridService;
         [Inject] private InputService _inputService;
-        [Inject] private EnemyService _enemyService;
+        [Inject] private NPCService _npcService;
         [Inject] private PlayerService _playerService;
         [Inject] private EnemyWaveService _enemyWaveService;
 
         [FoldoutGroup("Enemies")]
         [Button]
         [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
-        private void SpawnEnemy(EnemyID enemyID, Vector2 position)
+        private void SpawnEnemy(NPCID npcid, Vector2 position)
         {
-            _enemyService.SpawnEnemy(enemyID, position);
+            _npcService.SpawnEnemy(npcid, position);
         }
 
         [FoldoutGroup("Enemies")]
@@ -51,7 +51,7 @@ namespace Blizzard.Utilities
         [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void PrintNearestEnemyToPlayer()
         {
-            List<EnemyBehaviour> kNearest = _enemyService.Quadtree.GetKNearestEnemies(_playerService.PlayerPosition, 1, float.MaxValue);
+            List<NPCBehaviour> kNearest = _npcService.Quadtree.GetKNearestNPCs(_playerService.PlayerPosition, 1, float.MaxValue);
             if (kNearest.Count == 0) BLog.Log("Debug","Query returned no enemies!");
             else BLog.Log("Debug",$"Nearest enemy to player: {kNearest[0]} at {kNearest[0].transform.position}");
         }

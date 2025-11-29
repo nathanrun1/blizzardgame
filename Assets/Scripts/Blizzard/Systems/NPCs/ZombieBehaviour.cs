@@ -1,19 +1,19 @@
+using Blizzard.Grid;
+using Blizzard.Obstacles;
+using Blizzard.Pathfinding;
+using Blizzard.Player;
+using Blizzard.Utilities;
+using Blizzard.Utilities.DataTypes;
+using Blizzard.Utilities.Logging;
 using UnityEngine;
 using Zenject;
-using Blizzard.Utilities.Logging;
-using Blizzard.Utilities;
-using Blizzard.Obstacles;
-using Blizzard.Player;
-using Blizzard.Grid;
-using Blizzard.Pathfinding;
-using Blizzard.Utilities.DataTypes;
 using Assert = UnityEngine.Assertions.Assert;
 using Random = UnityEngine.Random;
 
 
-namespace Blizzard.Enemies
+namespace Blizzard.NPCs
 {
-    public class ZombieBehaviour : EnemyBehaviour
+    public class ZombieBehaviour : NPCBehaviour
     {
         [System.Serializable]
         public class BehaviourConfig
