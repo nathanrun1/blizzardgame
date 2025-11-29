@@ -30,52 +30,52 @@ namespace Blizzard.NPCs.Core
         /// <summary>
         /// Parent transform to spawned enemies
         /// </summary>
-        private readonly Transform _enemyParent;
+        private readonly Transform _npcParent;
         /// <summary>
         /// Maps enemy id (int) to stack containing inactive instances. Prioritizes inactive
         /// instances of an enemy for spawning before instantiating.
         /// </summary>
-        private readonly Dictionary<int, Stack<NPCBehaviour>> _inactiveEnemies = new();
+        private readonly Dictionary<int, Stack<NPCBehaviour>> _inactiveNPCs = new();
 
         /// <summary>
         /// Initializes EnemyService
         /// </summary>
-        /// <param name="enemyParent">Parent to spawned enemies</param>
-        public NPCService(Transform enemyParent)
+        /// <param name="npcParent">Parent to spawned enemies</param>
+        public NPCService(Transform npcParent)
         {
-            _enemyParent = enemyParent;
+            _npcParent = npcParent;
         }
 
         /// <summary>
         /// Spawns enemy at given position
         /// </summary>
         /// <returns>Spawned enemy instance</returns>
-        public NPCBehaviour SpawnEnemy(NPCID npcid, Vector3 spawnPosition)
+        public NPCBehaviour SpawnNPC(NPCID npcid, Vector3 spawnPosition)
         {
-            return SpawnEnemy(_enemyDict[(int)npcid], spawnPosition);
+            return SpawnNPC(_enemyDict[(int)npcid], spawnPosition);
         }
 
         /// <summary>
         /// Spawns enemy at given grid position
         /// </summary>
         /// <returns>Spawned enemy instance</returns>
-        public NPCBehaviour SpawnEnemy(NPCID npcid, Vector2Int spawnPosition)
+        public NPCBehaviour SpawnNPC(NPCID npcid, Vector2Int spawnPosition)
         {
             Vector3 spawnPositionWorld = _obstacleGridService.Grids[ObstacleConstants.MainObstacleLayer]
                 .CellToWorldPosCenter(spawnPosition);
-            return SpawnEnemy(_enemyDict[(int)npcid], spawnPositionWorld);
+            return SpawnNPC(_enemyDict[(int)npcid], spawnPositionWorld);
         }
         
         
-        private NPCBehaviour SpawnEnemy(NPCData npcData, Vector3 spawnPosition)
+        private NPCBehaviour SpawnNPC(NPCData npcData, Vector3 spawnPosition)
         {
             // Pull from pool if pool non-empty, else instantiate directly
-            NPCBehaviour npcInstance =_inactiveEnemies[npcData.ID].Count > 0 ? 
-                _inactiveEnemies[npcData.ID].Pop() :
+            NPCBehaviour npcInstance =_inactiveNPCs[npcData.ID].Count > 0 ? 
+                _inactiveNPCs[npcData.ID].Pop() :
                 _diContainer.InstantiatePrefabForComponent<NPCBehaviour>(npcData.npcPrefab);
             
             npcInstance.transform.position = spawnPosition;
-            npcInstance.transform.SetParent(_enemyParent);
+            npcInstance.transform.SetParent(_npcParent);
             Quadtree.Add(npcInstance);
             
             int enemyID = npcData.ID;
@@ -85,7 +85,7 @@ namespace Blizzard.NPCs.Core
                 if (!npcInstance.gameObject.activeInHierarchy) return; // Do nothing if already inactive
                 npcInstance.gameObject.SetActive(false);
                 Quadtree.Remove(npcInstance); 
-                _inactiveEnemies[enemyID].Push(npcInstance);
+                _inactiveNPCs[enemyID].Push(npcInstance);
             };
             npcInstance.gameObject.SetActive(true);
             return npcInstance;
@@ -94,11 +94,11 @@ namespace Blizzard.NPCs.Core
         [Inject]
         private void Initialize(NPCDatabase npcDatabase)
         {
-            BLog.Log("Initializing UI prefab dictionaries");
-            foreach (NPCData enemyData in npcDatabase.npcDatas)
+            BLog.Log("Initializing NPC prefab dictionary");
+            foreach (NPCData npcData in npcDatabase.npcDatas)
             {
-                _enemyDict.Add(enemyData.ID, enemyData);
-                InitPool(enemyData);
+                _enemyDict.Add(npcData.ID, npcData);
+                InitPool(npcData);
             }
 
             _quadtreeTick = Quadtree.Tick();
@@ -110,13 +110,13 @@ namespace Blizzard.NPCs.Core
         /// <param name="npcData"></param>
         private void InitPool(NPCData npcData)
         {
-            _inactiveEnemies.Add(npcData.ID, new Stack<NPCBehaviour>());
+            _inactiveNPCs.Add(npcData.ID, new Stack<NPCBehaviour>());
             npcData.npcPrefab.gameObject.SetActive(false);
             
             // Instantiate inactive enemies to fill pool
             for (int i = 0; i < EnemyConstants.StartInactivePoolSize; ++i)
             {
-                _inactiveEnemies[npcData.ID].Push(
+                _inactiveNPCs[npcData.ID].Push(
                     _diContainer.InstantiatePrefabForComponent<NPCBehaviour>(npcData.npcPrefab));
             }
         }

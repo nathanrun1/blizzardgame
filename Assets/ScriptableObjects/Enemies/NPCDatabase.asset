@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff8cde63555e4ff384d3cf5b15d4a355, type: 3}
-  m_Name: EnemyDatabase
+  m_Name: NPCDatabase
   m_EditorClassIdentifier: Blizzard::Blizzard.Enemies.Core.EnemyDatabase
   enemyDatas:
   - {fileID: 11400000, guid: 4019e1c41ea55e84ba47c242b3d4f917, type: 2}

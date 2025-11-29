@@ -18,7 +18,7 @@ namespace Blizzard.Installers
         [SerializeField] private CraftingDatabase _craftingDatabase;
         [SerializeField] private SmeltingDatabase _smeltingDatabase;
         [SerializeField] private UIDatabase _uiDatabase;
-        [FormerlySerializedAs("_enemyDatabase")] [SerializeField] private NPCDatabase npcDatabase;
+        [FormerlySerializedAs("npcDatabase")] [FormerlySerializedAs("_enemyDatabase")] [SerializeField] private NPCDatabase _npcDatabase;
         [SerializeField] private PlayerTemperatureConfig _playerTemperatureConfig;
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -34,7 +34,7 @@ namespace Blizzard.Installers
             Container.BindInstance(_uiDatabase).AsSingle();
             
             // Enemy database
-            Container.BindInstance(npcDatabase).AsSingle();
+            Container.BindInstance(_npcDatabase).AsSingle();
             
             // Player temperature config
             Container.BindInstance(_playerTemperatureConfig).AsSingle();

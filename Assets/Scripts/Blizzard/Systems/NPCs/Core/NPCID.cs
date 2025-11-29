@@ -5,6 +5,7 @@
     /// </summary>
     public enum NPCID
     {
-        Zombie = 0
+        Zombie = 0,
+        Rabbit = 1
     }
 }

@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 7175631586686968687}
   - component: {fileID: 3823765924476577408}
   - component: {fileID: 2651775530957649894}
-  - component: {fileID: 151768960352639157}
   - component: {fileID: 8849110296705609942}
+  - component: {fileID: 2238214206486692207}
   m_Layer: 7
   m_Name: Rabbit
   m_TagString: Untagged
@@ -129,32 +129,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.49999997
---- !u!114 &151768960352639157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6310151239790000219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71f1ff380c30dc34e96a2a5c18f7a9c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _spriteRenderers:
-  - {fileID: 3823765924476577408}
-  _startingHealth: 100
-  _behaviour:
-    walkSpeed: 1
-    attackRange: 0.75
-    attackDamage: 25
-    attackDelay: 0.75
-    playerAgroRange: 10
-    targetListSize: 10
-    maxTargetDistance: 100
-    idleUpdateDelay: 0.25
-    attackRangeSqr: 0
-    playerAgroRangeSqr: 0
 --- !u!50 &8849110296705609942
 Rigidbody2D:
   serializedVersion: 5
@@ -182,3 +156,23 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &2238214206486692207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6310151239790000219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eaef5b8fdaa43fcbcb2785c29c241e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blizzard::Blizzard.NPCs.Concrete.RabbitBehaviour
+  _spriteRenderers:
+  - {fileID: 3823765924476577408}
+  _startingHealth: 50
+  _behaviour:
+    walkSpeed: 0
+    playerFleeRange: 0
+    idleUpdateDelay: 0
+    playerFleeRangeSqr: 0

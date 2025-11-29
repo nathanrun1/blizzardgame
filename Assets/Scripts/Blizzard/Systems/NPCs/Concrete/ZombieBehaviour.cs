@@ -11,7 +11,7 @@ using Assert = UnityEngine.Assertions.Assert;
 using Random = UnityEngine.Random;
 
 
-namespace Blizzard.NPCs
+namespace Blizzard.NPCs.Concrete
 {
     public class ZombieBehaviour : NPCBehaviour
     {

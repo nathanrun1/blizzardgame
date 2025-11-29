@@ -43,7 +43,7 @@ namespace Blizzard.Utilities
         [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void SpawnEnemy(NPCID npcid, Vector2 position)
         {
-            _npcService.SpawnEnemy(npcid, position);
+            _npcService.SpawnNPC(npcid, position);
         }
 
         [FoldoutGroup("Enemies")]

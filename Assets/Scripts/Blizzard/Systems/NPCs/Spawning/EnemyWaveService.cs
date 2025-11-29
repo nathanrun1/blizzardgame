@@ -96,7 +96,7 @@ namespace Blizzard.NPCs.Spawning
             if (_readyEnemyGroups.Count == 0 || _readyEnemyGroups.Keys.First() >= Time.realtimeSinceStartup) return;
             for (int i = 0; i < EnemyConstants.MaxEnemySpawnsPerTick; ++i)
             {
-                _npcService.SpawnEnemy(
+                _npcService.SpawnNPC(
                     _readyEnemyGroups.Values.First().npcid,
                     _enemySpawnRange.GetRandomEnemySpawnLocation()
                 );

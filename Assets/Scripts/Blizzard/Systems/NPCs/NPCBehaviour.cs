@@ -2,6 +2,7 @@
 using Blizzard.Interfaces;
 using Blizzard.Player.Tools;
 using Blizzard.Utilities.Assistants;
+using Blizzard.Utilities.Logging;
 using DG.Tweening;
 using UnityEngine;
 
@@ -71,7 +72,7 @@ namespace Blizzard.NPCs
         protected virtual void TakeDamage(int damage, out bool death)
         {
             Health -= damage;
-            
+
             death = Health <= 0;
             if (death)
             {
