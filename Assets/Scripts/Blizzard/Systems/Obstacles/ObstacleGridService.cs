@@ -9,6 +9,7 @@ using Blizzard.Temperature;
 using Blizzard.Utilities.Logging;
 using Blizzard.Utilities.DataTypes;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace Blizzard.Obstacles
 {
@@ -167,13 +168,14 @@ namespace Blizzard.Obstacles
         }
         
         /// <summary>
-        /// Invoked when an obstacle at the given grid position is destroyed.
-        /// Removes the obstacle from the Obstacle Grid at the given grid position if it exists
+        /// Invoked when an obstacle at the given grid position 
+        /// If it exists, destroys the obstacle's GameObject and removes it from the grid & relevant quadtrees.
         /// </summary>
         private void OnObstacleDestroyed(Vector2Int gridPosition, ObstacleLayer obstacleLayer)
         {
             if (Grids[obstacleLayer].TryGetValue(gridPosition, out var obstacle))
             {
+                Object.Destroy(obstacle.gameObject);
                 Grids[obstacleLayer].ResetAt(gridPosition);
                 if (obstacleLayer == ObstacleConstants.MainObstacleLayer)
                 {
