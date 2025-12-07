@@ -93,7 +93,7 @@ namespace Blizzard.Pathfinding
     /// A Flow Field, allows retrieval of navigation direction for given
     /// pathfinding target type.
     /// </summary>
-    public class FlowField
+    public class PlayerBuildingFlowField
     {
         /// <summary>
         /// Underlying NativeFlowField implementation
@@ -128,7 +128,7 @@ namespace Blizzard.Pathfinding
 
         private readonly ObstacleGridService _obstacleGridService;
 
-        public FlowField(ObstacleGridService obstacleGridService)
+        public PlayerBuildingFlowField(ObstacleGridService obstacleGridService)
         {
             _obstacleGridService = obstacleGridService;
         }

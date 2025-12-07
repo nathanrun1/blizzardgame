@@ -1,20 +1,64 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Blizzard.Utilities.Logging;
+using Blizzard.Constants;
 using Sirenix.Utilities;
 using UnityEngine;
+using Assert = UnityEngine.Assertions.Assert;
 
 namespace Blizzard.Utilities.Assistants
 {
+    /// <summary>
+    /// A rotation direction to follow when rotating around adjacent grid coordinates.
+    /// </summary>
+    public enum AdjRotation
+    {
+        Clockwise = -1,
+        Counterclockwise = 1
+    }
+    
     /// <summary>
     /// Helper class for grid-related operations
     /// </summary>
     public static class GridAssistant
     {
         /// <summary>
+        /// Ordered grid coordinates representing the rotation of adjacent grid coordinates, i.e.
+        /// right -> top right -> top -> top left -> ...
+        /// </summary>
+        private static readonly Vector2Int[] _adjacentClock = new[]
+        {
+            new Vector2Int(1, 0),
+            new Vector2Int(1, 1),
+            new Vector2Int(0, 1),
+            new Vector2Int(-1, 1),
+            new Vector2Int(-1, 0),
+            new Vector2Int(-1, -1),
+            new Vector2Int(0, -1),
+            new Vector2Int(1, -1)
+        };
+
+        /// <summary>
+        /// Takes a grid coordinate representing an offset of at most distance sqrt(2) and a 'rot' value representing
+        /// how many coordinates around the origin to rotate. Returns the resulting "rotation".
+        ///
+        /// E.g. (1,0) rotated by 2 yields (0,1)
+        /// </summary>
+        public static Vector2Int RotateAdjacentCoordinate(Vector2Int coordinate, AdjRotation rot)
+        {
+            int index = Array.IndexOf(_adjacentClock, coordinate);
+            Assert.IsTrue(index != -1, $"Invalid coordinate to rotate: {coordinate}");
+
+            index = (index + (int)rot) % 8;
+            if (index < 0) index += 8;
+
+            return _adjacentClock[index];
+        }
+        
+        /// <summary>
         /// Converts world position to grid position, given square grid cell side length
         /// </summary>
-        public static Vector2Int WorldToCellPos(Vector2 worldPosition, float cellSideLength)
+        public static Vector2Int WorldToCellPos(Vector2 worldPosition, float cellSideLength = GameConstants.CellSideLength)
         {
             var gridPosition = new Vector2Int
             {
@@ -24,11 +68,19 @@ namespace Blizzard.Utilities.Assistants
 
             return gridPosition;
         }
+
+        /// <summary>
+        /// Converts world position to grid position, given square grid cell side length
+        /// </summary>
+        public static Vector2Int ToCellPos(this Vector2 worldPosition, float cellSideLength = GameConstants.CellSideLength)
+        {
+            return GridAssistant.WorldToCellPos(worldPosition, cellSideLength);
+        }
         
         /// <summary>
         /// Converts grid position to world position of bottom left of grid square, given square grid cell side length
         /// </summary>
-        public static Vector2 CellToWorldPosCorner(Vector2Int gridPosition, float cellSideLength)
+        public static Vector2 CellToWorldPosCorner(Vector2Int gridPosition, float cellSideLength = GameConstants.CellSideLength)
         {
             Vector2 worldPosition;
             worldPosition.x = gridPosition.x * cellSideLength;
@@ -40,13 +92,18 @@ namespace Blizzard.Utilities.Assistants
         /// <summary>
         /// Converts grid position to world position of center of grid square, given square grid cell side length
         /// </summary>
-        public static Vector2 CellToWorldPosCenter(Vector2Int gridPosition, float cellSideLength)
+        public static Vector2 CellToWorldPosCenter(Vector2Int gridPosition, float cellSideLength = GameConstants.CellSideLength)
         {
             Vector2 worldPosition;
             worldPosition.x = gridPosition.x * cellSideLength + cellSideLength * 0.5f;
             worldPosition.y = gridPosition.y * cellSideLength + cellSideLength * 0.5f;
 
             return worldPosition;
+        }
+
+        public static Vector2 ToWorldPosCenter(this Vector2Int gridPosition, float cellSideLength = GameConstants.CellSideLength)
+        {
+            return GridAssistant.CellToWorldPosCenter(gridPosition, cellSideLength);
         }
 
         /// <summary>
@@ -93,5 +150,7 @@ namespace Blizzard.Utilities.Assistants
                 }
             }
         }
+        
+        
     }
 }

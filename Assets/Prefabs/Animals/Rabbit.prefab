@@ -171,8 +171,10 @@ MonoBehaviour:
   _spriteRenderers:
   - {fileID: 3823765924476577408}
   _startingHealth: 50
-  _behaviour:
-    walkSpeed: 0
-    playerFleeRange: 0
+  _config:
+    walkSpeed: 1
+    playerEnterFleeRange: 3
+    playerExitFleeRange: 3
+    wanderPeriodRange: {x: 1, y: 6}
+    wanderTimeRange: {x: 3, y: 6}
     idleUpdateDelay: 0
-    playerFleeRangeSqr: 0

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Blizzard.Grid;
 using Blizzard.Constants;
@@ -10,11 +11,11 @@ using Blizzard.Utilities.DataTypes;
 namespace Blizzard.Pathfinding
 {
     /// <summary>
-    /// Service responsible for managing enemy pathfinding
+    /// Service responsible for managing NPC pathfinding
     /// </summary>
-    public class EnemyPathfindingService : IInitializable
+    public class PathfindingService : IInitializable
     {
-        private FlowField _flowField;
+        private PlayerBuildingFlowField _playerBuildingFlowField;
         /// <summary>
         /// Whether flow field is valid. If false, will be as if flow field is empty.
         /// </summary>
@@ -34,11 +35,12 @@ namespace Blizzard.Pathfinding
             _obstacleGridService.ObstacleAddedOrRemoved += ObstacleAddedOrRemoved;
             _obstacleGridService.ObstacleFlagsUpdated += OnObstacleFlagsUpdated;
 
-            _flowField = new FlowField(_obstacleGridService);
+            _playerBuildingFlowField = new PlayerBuildingFlowField(_obstacleGridService);
         }
 
         /// <summary>
-        /// Gets next position to navigate to based on current navigator position
+        /// Gets next position to navigate to based on current navigator position, when navigating toward
+        /// player buildings.
         /// </summary>
         /// <param name="navigatorPos">Position of navigator</param>
         /// <param name="targetObstacle">Obstacle located at target position, if any</param>
@@ -62,7 +64,8 @@ namespace Blizzard.Pathfinding
         }
 
         /// <summary>
-        /// Gets next grid position to navigate to based on current navigator position
+        /// Gets next grid position to navigate to based on current navigator position, when navigating
+        /// toward player buildings.
         /// </summary>
         /// <param name="navigatorGridPos">Position of navigator</param>
         /// <param name="targetObstacle">Obstacle located at target position, if any</param>
@@ -71,7 +74,7 @@ namespace Blizzard.Pathfinding
         public bool TryGetNextTargetGridPosition(Vector2Int navigatorGridPos, out Vector2Int nextTargetGridPos,
             out Obstacle targetObstacle)
         {
-            if (!_flowFieldValid || !_flowField.TryGetNextPos(navigatorGridPos, out nextTargetGridPos))
+            if (!_flowFieldValid || !_playerBuildingFlowField.TryGetNextPos(navigatorGridPos, out nextTargetGridPos))
             {
                 targetObstacle = null;
                 nextTargetGridPos = default;
@@ -82,6 +85,16 @@ namespace Blizzard.Pathfinding
             return true;
         }
 
+        /// <summary>
+        /// Generates a path from the given start and end positions using A*, if one is available.
+        /// </summary>
+        /// <param name="startPos"></param>
+        /// <param name="endPos"></param>
+        /// <returns></returns>
+        public List<Vector2Int> GenerateAStarPath(Vector2Int startPos, Vector2Int endPos)
+        {
+            return new(); // TEMP
+        }
 
         /// <summary>
         /// Invoked when an obstacle is added or removed from the obstacle grid 
@@ -114,7 +127,7 @@ namespace Blizzard.Pathfinding
                 _outerMostBoundsPlayerBuilt.MinBound.x + PathfindingConstants.ffPadding,
                 _outerMostBoundsPlayerBuilt.MinBound.y + PathfindingConstants.ffPadding);
 
-            _flowField.BuildFlowField(paddedMin, paddedMax);
+            _playerBuildingFlowField.BuildFlowField(paddedMin, paddedMax);
             _flowFieldValid = true;
         }
 
@@ -139,7 +152,7 @@ namespace Blizzard.Pathfinding
                 _outerMostBoundsPlayerBuilt.MinBound.x + PathfindingConstants.ffPadding,
                 _outerMostBoundsPlayerBuilt.MinBound.y + PathfindingConstants.ffPadding);
 
-            _flowField.BuildFlowField(paddedMin, paddedMax);
+            _playerBuildingFlowField.BuildFlowField(paddedMin, paddedMax);
             _flowFieldValid = true;
         }
     }

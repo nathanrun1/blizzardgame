@@ -15,5 +15,10 @@ namespace Blizzard.Constants
         /// covering player-built obstacles
         /// </summary>
         public const int ffPadding = 25;
+        
+        /// <summary>
+        /// When brute force checking for valid directions, will split all possible directions into this many angles.
+        /// </summary>
+        public const int maxDirectionRotationChecks = 20;
     }
 }
