@@ -172,9 +172,9 @@ MonoBehaviour:
   - {fileID: 3823765924476577408}
   _startingHealth: 50
   _config:
-    walkSpeed: 1
-    playerEnterFleeRange: 3
-    playerExitFleeRange: 3
+    walkSpeed: 1.4
+    playerEnterFleeRange: 1.5
+    playerExitFleeRange: 4
     wanderPeriodRange: {x: 1, y: 6}
     wanderTimeRange: {x: 3, y: 6}
-    idleUpdateDelay: 0
+    dirAdjustmentRate: 270
