@@ -1,3 +1,4 @@
+using Blizzard.NPCs.BaseStates;
 using Blizzard.NPCs.Concrete.Rabbit;
 using Blizzard.Obstacles;
 using Blizzard.Pathfinding;
@@ -21,7 +22,7 @@ namespace Blizzard.NPCs.Concrete
 
         protected override void Awake()
         {
-            RabbitContext ctx = new RabbitContext
+            PassiveNPCContext ctx = new PassiveNPCContext
             {
                 config = _config,
                 obstacleGridService = _obstacleGridService,

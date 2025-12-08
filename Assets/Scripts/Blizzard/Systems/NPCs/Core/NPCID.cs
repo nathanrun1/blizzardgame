@@ -6,6 +6,7 @@
     public enum NPCID
     {
         Zombie = 0,
-        Rabbit = 1
+        Rabbit = 1,
+        Wolf   = 2
     }
 }
