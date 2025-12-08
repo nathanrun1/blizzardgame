@@ -86,15 +86,14 @@ namespace Blizzard.NPCs.BaseStates
             Quaternion rot = Quaternion.Euler(0, 0, rotDir * deltaTime * _ctx.config.dirAdjustmentRate);
             _curDirection = rot * _curDirection;
         }
-        
+
         /// <summary>
         /// Picks the next direction to travel in to based on the desired direction to travel in.
-        ///
+        /// 
         /// Assumes direction is normalized.
         /// </summary>
         /// <param name="direction">Direction to attempt travelling in</param>
-        /// <param name="adjRot">Rotation direction when checking similar alternative directions</param>
-        protected Vector2 TryTravelInDirection(Vector2 direction, AdjRotation adjRot)
+        protected Vector2 TryTravelInDirection(Vector2 direction)
         {
             // Ensure that next travel position is at most one grid square away
             Vector2 curDir = direction *= GameConstants.CellSideLength;
