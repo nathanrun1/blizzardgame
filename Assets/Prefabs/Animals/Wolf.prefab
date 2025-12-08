@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3823765924476577408}
   - component: {fileID: 2651775530957649894}
   - component: {fileID: 8849110296705609942}
-  - component: {fileID: 2238214206486692207}
+  - component: {fileID: 2379722547516095840}
   m_Layer: 7
   m_Name: Wolf
   m_TagString: Untagged
@@ -156,7 +156,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &2238214206486692207
+--- !u!114 &2379722547516095840
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -165,16 +165,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 6310151239790000219}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2eaef5b8fdaa43fcbcb2785c29c241e6, type: 3}
+  m_Script: {fileID: 11500000, guid: 191aef05e13b4d0197e39907fc8cf994, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Blizzard::Blizzard.NPCs.Concrete.RabbitBehaviour
+  m_EditorClassIdentifier: Blizzard::Blizzard.NPCs.Concrete.WolfBehaviour
   _spriteRenderers:
   - {fileID: 3823765924476577408}
-  _startingHealth: 50
+  _startingHealth: 100
   _config:
     walkSpeed: 1.4
-    playerEnterFleeRange: 1.5
+    playerEnterFleeRange: 1
     playerExitFleeRange: 4
     wanderPeriodRange: {x: 1, y: 6}
     wanderTimeRange: {x: 3, y: 6}
-    dirAdjustmentRate: 270
+    dirAdjustmentRate: 250
+    exitHostileRange: 4
+    attackDamage: 25
+    attackRange: 0.5
+    attackDelay: 1

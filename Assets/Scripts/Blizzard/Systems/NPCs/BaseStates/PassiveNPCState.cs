@@ -14,7 +14,7 @@ namespace Blizzard.NPCs.BaseStates
     {
         public StateMachine StateMachine { get; set; }
 
-        public RabbitConfig config;
+        public PassiveNPCConfig config;
 
         public ObstacleGridService obstacleGridService;
         public PlayerService playerService;
@@ -75,14 +75,11 @@ namespace Blizzard.NPCs.BaseStates
         /// </summary>
         protected void AdjustDirectionToward(Vector2 targetDir, float deltaTime)
         {
-            BLog.Log($"Intended dir: {targetDir}, actual: {_curDirection}");
-            
             float signedAngle = Mathf.Atan2(
                     _curDirection.x * targetDir.y - _curDirection.y * targetDir.x,  // cross product
                     Vector2.Dot(_curDirection, targetDir)                   // dot product
             );
             float rotDir = Mathf.Sign(signedAngle);
-            BLog.Log($"Rotation dir: {rotDir}");
             Quaternion rot = Quaternion.Euler(0, 0, rotDir * deltaTime * _ctx.config.dirAdjustmentRate);
             _curDirection = rot * _curDirection;
         }
@@ -96,7 +93,7 @@ namespace Blizzard.NPCs.BaseStates
         protected Vector2 TryTravelInDirection(Vector2 direction)
         {
             // Ensure that next travel position is at most one grid square away
-            Vector2 curDir = direction *= GameConstants.CellSideLength;
+            Vector2 curDir = direction * GameConstants.CellSideLength;
 
             // We alternate by checking some angle both rotated clockwise & counterclockwise, increasing that angle
             //   iteratively.

@@ -13,7 +13,7 @@ namespace Blizzard.NPCs.Concrete
     public class RabbitBehaviour : NPCBehaviour
     {
         [Header("Behaviour Config")] 
-        [SerializeField] private RabbitConfig _config;
+        [SerializeField] private PassiveNPCConfig _config;
 
         private StateMachine _stateMachine;
 

@@ -1,31 +1,26 @@
-﻿using UnityEngine;
+﻿using Blizzard.NPCs.BaseStates;
+using UnityEngine;
 
 namespace Blizzard.NPCs.Concrete.Wolf
 {
     [System.Serializable]
-    public class WolfConfig
+    public class WolfConfig : PassiveNPCConfig
     {
-        public float walkSpeed;
-        
         /// <summary>
-        /// Range at which rabbit starts to flee from player
+        /// Range at which wolf is no longer hostile to player
         /// </summary>
-        public float playerEnterFleeRange;
+        public float exitHostileRange;
         /// <summary>
-        /// Range at which rabbit stops fleeing from player
+        /// Attack damage to player
         /// </summary>
-        public float playerExitFleeRange;
+        public int attackDamage;
         /// <summary>
-        /// Range of time intervals between entering idle state and starting to wander
+        /// Attacks are permitted within this range to the player
         /// </summary>
-        public Vector2 wanderPeriodRange;
+        public float attackRange;
         /// <summary>
-        /// Range of time that a rabbit wanders for
+        /// Minimum delay between attacks to the player
         /// </summary>
-        public Vector2 wanderTimeRange;
-        /// <summary>
-        /// Degrees/second that the travel direction can rotate toward its intended travel direction
-        /// </summary>
-        public float dirAdjustmentRate;
+        public float attackDelay;
     }
 }

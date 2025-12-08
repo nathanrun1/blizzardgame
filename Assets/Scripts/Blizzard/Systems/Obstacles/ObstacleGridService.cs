@@ -211,9 +211,6 @@ namespace Blizzard.Obstacles
                 // Update temperature data using obstacle's heat and insulation values
                 newTemperatureCell.heat = obstacle.Heat;
                 newTemperatureCell.insulation = obstacle.Insulation;
-
-                BLog.Log(
-                    $"Temperature sim data updated at {gridPosition}.\n\tNew heat: {obstacle.Heat}\n\tNew Insulation: {obstacle.Insulation}");
             }
             else
             {

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-namespace Blizzard.NPCs.Concrete.Rabbit
+namespace Blizzard.NPCs.BaseStates
 {
     [System.Serializable]
-    public class RabbitConfig
+    public class PassiveNPCConfig
     {
         public float walkSpeed;
         
