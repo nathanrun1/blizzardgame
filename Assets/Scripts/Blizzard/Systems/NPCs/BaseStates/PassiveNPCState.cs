@@ -5,6 +5,7 @@ using Blizzard.Obstacles;
 using Blizzard.Player;
 using Blizzard.Utilities;
 using Blizzard.Utilities.Assistants;
+using Blizzard.Utilities.DataTypes;
 using Blizzard.Utilities.Logging;
 using UnityEngine;
 
@@ -106,15 +107,24 @@ namespace Blizzard.NPCs.BaseStates
                 Quaternion rotCounterclockwise = Quaternion.Euler(0, 0, counterclockwiseAngle);
                 
                 Vector2 targetPos = (Vector2)_ctx.transform.position + (Vector2)(rotClockwise * curDir);
-                if (!_ctx.obstacleGridService.IsOccupied(targetPos.ToCellPos()))
+                if (!IsOccupiedAndDetectable(targetPos.ToCellPos()))
                     return rotClockwise * curDir;
                 
                 targetPos = (Vector2)_ctx.transform.position + (Vector2)(rotCounterclockwise * curDir);
-                if (!_ctx.obstacleGridService.IsOccupied(targetPos.ToCellPos()))
+                if (!IsOccupiedAndDetectable(targetPos.ToCellPos()))
                     return rotCounterclockwise * curDir;
             }
 
             return _ctx.transform.position;  // No available options. Stand still.
+        }
+
+        /// <summary>
+        /// Determines if a grid square contains a detectable obstacle
+        /// </summary>
+        private bool IsOccupiedAndDetectable(Vector2Int position)
+        {
+            return _ctx.obstacleGridService.TryGetObstacleAt(position, out Obstacle obs) &&
+                   obs.ObstacleFlags.HasFlag(ObstacleFlags.Detectable);
         }
         
         /// <summary>

@@ -44,12 +44,18 @@ namespace Blizzard.NPCs.Concrete
             base.OnEnable();
         }
 
-        protected override void TakeDamage(int damage, out bool death)
+        protected override void TakeDamage(int damage, out bool death, DamageFlags damageFlags)
         {
+            if (!damageFlags.HasFlag(DamageFlags.Player))
+            {
+                death = false;
+                return;
+            }
+            
             if (_stateMachine.CurrentState is not HostileState) 
                 _stateMachine.ChangeState(new HostileState());
             
-            base.TakeDamage(damage, out death);
+            base.TakeDamage(damage, out death, damageFlags);
         }
 
         private void FixedUpdate()

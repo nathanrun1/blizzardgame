@@ -1,4 +1,6 @@
-﻿namespace Blizzard.Interfaces
+﻿using Blizzard.Utilities.DataTypes;
+
+namespace Blizzard.Interfaces
 {
     /// <summary>
     /// A GameObject that is "Strikeable" by a general purpose player-sided weapon. GameObjects implementing
@@ -11,6 +13,7 @@
         /// </summary>
         /// <param name="damage">Damage to inflict</param>
         /// <param name="death">Whether the strike causes the death of the strikeable</param>
-        public void Strike(int damage, out bool death);
+        /// <param name="damageFlags"></param>
+        public void Strike(int damage, out bool death, DamageFlags damageFlags = DamageFlags.Player);
     }
 }

@@ -10,6 +10,7 @@ namespace Blizzard.Utilities.DataTypes
     {
         Player = 1 << 0,
         Enemy = 1 << 1,
-        Cold = 1 << 2
+        Cold = 1 << 2,
+        PlayerTrap = 1 << 3
     }
 }

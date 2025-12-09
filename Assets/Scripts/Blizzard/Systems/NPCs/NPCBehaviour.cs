@@ -2,6 +2,7 @@
 using Blizzard.Interfaces;
 using Blizzard.Player.Tools;
 using Blizzard.Utilities.Assistants;
+using Blizzard.Utilities.DataTypes;
 using Blizzard.Utilities.Logging;
 using DG.Tweening;
 using UnityEngine;
@@ -33,12 +34,12 @@ namespace Blizzard.NPCs
 
         public virtual void Hit(int damage, ToolType toolType, out bool death)
         {
-            TakeDamage(damage, out death);
+            TakeDamage(damage, out death, DamageFlags.Player);
         }
         
-        public virtual void Strike(int damage, out bool death)
+        public virtual void Strike(int damage, out bool death, DamageFlags damageFlags = DamageFlags.Player)
         {
-            TakeDamage(damage, out death);
+            TakeDamage(damage, out death, damageFlags);
         }
 
         protected virtual void Awake()
@@ -69,7 +70,7 @@ namespace Blizzard.NPCs
         /// <summary>
         /// Take some amount of damage. If health reaches 0, causes death.
         /// </summary>
-        protected virtual void TakeDamage(int damage, out bool death)
+        protected virtual void TakeDamage(int damage, out bool death, DamageFlags damageFlags)
         {
             Health -= damage;
 
