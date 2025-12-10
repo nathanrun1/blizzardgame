@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Blizzard.NPCs.Core
 {
     /// <summary>
-    /// Wrapper for QuadTree storing obstacles
+    /// Wrapper for QuadTree storing NPCs
     /// </summary>
     public class NPCQuadtree {
         #region QTStructs

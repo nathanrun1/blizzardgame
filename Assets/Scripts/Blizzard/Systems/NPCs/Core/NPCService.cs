@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Blizzard.Constants;
 using Blizzard.Grid;
@@ -18,11 +19,11 @@ namespace Blizzard.NPCs.Core
         [Inject] private ObstacleGridService _obstacleGridService;
 
         /// <summary>
-        /// Quadtree containing locations of all NPCs. Can be used for enemy position queries.
+        /// Quadtrees containing locations of all NPCs of different types. Useful for NPC position querying.
         /// </summary>
-        public readonly NPCQuadtree Quadtree = new();
+        public readonly Dictionary<NPCID, NPCQuadtree> Quadtrees = new();
         
-        private IEnumerator _quadtreeTick;
+        private List<IEnumerator> _quadtreeTicks = new();
         /// <summary>
         /// Maps enemy id (int) to enemy data
         /// </summary>
@@ -44,6 +45,11 @@ namespace Blizzard.NPCs.Core
         public NPCService(Transform npcParent)
         {
             _npcParent = npcParent;
+            foreach (NPCID npcId in Enum.GetValues(typeof(NPCID)))
+            {
+                Quadtrees.Add(npcId, new NPCQuadtree());
+                _quadtreeTicks.Add(Quadtrees[npcId].Tick());
+            }
         }
 
         /// <summary>
@@ -76,7 +82,7 @@ namespace Blizzard.NPCs.Core
             
             npcInstance.transform.position = spawnPosition;
             npcInstance.transform.SetParent(_npcParent);
-            Quadtree.Add(npcInstance);
+            Quadtrees[(NPCID)npcData.ID].Add(npcInstance);
             
             int enemyID = npcData.ID;
             npcInstance.OnDeath += () =>
@@ -84,7 +90,7 @@ namespace Blizzard.NPCs.Core
                 // On enemy death: Remove from quadtree and transfer to inactive pool
                 if (!npcInstance.gameObject.activeInHierarchy) return; // Do nothing if already inactive
                 npcInstance.gameObject.SetActive(false);
-                Quadtree.Remove(npcInstance); 
+                Quadtrees[(NPCID)npcData.ID].Remove(npcInstance); 
                 _inactiveNPCs[enemyID].Push(npcInstance);
             };
             npcInstance.gameObject.SetActive(true);
@@ -100,8 +106,6 @@ namespace Blizzard.NPCs.Core
                 _enemyDict.Add(npcData.ID, npcData);
                 InitPool(npcData);
             }
-
-            _quadtreeTick = Quadtree.Tick();
         }
 
         /// <summary>
@@ -123,8 +127,9 @@ namespace Blizzard.NPCs.Core
 
         public void FixedTick()
         {
-            // Tick the quadtree
-            _quadtreeTick.MoveNext();
+            // Tick each quadtree
+            foreach (IEnumerator qtTick in _quadtreeTicks) 
+                qtTick.MoveNext();
         }
     }
 }

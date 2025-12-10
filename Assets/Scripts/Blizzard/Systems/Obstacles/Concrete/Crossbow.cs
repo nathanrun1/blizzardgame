@@ -81,7 +81,7 @@ namespace Blizzard.Obstacles.Concrete
         /// <returns>Closest enemy or null if none in range</returns>
         private bool TryGetClosestEnemy(out NPCBehaviour closestNpc)
         {
-            List<NPCBehaviour> nearest = _npcService.Quadtree.GetKNearestNPCs(transform.position, 1, _maxRange);
+            List<NPCBehaviour> nearest = _npcService.Quadtrees[NPCID.Zombie].GetKNearestNPCs(transform.position, 1, _maxRange);
             closestNpc = nearest.Count > 0 ? nearest[0] : null;
             return nearest.Count > 0;
         }

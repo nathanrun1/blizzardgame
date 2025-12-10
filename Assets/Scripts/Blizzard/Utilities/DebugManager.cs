@@ -51,7 +51,7 @@ namespace Blizzard.Utilities
         [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
         private void PrintNearestEnemyToPlayer()
         {
-            List<NPCBehaviour> kNearest = _npcService.Quadtree.GetKNearestNPCs(_playerService.PlayerPosition, 1, float.MaxValue);
+            List<NPCBehaviour> kNearest = _npcService.Quadtrees[NPCID.Zombie].GetKNearestNPCs(_playerService.PlayerPosition, 1, float.MaxValue);
             if (kNearest.Count == 0) BLog.Log("Debug","Query returned no enemies!");
             else BLog.Log("Debug",$"Nearest enemy to player: {kNearest[0]} at {kNearest[0].transform.position}");
         }
