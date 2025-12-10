@@ -1,4 +1,6 @@
-﻿using Blizzard.NPCs.BaseStates;
+﻿using System.Collections.Generic;
+using Blizzard.NPCs.BaseStates;
+using Blizzard.NPCs.Core;
 using Blizzard.Obstacles;
 using Blizzard.Player;
 using Blizzard.Utilities;
@@ -9,6 +11,7 @@ namespace Blizzard.NPCs.Concrete.Wolf
 {
     public class WolfContext : PassiveNPCContext
     {
+        public NPCService npcService;
         public WolfBehaviour wolfBehaviour;
     }
     
@@ -23,16 +26,24 @@ namespace Blizzard.NPCs.Concrete.Wolf
         }
 
         /// <summary>
-        /// Determines whether, when the player is in flee range, the wolf should instead attack the player
-        /// rather than flee.
+        /// Determines whether the wolf should engage in combat with the player.
+        /// </summary>
+        protected bool ShouldEngage()
+        {
+            // Is player in engagement range AND it hasn't been long enough since most recent engagement?
+            return (_ctx.playerService.PlayerPosition - (Vector2)_ctx.transform.position).magnitude <= _cfg.engagementRange 
+                   && Time.time - WolfBehaviour.whenLastEngagedPlayer < _cfg.packHostileCooldown;
+        }
+
+        /// <summary>
+        /// Determines whether, when the player gets too close, the wolf should immediately defend rather than flee.
         /// </summary>
         /// <returns></returns>
         protected bool ShouldDefend()
         {
-            // TODO: Function to determine if wolf defends itself (based on pack presence)
-            // Check where nearest wolf is somehow
-            // If close enough, return true, else false
-            return false;
+            List<NPCBehaviour> wolvesNearby = _wCtx.npcService.Quadtrees[NPCID.Wolf]
+                .GetKNearestNPCs(_wCtx.transform.position, _cfg.packSize + 1, _cfg.packRange);
+            return wolvesNearby.Count - 1 >= _cfg.packSize;  // Exclude self
         }
     }
 
@@ -53,6 +64,8 @@ namespace Blizzard.NPCs.Concrete.Wolf
         {
             _clock += deltaTime;
             
+            if (ShouldEngage())
+                _ctx.StateMachine.ChangeState(new HostileState());
             if (ShouldStartFlee())
                 _ctx.StateMachine.ChangeState(ShouldDefend() ? new HostileState() : new FleeState());
             if (_clock >= _wanderPeriod)
@@ -87,8 +100,10 @@ namespace Blizzard.NPCs.Concrete.Wolf
         {
             _clock += deltaTime;
 
-            if (ShouldStartFlee()) 
-                _ctx.StateMachine.ChangeState(new FleeState());
+            if (ShouldEngage())
+                _ctx.StateMachine.ChangeState(new HostileState());
+            if (ShouldStartFlee())
+                _ctx.StateMachine.ChangeState(ShouldDefend() ? new HostileState() : new FleeState());
             if (_clock >= _wanderTime)
                 _ctx.StateMachine.ChangeState(new IdleState());
             
@@ -113,6 +128,9 @@ namespace Blizzard.NPCs.Concrete.Wolf
         
         public override void Update(float deltaTime)
         {
+            if (ShouldEngage())
+                _ctx.StateMachine.ChangeState(new HostileState());
+            
             Vector2 fleeDirection = (Vector2)_ctx.transform.position - _ctx.playerService.PlayerPosition;
             if (fleeDirection.magnitude >= _ctx.config.playerExitFleeRange)
                 _ctx.StateMachine.ChangeState(new IdleState());
@@ -127,12 +145,15 @@ namespace Blizzard.NPCs.Concrete.Wolf
     /// </summary>
     public class HostileState : WolfState
     {
+        private float _whenBecameHostile;
+        
         public override void Enter(IStateContext ctx)
         {
             BLog.Log("HostileState");
             
             base.Enter(ctx);
 
+            _whenBecameHostile = Time.time;
             Vector2 chaseDirection = _ctx.playerService.PlayerPosition - (Vector2)_ctx.transform.position;
             SetDirectionTo(chaseDirection);
         }
@@ -140,13 +161,19 @@ namespace Blizzard.NPCs.Concrete.Wolf
         public override void Update(float deltaTime)
         {
             Vector2 chaseDirection = _ctx.playerService.PlayerPosition - (Vector2)_ctx.transform.position;
-            if (chaseDirection.magnitude >= _cfg.exitHostileRange)
+            if (ShouldExitHostile(chaseDirection.magnitude))
                 _ctx.StateMachine.ChangeState(new IdleState());
             if (chaseDirection.magnitude <= _cfg.attackRange)
                 _wCtx.wolfBehaviour.AttackPlayer();
             
             AdjustDirectionToward(TryTravelInDirection(chaseDirection.normalized), deltaTime);
             Move();
+        }
+        
+        private bool ShouldExitHostile(float distanceToPlayer)
+        {
+            return (Time.time - _whenBecameHostile) > _cfg.minHostileDuration &&
+                   distanceToPlayer >= _cfg.exitHostileRange;
         }
     }
 }

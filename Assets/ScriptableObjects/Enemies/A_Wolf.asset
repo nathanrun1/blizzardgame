@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba1eb843afe6497097ff070bcea52389, type: 3}
   m_Name: A_Wolf
   m_EditorClassIdentifier: Blizzard::Blizzard.Enemies.Core.EnemyData
-  ID: 1
-  npcPrefab: {fileID: 2238214206486692207, guid: cb876f2066663ef41ad00078e6dc3cc6, type: 3}
+  ID: 2
+  npcPrefab: {fileID: 2379722547516095840, guid: 53ad43bd170b4b64bb692f03594ef810, type: 3}

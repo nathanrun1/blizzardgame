@@ -1,8 +1,10 @@
 ﻿using Blizzard.NPCs.Concrete.Wolf;
+using Blizzard.NPCs.Core;
 using Blizzard.Obstacles;
 using Blizzard.Player;
 using Blizzard.Utilities;
 using Blizzard.Utilities.DataTypes;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Zenject;
 
@@ -12,13 +14,19 @@ namespace Blizzard.NPCs.Concrete
     {
         [Inject] private ObstacleGridService _obstacleGridService;
         [Inject] private PlayerService _playerService;
-        
+        [Inject] private NPCService _npcService;
         
         [Header("Behaviour Config")] 
         [SerializeField] private WolfConfig _config;
 
         private StateMachine _stateMachine;
         private float _whenLastAttack = float.MinValue;
+        
+        /// <summary>
+        /// The last time any wolf has engaged in combat with the player (attacked or was attacked). Useful
+        /// for pack behavior.
+        /// </summary>
+        public static float whenLastEngagedPlayer = float.MinValue;
 
         protected override void Awake()
         {
@@ -29,7 +37,8 @@ namespace Blizzard.NPCs.Concrete
                 
                 obstacleGridService = _obstacleGridService,
                 playerService = _playerService,
-                collisionRadius = 0.125f, // TODO: get this value from somewhere
+                npcService = _npcService,
+                collisionRadius = 0.2f, // TODO: get this value from somewhere
                 transform = GetComponent<Transform>(),
                 rigidbody = GetComponent<Rigidbody2D>()
             };
@@ -51,7 +60,8 @@ namespace Blizzard.NPCs.Concrete
                 death = false;
                 return;
             }
-            
+
+            whenLastEngagedPlayer = Time.time;
             if (_stateMachine.CurrentState is not HostileState) 
                 _stateMachine.ChangeState(new HostileState());
             
@@ -72,6 +82,15 @@ namespace Blizzard.NPCs.Concrete
             if (!(Time.time - _whenLastAttack >= _config.attackDelay)) return;
             _whenLastAttack = Time.time;
             _playerService.DamagePlayer(_config.attackDamage, DamageFlags.Enemy);
+            whenLastEngagedPlayer = Time.time;
+        }
+
+        /// <summary>
+        /// Forces this wolf to become hostile toward the player
+        /// </summary>
+        public void BecomeHostile()
+        {
+            
         }
     }
 }
