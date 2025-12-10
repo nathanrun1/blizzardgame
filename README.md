@@ -1,10 +1,8 @@
 Currently working on a 2D topdown survival/factory building game. The game is set deep in a boreal forest as an unforgiving blizzard approaches.
 
-Temperature is a core mechanic of this game, so I decided to start creating this game by building a dedicated system for it.
+I regularly post gameplay updates [here](https://x.com/snowguydude)! You can also open the project and play around with it yourself.
 
-This is essentially a modified snapshot of my early in-development game. The temperature simulation scripts are found in [this folder,](https://github.com/nathanrun1/unity-temperature-diffusion/tree/main/Assets/Scripts/Systems/Temperature) and is built on top of the grid system created in [this folder.](https://github.com/nathanrun1/temperature-diffusion-sim/tree/main/Assets/Scripts/Systems/Grid)
-
-The CPU-based temperature system attempt can be found in [this folder.](https://github.com/nathanrun1/temperature-diffusion-sim/tree/main/Assets/Scripts/Systems/Temperature/Old)
+When this project is finished, it'll be uploaded to my [itch.io](https://nathanrun1.itch.io/) profile.
 
 ## Design of the Temperature System
 The temperature system works by representing the temperature of each position in the world using a 2D grid. Each square in the grid represents a region (of customizable size) in the 2D scene that the player will build, fight and survive in. 
