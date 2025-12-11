@@ -20,6 +20,11 @@ namespace Blizzard.NPCs.Concrete.Wolf
         /// </summary>
         public int packSize;
         /// <summary>
+        /// Curve mapping a random value between 0 and 1 to the dot product between the wander direction and
+        /// the direction to the nearest wolf when wandering.
+        /// </summary>
+        public AnimationCurve wanderTowardPackDistribution;
+        /// <summary>
         /// Minimum duration of the hostile state. Ignores exit conditions when the hostile state is entered until
         /// this duration is elapsed. 
         /// </summary>

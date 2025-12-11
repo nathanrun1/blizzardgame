@@ -90,9 +90,8 @@ namespace Blizzard.NPCs.Concrete.Wolf
             base.Enter(ctx);
 
             _wanderTime = Random.Range(_ctx.config.wanderTimeRange.x, _ctx.config.wanderTimeRange.y);
-            float randAngle = Random.Range(0, 2 * Mathf.PI);
-            _wanderDirection = Vector2.right * Mathf.Cos(randAngle) + Vector2.up * Mathf.Sin(randAngle);
-            
+
+            _wanderDirection = GetWanderDirection();
             SetDirectionTo(_wanderDirection);
         }
 
@@ -109,6 +108,26 @@ namespace Blizzard.NPCs.Concrete.Wolf
             
             AdjustDirectionToward(TryTravelInDirection(_wanderDirection), deltaTime);
             Move();
+        }
+
+        /// <summary>
+        /// Determines the wandering direction, weighted towards the nearest wolf.
+        /// </summary>
+        private Vector2 GetWanderDirection()
+        {
+            List<NPCBehaviour> nearbyWolves = _wCtx.npcService.Quadtrees[NPCID.Wolf]
+                .GetKNearestNPCs(_wCtx.transform.position, 2, float.MaxValue);
+            
+            if (nearbyWolves.Count <= 1)
+            {
+                float randAngle = Random.Range(0, 2 * Mathf.PI);
+                return Vector2.right * Mathf.Cos(randAngle) + Vector2.up * Mathf.Sin(randAngle);
+            }
+            
+            Vector2 packDirection = (nearbyWolves[1].transform.position - _wCtx.transform.position).normalized;
+            float angleFromPack = _cfg.wanderTowardPackDistribution.Evaluate(Random.value) * (Random.Range(0, 2) * 2 - 1) * 180;
+            BLog.Log($"Wandering {angleFromPack} degrees from nearest wolf direction");
+            return Quaternion.Euler(0, 0, angleFromPack) * packDirection;
         }
     }
     
