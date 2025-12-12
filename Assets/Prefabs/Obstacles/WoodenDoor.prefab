@@ -9,10 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2779274468379762220}
-  - component: {fileID: 4374139578210925026}
   - component: {fileID: 245448152275529829}
   - component: {fileID: 3989951527430796683}
   - component: {fileID: 3645967852482406556}
+  - component: {fileID: 8817078394943357375}
+  - component: {fileID: 7478815804356281353}
   m_Layer: 6
   m_Name: WoodenDoor
   m_TagString: Untagged
@@ -35,21 +36,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4374139578210925026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7478012713066497398}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ad275492cadfdc499f9d6fdbe5f4970, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _startingHealth: 500
-  _spriteRenderers:
-  - {fileID: 245448152275529829}
 --- !u!212 &245448152275529829
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -70,6 +56,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -91,6 +79,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 60
@@ -178,3 +167,35 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &8817078394943357375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7478012713066497398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 696825d4c505426db5ea6bf7cb82181a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blizzard::Blizzard.Obstacles.Concrete.WoodenDoor
+  _spriteRenderers: []
+  _startingHealth: 100
+  _openSprite: {fileID: 5683460502824490638, guid: fe687c73990f7544e98528000757139f, type: 3}
+  _closedSprite: {fileID: -7543998948565880746, guid: b61ad6ff143a2ea4389a1b3209a336eb, type: 3}
+  _collider: {fileID: 3989951527430796683}
+  _doorSpriteRenderer: {fileID: 245448152275529829}
+--- !u!114 &7478815804356281353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7478012713066497398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 489c7938fe4549c4b79698c0673d8254, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blizzard::Blizzard.Obstacles.InteractionHandler
+  _interactableScript: {fileID: 8817078394943357375}
+  _maxDistance: 3
