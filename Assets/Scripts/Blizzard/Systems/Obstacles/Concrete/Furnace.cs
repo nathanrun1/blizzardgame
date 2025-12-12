@@ -32,8 +32,8 @@ namespace Blizzard.Obstacles.Concrete
             public float smeltTimeRemaining;
         }
 
-        public string PrimaryInteractText { get; private set; } = "Smelt";
-        public bool PrimaryInteractReady { get; } = true;
+        public string PrimaryInteractText => "Smelt";
+        public bool PrimaryInteractReady => true;
 
         /// <summary>
         /// Base time taken to smelt a single smelting recipe

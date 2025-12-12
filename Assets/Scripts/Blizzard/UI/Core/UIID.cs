@@ -12,6 +12,7 @@
         Furnace = 4,
         Temperature = 5,
         InteractInfo = 6,
-        ColorFlash = 7
+        ColorFlash = 7,
+        Chest = 8
     }
 }
