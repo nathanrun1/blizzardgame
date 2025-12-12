@@ -10,12 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2779274468379762220}
   - component: {fileID: 245448152275529829}
-  - component: {fileID: 691536915717258825}
   - component: {fileID: 3989951527430796683}
   - component: {fileID: 3645967852482406556}
   - component: {fileID: -1931178810775066836}
+  - component: {fileID: -7469113808644809858}
   m_Layer: 6
-  m_Name: Furnace
+  m_Name: Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94,21 +94,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &691536915717258825
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7478012713066497398}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c68c294ccb786b3469290a8082794dd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _spriteRenderers:
-  - {fileID: 245448152275529829}
-  _startingHealth: 100
 --- !u!61 &3989951527430796683
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -194,4 +179,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 489c7938fe4549c4b79698c0673d8254, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Blizzard::Blizzard.Obstacles.InteractionHandler
-  _interactable: {fileID: 691536915717258825}
+  _interactableScript: {fileID: -7469113808644809858}
+  _maxDistance: 5
+--- !u!114 &-7469113808644809858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7478012713066497398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 811f6d707beb4af99dcc423658a44eae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blizzard::Blizzard.Obstacles.Concrete.Chest
+  _spriteRenderers:
+  - {fileID: 245448152275529829}
+  _startingHealth: 100
+  _slotCount: 9
+  _itemPreserveChance: 0.5

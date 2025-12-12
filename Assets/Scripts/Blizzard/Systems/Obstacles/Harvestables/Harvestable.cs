@@ -58,7 +58,7 @@ namespace Blizzard.Obstacles.Harvestables
             _inventoryService.TryAddItemsWithAnim(_uiService, transform.position, items);
 
             if (!items.IsNullOrEmpty())
-                // Some items weren't succesfully added (inventory full likely), drop instead
+                // Some items weren't successfully added (inventory full likely), drop instead
                 foreach (var item in items)
                 {
                     if (item.amount == 0) continue; // Sanity check

@@ -126,7 +126,6 @@ namespace Blizzard.NPCs.Concrete.Wolf
             
             Vector2 packDirection = (nearbyWolves[1].transform.position - _wCtx.transform.position).normalized;
             float angleFromPack = _cfg.wanderTowardPackDistribution.Evaluate(Random.value) * (Random.Range(0, 2) * 2 - 1) * 180;
-            BLog.Log($"Wandering {angleFromPack} degrees from nearest wolf direction");
             return Quaternion.Euler(0, 0, angleFromPack) * packDirection;
         }
     }
