@@ -1,5 +1,6 @@
 ﻿using System;
 using Blizzard.Input;
+using Blizzard.Player;
 using Blizzard.UI;
 using Blizzard.UI.Core;
 using Blizzard.Utilities.Logging;
@@ -7,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Blizzard.Obstacles
@@ -19,16 +21,25 @@ namespace Blizzard.Obstacles
     {
         [Inject] private InputService _inputService;
         [Inject] private UIService _uiService;
-        
+        [Inject] private PlayerService _playerService;
+
         /// <summary>
         /// IInteractable script attached to the same object
         /// </summary>
-        [SerializeField] private MonoBehaviour _interactable;
+        [FormerlySerializedAs("_interactable")]
+        [Header("References")]
+        [SerializeField] private MonoBehaviour _interactableScript;
+        private IInteractable _interactable => _interactableScript as IInteractable;
+        /// <summary>
+        /// Maximum interaction distance
+        /// </summary>
+        [Header("Config")]
+        [SerializeField] private float _maxDistance = float.MaxValue;
 
         /// <summary>
-        /// Current target interactable, i.e. the one that the pointer is currently hovered over, if any.
+        /// Current target interactable's handler, i.e. the one that the pointer is currently hovered over, if any.
         /// </summary>
-        private static IInteractable _curTargetInteractable = null;
+        private static InteractionHandler _curTargetHandler = null;
         /// <summary>
         /// Whether interaction system (static) has been initialized
         /// </summary>
@@ -41,14 +52,13 @@ namespace Blizzard.Obstacles
             _uiService = uiService;
             
             if (!_interactionInitialized) InitInteraction(_inputService, uiService);  // Init static functionality
-            Assert.IsTrue(_interactable is IInteractable, "Interactable script must inherit from IInteractable!");
+            Assert.IsTrue(_interactableScript is IInteractable, "Interactable script must inherit from IInteractable!");
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            BLog.Log("Interactable pointer enter");
-            _curTargetInteractable = _interactable as IInteractable;
-            if (!_curTargetInteractable!.PrimaryInteractReady) return;  // Interaction must be ready
+            _curTargetHandler = this;
+            if (!(_interactable.PrimaryInteractReady && CanInteract())) return;
             _uiService.InitUI(UIID.InteractInfo, new InteractInfoUI.Args(
                 interactable: _interactable as IInteractable, 
                 interactablePosition: transform.position));
@@ -56,10 +66,19 @@ namespace Blizzard.Obstacles
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            BLog.Log("Interactable pointer exit");
-            if (_curTargetInteractable != (_interactable as IInteractable)) return; // Has already been reassigned to other interactable
-            _curTargetInteractable = null;
+            if (_curTargetHandler != this) return; // Has already been reassigned to other handler
+            _curTargetHandler = null;
             _uiService.CloseUI(UIID.InteractInfo);
+        }
+
+        /// <summary>
+        /// Determines whether interaction with this interactable is currently allowed based on
+        /// interaction handler configuration.
+        /// </summary>
+        /// <returns></returns>
+        private bool CanInteract()
+        {
+            return (_playerService.PlayerPosition - (Vector2)transform.position).magnitude <= _maxDistance;
         }
 
         
@@ -79,14 +98,15 @@ namespace Blizzard.Obstacles
         
         private static void OnPrimaryInteractionInput(UIService uiService)
         {
-            if (_curTargetInteractable is { PrimaryInteractReady: true })
-                _curTargetInteractable.OnPrimaryInteract();
-            uiService.CloseUI(UIID.InteractInfo); // Reset UI in case interaction no longer ready 
+            if (_curTargetHandler != null && _curTargetHandler._interactable.PrimaryInteractReady && _curTargetHandler.CanInteract())
+                _curTargetHandler._interactable.OnPrimaryInteract();
+            uiService.CloseUI(UIID.InteractInfo);
         }
         private static void OnSecondaryInteractionInput(UIService uiService)
         {
-            if ((_curTargetInteractable as ISecondaryInteractable) is { SecondaryInteractReady: true})
-                (_curTargetInteractable as ISecondaryInteractable)!.OnSecondaryInteract();
+            if (_curTargetHandler != null && (_curTargetHandler._interactable as ISecondaryInteractable) is { SecondaryInteractReady: true} 
+                && _curTargetHandler.CanInteract())
+                (_curTargetHandler._interactable as ISecondaryInteractable)!.OnSecondaryInteract();
             uiService.CloseUI(UIID.InteractInfo);
         }
     }

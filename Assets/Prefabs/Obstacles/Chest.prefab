@@ -179,7 +179,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 489c7938fe4549c4b79698c0673d8254, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Blizzard::Blizzard.Obstacles.InteractionHandler
-  _interactable: {fileID: -7469113808644809858}
+  _interactableScript: {fileID: -7469113808644809858}
+  _maxDistance: 5
 --- !u!114 &-7469113808644809858
 MonoBehaviour:
   m_ObjectHideFlags: 0
