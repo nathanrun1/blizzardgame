@@ -3341,16 +3341,6 @@ MonoBehaviour:
   _startingItems:
   - item: {fileID: 11400000, guid: b47f3e859c8e6ee4d8d89cb19f24b749, type: 2}
     amount: 1
-  - item: {fileID: 11400000, guid: 143031de987ad274e97c79399a46dba3, type: 2}
-    amount: 1
-  - item: {fileID: 11400000, guid: cd2b08fb8d5256743b7274d6dfe5913a, type: 2}
-    amount: 1
-  - item: {fileID: 11400000, guid: 056eb7c4c1406bf4ba7378cc99895859, type: 2}
-    amount: 1
-  - item: {fileID: 11400000, guid: b1f64ca7c6b41af48a783bb30370c5fb, type: 2}
-    amount: 6
-  - item: {fileID: 11400000, guid: e64add643b123ff448eef0ab39765656, type: 2}
-    amount: 3
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}
     position: {x: 0, y: 5}
@@ -4833,7 +4823,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1880684509
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5796,43 +5786,47 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3671022773513916404, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3671022773513916404, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3671022773513916404, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 282.22925
       objectReference: {fileID: 0}
     - target: {fileID: 3671022773513916404, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 91.10739
       objectReference: {fileID: 0}
     - target: {fileID: 3671022773513916404, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -91.10739
       objectReference: {fileID: 0}
     - target: {fileID: 4174115672839435075, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4174115672839435075, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4174115672839435075, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 282.22925
       objectReference: {fileID: 0}
     - target: {fileID: 4174115672839435075, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 91.10739
       objectReference: {fileID: 0}
     - target: {fileID: 5330804847628563354, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
       propertyPath: m_Name
       value: TemperatureUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 5330804847628563354, guid: 05017d37d33e079488bc6a05b9ac4ddf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

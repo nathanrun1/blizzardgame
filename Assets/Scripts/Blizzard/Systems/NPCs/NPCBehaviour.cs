@@ -1,11 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using Blizzard.Constants;
+using Blizzard.Environment;
 using Blizzard.Interfaces;
+using Blizzard.Inventory;
+using Blizzard.Player;
 using Blizzard.Player.Tools;
+using Blizzard.UI.Core;
+using Blizzard.Utilities;
 using Blizzard.Utilities.Assistants;
 using Blizzard.Utilities.DataTypes;
 using Blizzard.Utilities.Logging;
 using DG.Tweening;
 using UnityEngine;
+using Zenject;
 
 namespace Blizzard.NPCs
 {
@@ -14,10 +22,15 @@ namespace Blizzard.NPCs
     /// </summary>
     public abstract class NPCBehaviour : MonoBehaviour, IHittable, IStrikeable
     {
+        [Inject] private InventoryService _inventoryService;
+        [Inject] private UIService _uiService;
+        [Inject] private EnvPrefabService _envPrefabService;
+        
         [Header("EnemyBehaviour References")] 
         [SerializeField] private SpriteRenderer[] _spriteRenderers;
         [Header("EnemyBehaviour Config")]
         [SerializeField] private int _startingHealth;
+        [SerializeField] private List<ItemAmountPair> _drops;
 
         private Color[] _spriteRendererInitialColors;
         private Sequence _damagedSequence;
@@ -94,7 +107,25 @@ namespace Blizzard.NPCs
         /// </summary>
         protected virtual void Death()
         {
+            DropItems();
             OnDeath?.Invoke();
+        }
+        
+        /// <summary>
+        /// Drops items specified by config, intended to be invoked on NPC death. If killed by player, will attempt
+        /// to directly give the items.
+        /// </summary>
+        private void DropItems()
+        {
+            List<ItemAmountPair> toDrop = new(_drops);
+            _inventoryService.TryAddItemsWithAnim(_uiService, transform.position, toDrop);
+            foreach (ItemAmountPair pair in toDrop) // Drop remaining on the ground
+            {
+                var dropObj = _envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
+                dropObj.transform.position = (Vector2)transform.position +
+                          RandomAssistant.RangeVector2(-GameConstants.CellSideLength, GameConstants.CellSideLength);
+                dropObj.Setup(pair);
+            }
         }
     }
 }

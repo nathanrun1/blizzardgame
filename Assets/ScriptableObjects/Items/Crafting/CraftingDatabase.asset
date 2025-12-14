@@ -51,3 +51,10 @@ MonoBehaviour:
       cost:
       - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
         amount: 1
+  - categoryName: Clothing
+    recipes:
+    - result: {fileID: 11400000, guid: 056eb7c4c1406bf4ba7378cc99895859, type: 2}
+      resultAmount: 1
+      cost:
+      - item: {fileID: 11400000, guid: b1f64ca7c6b41af48a783bb30370c5fb, type: 2}
+        amount: 6

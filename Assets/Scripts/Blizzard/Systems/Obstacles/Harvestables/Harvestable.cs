@@ -1,5 +1,6 @@
 using Sirenix.Utilities;
 using System.Collections.Generic;
+using Blizzard.Constants;
 using UnityEngine;
 using Zenject;
 using Blizzard.Environment;
@@ -9,6 +10,7 @@ using Blizzard.Player;
 using Blizzard.Player.Tools;
 using Blizzard.Utilities;
 using Blizzard.UI.Core;
+using Blizzard.Utilities.Assistants;
 using Blizzard.Utilities.DataTypes;
 
 namespace Blizzard.Obstacles.Harvestables
@@ -64,8 +66,8 @@ namespace Blizzard.Obstacles.Harvestables
                     if (item.amount == 0) continue; // Sanity check
                     var dropObj = _envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
                     // Initialize drop at harvestable location with random offset
-                    dropObj.transform.position = transform.position +
-                                                 new Vector3(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f), 0);
+                    dropObj.transform.position = (Vector2)transform.position + 
+                                                 RandomAssistant.RangeVector2(-GameConstants.CellSideLength, GameConstants.CellSideLength);
                     dropObj.Setup(item);
                 }
 

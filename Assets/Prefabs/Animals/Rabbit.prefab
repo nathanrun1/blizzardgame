@@ -171,6 +171,9 @@ MonoBehaviour:
   _spriteRenderers:
   - {fileID: 3823765924476577408}
   _startingHealth: 50
+  _drops:
+  - item: {fileID: 11400000, guid: b1f64ca7c6b41af48a783bb30370c5fb, type: 2}
+    amount: 3
   _config:
     walkSpeed: 1.4
     playerEnterFleeRange: 1.5

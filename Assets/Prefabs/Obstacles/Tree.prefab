@@ -55,6 +55,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -76,6 +78,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -129,13 +132,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 628b2b12723116b47bb0ddefae4f4d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spriteRenderers: []
   _startingHealth: 100
   ToolTypes: 1
   _resources:
   - item: {fileID: 11400000, guid: f6695b8b693e9bf4b8d7a9cf940eac8d, type: 2}
     amount: 5
-  - item: {fileID: 11400000, guid: 5dfeb5bbc8c7c534f99ebeb2af227776, type: 2}
-    amount: 1
 --- !u!58 &6708988086812396866
 CircleCollider2D:
   m_ObjectHideFlags: 0
