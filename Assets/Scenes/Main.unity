@@ -3343,14 +3343,14 @@ MonoBehaviour:
     amount: 1
   - item: {fileID: 11400000, guid: 143031de987ad274e97c79399a46dba3, type: 2}
     amount: 1
-  - item: {fileID: 11400000, guid: 216fc2853a879ac47acedc94ccbc2a53, type: 2}
-    amount: 1
-  - item: {fileID: 11400000, guid: 7fc6dcb10fbd1004f9e59a486f49411b, type: 2}
-    amount: 1
   - item: {fileID: 11400000, guid: cd2b08fb8d5256743b7274d6dfe5913a, type: 2}
     amount: 1
   - item: {fileID: 11400000, guid: 056eb7c4c1406bf4ba7378cc99895859, type: 2}
     amount: 1
+  - item: {fileID: 11400000, guid: b1f64ca7c6b41af48a783bb30370c5fb, type: 2}
+    amount: 6
+  - item: {fileID: 11400000, guid: e64add643b123ff448eef0ab39765656, type: 2}
+    amount: 3
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}
     position: {x: 0, y: 5}
