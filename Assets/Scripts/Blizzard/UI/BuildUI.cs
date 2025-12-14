@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Assertions;
 using Zenject;
 using Blizzard.Obstacles;
 using Blizzard.Grid;
@@ -8,7 +9,6 @@ using Blizzard.Building;
 using Blizzard.Input;
 using Blizzard.Inventory;
 using Blizzard.Inventory.ItemTypes;
-using ModestTree;
 using Blizzard.UI.Core;
 using Blizzard.Utilities.Assistants;
 using Blizzard.Utilities.Logging;
@@ -71,7 +71,7 @@ namespace Blizzard.UI
 
             _buildingData = buildArgs.buildingData;
             _buildItemSlotIndex = buildArgs.itemSlot;
-            if (_buildingData == null) throw new ArgumentException("Building Data is null!");
+            if (!_buildingData) throw new ArgumentException("Building Data is null!");
 
             // Bind input
             _inputService.inputActions.Player.Build.performed += OnInputBuild;
@@ -108,7 +108,7 @@ namespace Blizzard.UI
 
             // Sanity check: Ensure item corresponding to building is the correct item
             var buildItem = _inventoryService.inventorySlots[_buildItemSlotIndex].Item as BuildingItemData;
-            Assert.That(buildItem != null && buildItem.buildingData == _buildingData,
+            Assert.IsTrue(buildItem && buildItem.buildingData == _buildingData,
                 "Given inventory slot does not contain matching item to building!");
 
             // Remove one of the building from inventory, ensure item removed successfully

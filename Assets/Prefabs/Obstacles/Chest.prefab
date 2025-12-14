@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Blizzard::Blizzard.Obstacles.InteractionHandler
   _interactableScript: {fileID: -7469113808644809858}
-  _maxDistance: 5
+  _maxDistance: 2
 --- !u!114 &-7469113808644809858
 MonoBehaviour:
   m_ObjectHideFlags: 0

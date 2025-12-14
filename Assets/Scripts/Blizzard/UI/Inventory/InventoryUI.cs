@@ -75,7 +75,6 @@ namespace Blizzard.UI.Inventory
         {
             SetSelectedSlot((int)ctx.ReadValue<float>() - 1);
         }
-
         private void OnInputDropItem(InputAction.CallbackContext _)
         {
             DropSelectedItem();
@@ -167,7 +166,7 @@ namespace Blizzard.UI.Inventory
             // Attempt drop
             var amountRemoved = _inventoryService.TryRemoveItemAt(_selectedSlotIndex, 1);
 
-            if (amountRemoved == 0) return; // Items wasn't successfully removed, do not drop
+            if (amountRemoved == 0) return; // Items aren't successfully removed, do not drop
 
             InventoryServiceExtensions.DropItem(_envPrefabService, _playerService, itemToDrop, amountRemoved);
         }
@@ -181,7 +180,7 @@ namespace Blizzard.UI.Inventory
             var destSlot = _uiSlots[destIndex];
 
             var amntMoved = srcSlot.TryMoveItemsOut(destSlot, amount);
-            BLog.Log($"Transfered {amntMoved} items!");
+            BLog.Log($"Transferred {amntMoved} items!");
         }
     }
 }

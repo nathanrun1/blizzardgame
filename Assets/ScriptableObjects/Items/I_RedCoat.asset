@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 713706ca9b6ed7c489228cad1d2f73ed, type: 3}
+  m_Name: I_RedCoat
+  m_EditorClassIdentifier: Blizzard::Blizzard.ItemTypes.ClothingItemData
+  id: 15
+  displayName: Red Coat
+  icon: {fileID: -6968485296611769684, guid: de67bd4b96c821446905a0bdb64552f2, type: 3}
+  stackSize: 1
+  itemGainColor:
+    serializedVersion: 2
+    rgba: 4282861567
+  insulation: 0.7
+  playerSprite: {fileID: -2311659948842064771, guid: 05dbf143c5af6be408260ca273add1fe, type: 3}

@@ -8,23 +8,25 @@ using Zenject;
 namespace Blizzard.Player
 {
     /// <summary>
-    /// Manages player data and interactions
+    /// Manages player temperature
     /// </summary>
     public class PlayerTemperatureService : IInitializable, IFixedTickable
     {
         [Inject] private PlayerService _playerService;
         [Inject] private TemperatureService _temperatureService;
         [Inject] private PlayerTemperatureConfig _config;
+        [Inject] private ClothingService _clothingService;
         
         /// <summary>
         /// Player's body temperature
         /// </summary>
         public float BodyTemperature { get; private set; }
+
         /// <summary>
         /// Player's body insulation. Body temperature change as affected by external temperature
         /// is multiplied by (1 - this value)
         /// </summary>
-        public float BodyInsulation { get; set; }
+        public float BodyInsulation => _clothingService.CurrentClothing.insulation;
 
         
         private float _bodyHeat;

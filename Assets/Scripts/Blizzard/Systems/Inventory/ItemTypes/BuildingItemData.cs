@@ -13,6 +13,8 @@ namespace Blizzard.Inventory.ItemTypes
     [CreateAssetMenu(fileName = "BuildingItemData", menuName = "ScriptableObjects/Inventory/BuildingItemData")]
     public class BuildingItemData : ItemData
     {
+        [Inject] private UIService _uiService;
+        
         public BuildingData buildingData;
 
         /// <summary>
@@ -20,8 +22,6 @@ namespace Blizzard.Inventory.ItemTypes
         /// </summary>
         [HideInInspector]
         public override ItemCategory category { get; set; } = ItemCategory.Tool;
-
-        [Inject] private UIService _uiService;
 
         public override void Equip(EquipData equipData)
         {

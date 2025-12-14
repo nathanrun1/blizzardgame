@@ -1277,6 +1277,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1160183783451446351, guid: d181ee54b2b35fb44a943f1b474d7972, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 131.51001
+      objectReference: {fileID: 0}
+    - target: {fileID: 1160183783451446351, guid: d181ee54b2b35fb44a943f1b474d7972, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 21.993042
+      objectReference: {fileID: 0}
     - target: {fileID: 2192541627090898932, guid: d181ee54b2b35fb44a943f1b474d7972, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1888,6 +1896,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cd2b08fb8d5256743b7274d6dfe5913a, type: 2}
   - {fileID: 11400000, guid: 7b5aaf298b707f3418d7d824ddb673bb, type: 2}
   - {fileID: 11400000, guid: 6d65786e9f0d0a8469ab340a83318e49, type: 2}
+  - {fileID: 11400000, guid: 056eb7c4c1406bf4ba7378cc99895859, type: 2}
+  - {fileID: 11400000, guid: a263a3f252291f24684713eb95868202, type: 2}
 --- !u!1 &821977788
 GameObject:
   m_ObjectHideFlags: 0
@@ -3338,6 +3348,8 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 7fc6dcb10fbd1004f9e59a486f49411b, type: 2}
     amount: 1
   - item: {fileID: 11400000, guid: cd2b08fb8d5256743b7274d6dfe5913a, type: 2}
+    amount: 1
+  - item: {fileID: 11400000, guid: 056eb7c4c1406bf4ba7378cc99895859, type: 2}
     amount: 1
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}

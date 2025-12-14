@@ -4,11 +4,13 @@ using Unity.Cinemachine;
 using UnityEngine;
 using Zenject;
 using Blizzard.Inventory.Itemtypes;
+using Blizzard.ItemTypes;
 using Blizzard.Player.Tools;
 using Blizzard.UI;
 using Blizzard.UI.Core;
 using Blizzard.Utilities.Logging;
 using Blizzard.Utilities.DataTypes;
+using Object = UnityEngine.Object;
 
 namespace Blizzard.Player
 {
@@ -27,6 +29,10 @@ namespace Blizzard.Player
         /// Currently equipped tool instance
         /// </summary>
         public ToolBehaviour EquippedTool { get; private set; }
+        /// <summary>
+        /// Currently worn clothing
+        /// </summary>
+        public ClothingItemData WornClothing { get; private set; }
         /// <summary>
         /// Player's current position
         /// </summary>
@@ -107,10 +113,19 @@ namespace Blizzard.Player
         {
             if (EquippedTool)
             {
-                MonoBehaviour.Destroy(EquippedTool.gameObject); // TODO: obj pooling
+                Object.Destroy(EquippedTool.gameObject); // TODO: obj pooling
             }
         }
-
+        
+        /// <summary>
+        /// Wears clothing given clothing item data
+        /// </summary>
+        public void WearClothing(ClothingItemData clothingItemData)
+        {
+            if (WornClothing == clothingItemData) return;
+            
+        }
+        
         /// <summary>
         /// Returns unit vector pointing in the direction the player is facing in
         /// </summary>
@@ -122,6 +137,15 @@ namespace Blizzard.Player
                 (PlayerMovement.playerObj.transform.eulerAngles.z + 90); // 90 degrees is player sprite rotation offset
 
             return new Vector2(Mathf.Cos(playerAngle), Mathf.Sin(playerAngle));
+        }
+
+        /// <summary>
+        /// Sets player sprite to given sprite
+        /// </summary>
+        public void SetPlayerSprite(Sprite sprite)
+        {
+            BLog.Log($"Player sprite set to {sprite}");
+            PlayerCtrl.mainSpriteRenderer.sprite = sprite;
         }
     }
 }

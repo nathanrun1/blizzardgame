@@ -24,7 +24,11 @@ namespace Blizzard.Installers
                 .FromNew()
                 .AsSingle();
 
-            BLog.Log("Installed Player Service and Player Temperature Service");
+            Container.BindInterfacesAndSelfTo<ClothingService>()
+                .FromNew()
+                .AsSingle();
+
+            BLog.Log("Installed Player Service, Player Temperature Service, Clothing Service");
         }
     }
 }

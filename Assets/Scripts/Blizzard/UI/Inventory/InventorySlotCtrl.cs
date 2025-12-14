@@ -284,9 +284,9 @@ namespace Blizzard.UI.Inventory
             if (_linkedSlot == null || _linkedSlot.Amount < 1 || _dragState.isDragging) return;
             // Linked to inventory slot & item in slot, dragging behaviour supported
             // Start item drag
-            var shiftPressed =
+            bool shiftPressed =
                 _inputService.inputActions.Player.UIInteract1.IsPressed(); // Full stack if shift drag
-            var amountToDrag = shiftPressed ? _linkedSlot.Amount : 1;
+            int amountToDrag = shiftPressed ? _linkedSlot.Amount : 1;
             _dragState = new DragState(true, amountToDrag);
             StartCoroutine(DragCoroutine());
         }

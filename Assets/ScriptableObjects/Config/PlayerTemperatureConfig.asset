@@ -19,3 +19,4 @@ MonoBehaviour:
   temperatureDamageLevels:
   - threshold: 35
     damagePerSecond: 5
+  defaultClothing: {fileID: 11400000, guid: a263a3f252291f24684713eb95868202, type: 2}

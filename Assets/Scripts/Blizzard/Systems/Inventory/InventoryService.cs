@@ -407,7 +407,7 @@ namespace Blizzard.Inventory
         public void UnequipItem()
         {
             if (!equippedItem) return;
-
+            
             equippedItem.Unequip();
             equippedItem = null;
         }

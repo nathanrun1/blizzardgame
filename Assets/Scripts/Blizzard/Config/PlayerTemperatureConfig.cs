@@ -1,4 +1,5 @@
 using System;
+using Blizzard.ItemTypes;
 using UnityEngine;
 
 
@@ -43,5 +44,9 @@ namespace Blizzard.Config
         /// Temperature damage levels by body temperature. Must be sorted descending by threshold.
         /// </summary>
         public TemperatureDamageLevel[] temperatureDamageLevels;
+        /// <summary>
+        /// Clothing item that the player starts with.
+        /// </summary>
+        public ClothingItemData defaultClothing;
     }
 }
