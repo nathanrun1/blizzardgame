@@ -7,6 +7,8 @@ namespace Blizzard.Obstacles.Concrete
 {
     public class Campfire : Structure
     {
+        private static readonly int FuelLevel = Animator.StringToHash("FuelLevel");
+
         [Header("References")] 
         [SerializeField] private Animator _animator;
         [SerializeField] private Light2D _light2D;
@@ -63,7 +65,7 @@ namespace Blizzard.Obstacles.Concrete
 
         private void SetFuelLevel(int level)
         {
-            _animator.SetInteger("FuelLevel", level);
+            _animator.SetInteger(FuelLevel, level);
             _light2D.intensity = _lightIntensities[level];
             SetHeat(_heatLevels[level]);
             // TODO: other relevant shit like heat probably
