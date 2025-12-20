@@ -23,6 +23,10 @@ namespace Blizzard.UI.Inventory
         [SerializeField] private TextMeshProUGUI _itemCount;
         [SerializeField] private Image _bgSelected;
         [SerializeField] private Image _itemPreviewIcon;
+        [Header("Config")] 
+        [SerializeField] private bool _showPreview = false;
+        [SerializeField] private ItemData _previewItem;
+        
         
         // Item Dragging
 
@@ -100,34 +104,35 @@ namespace Blizzard.UI.Inventory
         }
 
 
+        private void Awake()
+        {
+            _itemIcon.gameObject.SetActive(true);
+            _itemIcon.enabled = false;
+            
+            _itemPreviewIcon.gameObject.SetActive(true);
+            SetPreviewActive(true);
+
+            _itemCount.gameObject.SetActive(true);
+            _itemCount.enabled = false;
+        }
+
         /// <summary>
         /// Setup this slot with given item and amount
         /// </summary>
-        public void Setup(ItemData item, int amount, bool isPreview = false)
+        public void Setup(ItemData item, int amount)
         {
             _dragState = new DragState(false, 0); // Stop dragging if applicable
             _dragParent.gameObject.SetActive(false);
-
+            
             if (item && amount > 0)
             {
                 // Slot not empty
-                _itemIconDrag.sprite = item.icon; // Add correct icon to drag preview
-                if (isPreview)
-                {
-                    // Item preview 
-                    _itemIcon.enabled = false;
-                    _itemPreviewIcon.enabled = true;
-                    _itemPreviewIcon.sprite = item.icon;
-                }
-                else
-                {
-                    // Actual item
-                    _itemPreviewIcon.enabled = false;
-                    _itemIcon.enabled = true;
-                    _itemIcon.sprite = item.icon;
-                }
+                _itemPreviewIcon.enabled = false;
+                _itemIcon.enabled = true;
+                _itemIcon.sprite = item.icon;
 
                 _itemCount.text = amount != 1 ? amount.ToString() : ""; // Don't show amount if only 1
+                SetPreviewActive(false);
             }
             else
             {
@@ -135,6 +140,7 @@ namespace Blizzard.UI.Inventory
                 _itemIcon.enabled = false;
                 _itemPreviewIcon.enabled = false;
                 _itemCount.text = "";
+                SetPreviewActive(true);
             }
         }
 
@@ -179,6 +185,18 @@ namespace Blizzard.UI.Inventory
 
             _moveInEnabled = false;
             _moveOutEnabled = false;
+        }
+
+        /// <summary>
+        /// Sets the preview icon active/inactive
+        /// </summary>
+        public void SetPreviewActive(bool previewActive)
+        {
+            if (!_previewItem) return;
+            
+            _itemPreviewIcon.enabled = previewActive;
+            if (!previewActive) return;
+            _itemPreviewIcon.sprite = _previewItem.icon;
         }
 
         /// <summary>

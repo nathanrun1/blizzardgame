@@ -1,74 +1,179 @@
+using System;
+using System.Collections.Generic;
+using Blizzard.Inventory;
+using Blizzard.UI.Core;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Rendering.Universal;
 using Sirenix.OdinInspector;
+using UnityEngine.Serialization;
+using Zenject;
 
 namespace Blizzard.Obstacles.Concrete
 {
-    public class Campfire : Structure
+    public enum CampfireForm
     {
+        Star,
+        Teepee,
+        Cabin
+    }
+
+    [Serializable]
+    public struct CampfireFormInfo
+    {
+        /// <summary>
+        /// Fuel units consumed per minute
+        /// </summary>
+        public float fuelPerMinute;
+        /// <summary>
+        /// Heat produced
+        /// </summary>
+        public float heat;
+    }
+    
+    /// <summary>
+    /// Campfire's burn mode, dictates outward appearance and heat modifier.
+    /// </summary>
+    internal enum BurnMode
+    {
+        Off,
+        Low,
+        High
+    }
+    
+    public class Campfire : Structure, IInteractable
+    {
+        [Inject] private UIService _uiService;
+        
+        // TODO:
+        //   Link to UI
+        //   Figure out form change
+        //   Have fun!
         private static readonly int FuelLevel = Animator.StringToHash("FuelLevel");
 
         [Header("References")] 
         [SerializeField] private Animator _animator;
         [SerializeField] private Light2D _light2D;
         [Header("Campfire Config")] 
-        [SerializeField] private int _fuelLevelAmount = 3;
+        [SerializeField] private CampfireForm _initialForm;
+        [SerializeField] private CampfireFormInfo _starFormInfo;
+        [SerializeField] private CampfireFormInfo _teepeeFormInfo;
+        [SerializeField] private CampfireFormInfo _cabinFormInfo;
+        [SerializeField] private float _litIntensity;
+        [SerializeField] private float _lowFuelLightIntensity;
+        [SerializeField] private float _lowFuelHeatMultiplier;
 
-        /// <summary>
-        /// Light intensity by fuel level
-        /// </summary>
-        [SerializeField] private float[] _lightIntensities = { 0f, .5f, .75f, 1 };
+        private Dictionary<CampfireForm, CampfireFormInfo> _campfireFormInfo;
+        private CampfireForm _curForm;
+        private BurnMode _curBurnMode;
+        private float _mostRecentFuelConsumption = float.MinValue;
+        private bool _fuelAvailable = false;
+        
+        // public event Action OnRebuild; TODO
+        public string PrimaryInteractText => "Fuel";
+        public bool PrimaryInteractReady => true;
+        public readonly InventorySlot fuelSlot = new();
+        public readonly InventorySlot reformSlot = new();
 
-        /// <summary>
-        /// Fuel must be higher than fuel threshold for corresponding level.
-        /// fuelThresholds[i] is threshold for level i + 1.
-        /// </summary>
-        [SerializeField] private int[] _fuelThresholds = { 0, 25, 60 };
-
-        [SerializeField] private int[] _heatLevels = { 0, 5, 7, 10 };
-
-        /// <summary>
-        /// Max fuel that can be added
-        /// </summary>
-        [SerializeField] private int _maxFuel = 100;
-
-        private int _fuel = 0;
-
-        private void OnValidate()
+        private void Awake()
         {
-            Assert.IsTrue(_lightIntensities.Length == _fuelLevelAmount + 1,
-                "Light Intensities array size must be equal to fuelLevelAmount + 1!");
-            Assert.IsTrue(_fuelThresholds.Length == _fuelLevelAmount,
-                "Fuel thresholds array size must be equal to fuelLevelAmount!");
-            Assert.IsTrue(_heatLevels.Length == _fuelLevelAmount + 1,
-                "Heat Levels array size must be equal to fuelLevelAmount + 1!");
+            // Setup mapping from campfire form to info
+            _campfireFormInfo = new Dictionary<CampfireForm, CampfireFormInfo>
+            {
+                { CampfireForm.Star, _starFormInfo },
+                { CampfireForm.Teepee, _teepeeFormInfo },
+                { CampfireForm.Cabin, _cabinFormInfo }
+            };
+            fuelSlot.OnUpdate += OnFuelSlotUpdate;
         }
 
-        private void Start()
+        private void OnEnable()
         {
-            SetFuel(50);
+            fuelSlot.Item = null;
+            reformSlot.Item = null;
+            UpdateContext(BurnMode.Off, _initialForm);
         }
 
-        [Button]
-        private void SetFuel(int fuel)
+        private void FixedUpdate()
         {
-            _fuel = Mathf.Min(fuel, _maxFuel);
-            var level = _fuelThresholds.Length;
-
-            for (; level > 0; level--)
-                if (_fuel > _fuelThresholds[level - 1])
-                    break; // Sufficient fuel for this level
-
-            SetFuelLevel(level);
+            if (_fuelAvailable && ShouldConsumeFuel())
+                ConsumeFuel();
+        }
+        
+        public void OnPrimaryInteract()
+        {
+            _uiService.InitUI(UIID.Campfire, new CampfireUI.Args
+            {
+                campfire = this
+            });
         }
 
-        private void SetFuelLevel(int level)
+        private bool ShouldConsumeFuel()
         {
-            _animator.SetInteger(FuelLevel, level);
-            _light2D.intensity = _lightIntensities[level];
-            SetHeat(_heatLevels[level]);
-            // TODO: other relevant shit like heat probably
+            return fuelSlot.Item.id == (int)ItemID.Wood && fuelSlot.Amount > 0 &&
+                   Time.time - _mostRecentFuelConsumption > 1f / (_campfireFormInfo[_curForm].fuelPerMinute / 60f);
+        }
+
+
+        private void OnFuelSlotUpdate()
+        {
+            if (_curBurnMode == BurnMode.Off)
+                _fuelAvailable = IsFuelInSlot();
+            else
+                UpdateContext(IsFuelInSlot() ? BurnMode.High : BurnMode.Low, _curForm);
+        }
+        
+        /// <summary>
+        /// Consumes one unit of fuel. If there is none available, stops burning.
+        /// </summary>
+        private void ConsumeFuel()
+        {
+            if (!IsFuelInSlot())
+            {
+                UpdateContext(BurnMode.Off, _curForm);
+                _fuelAvailable = false;
+            }
+            else
+            {
+                UpdateContext(fuelSlot.Amount == 1 ? BurnMode.Low : BurnMode.High, _curForm);
+                fuelSlot.SetAmountQuiet(fuelSlot.Amount - 1);
+                _mostRecentFuelConsumption = Time.time;
+            }
+        }
+
+        private bool IsFuelInSlot()
+        {
+            return (!fuelSlot.Empty() && fuelSlot.Item.id == (int)ItemID.Wood);
+        }
+        
+        /// <summary>
+        /// Updates heat and visuals according to burn mode and campfire form
+        /// </summary>
+        private void UpdateContext(BurnMode burnMode, CampfireForm campfireForm)
+        {
+            if (burnMode == _curBurnMode && campfireForm == _curForm) return;
+            
+            _curForm = campfireForm;
+            _curBurnMode = burnMode;
+            switch (burnMode)
+            {
+                case BurnMode.Off:
+                    SetHeat(0);
+                    _animator.SetInteger(FuelLevel, 0);
+                    break;
+                case BurnMode.Low:
+                    SetHeat(_campfireFormInfo[campfireForm].heat * _lowFuelHeatMultiplier);
+                    _animator.SetInteger(FuelLevel, 1);
+                    _light2D.intensity = _lowFuelLightIntensity;
+                    break;
+                case BurnMode.High:
+                    SetHeat(_campfireFormInfo[campfireForm].heat);
+                    _animator.SetInteger(FuelLevel, 3);
+                    _light2D.intensity = _litIntensity;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(burnMode), burnMode, null);
+            }
         }
     }
 }

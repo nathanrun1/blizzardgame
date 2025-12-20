@@ -13,6 +13,7 @@
         Temperature = 5,
         InteractInfo = 6,
         ColorFlash = 7,
-        Chest = 8
+        Chest = 8,
+        Campfire = 9
     }
 }

@@ -24,10 +24,10 @@ namespace Blizzard.Inventory
             set
             {
                 _item = value;
+                if (!value) _amount = 0;
                 OnUpdate?.Invoke();
             }
         }
-
         private ItemData _item = null;
 
         /// <summary>
@@ -39,18 +39,19 @@ namespace Blizzard.Inventory
             set
             {
                 _amount = value;
+                if (_amount <= 0) _item = null;
                 OnUpdate?.Invoke();
             }
         }
-
         private int _amount = 0;
-
+        
         /// <summary>
         /// Sets slot item without triggering OnUpdate event
         /// </summary>
         public void SetItemQuiet(ItemData item)
         {
             _item = item;
+            if (!item) _amount = 0;
         }
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace Blizzard.Inventory
         public void SetAmountQuiet(int amount)
         {
             _amount = amount;
+            if (amount <= 0) _item = null;
         }
     }
 
