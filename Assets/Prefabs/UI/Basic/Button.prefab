@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 4703453313624011079}
   - component: {fileID: 5445811126905829789}
   - component: {fileID: 8939147351471347512}
-  - component: {fileID: 4022651510882175322}
+  - component: {fileID: 5275804120473925962}
+  - component: {fileID: 4050927405789754814}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -77,7 +78,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4022651510882175322
+--- !u!114 &5275804120473925962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 457597022002909061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13873d1c274d4f51b463114e78257467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blizzard::Blizzard.UI.CampfireUI.CampfireFormButton
+  _buttonBg: {fileID: 8939147351471347512}
+  _selectedTint: {r: 0.76862746, g: 1, b: 0.80784315, a: 1}
+  button: {fileID: 4050927405789754814}
+--- !u!114 &4050927405789754814
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -213,7 +229,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 61.1
+  m_fontSize: 25.75
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1

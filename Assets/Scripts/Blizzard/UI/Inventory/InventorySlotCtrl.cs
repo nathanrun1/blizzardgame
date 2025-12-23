@@ -29,7 +29,6 @@ namespace Blizzard.UI.Inventory
         
         
         // Item Dragging
-
         /// <summary>
         /// Item icon used to show an item being dragged from the slot
         /// </summary>
@@ -113,7 +112,8 @@ namespace Blizzard.UI.Inventory
             SetPreviewActive(true);
 
             _itemCount.gameObject.SetActive(true);
-            _itemCount.enabled = false;
+            _itemCount.enabled = true;
+            _itemCount.text = "";
         }
 
         /// <summary>
@@ -130,6 +130,7 @@ namespace Blizzard.UI.Inventory
                 _itemPreviewIcon.enabled = false;
                 _itemIcon.enabled = true;
                 _itemIcon.sprite = item.icon;
+                _itemIconDrag.sprite = item.icon;
 
                 _itemCount.text = amount != 1 ? amount.ToString() : ""; // Don't show amount if only 1
                 SetPreviewActive(false);
@@ -317,7 +318,7 @@ namespace Blizzard.UI.Inventory
             _itemCountDrag.text = _dragState.amount > 1 ? _dragState.amount.ToString() : "";
 
             // Adjust slot content temporarily (as if item is actually being "picked up")
-            var amountRemaining = _linkedSlot.Amount - _dragState.amount;
+            int amountRemaining = _linkedSlot.Amount - _dragState.amount;
             _itemCount.text = amountRemaining > 1 ? amountRemaining.ToString() : "";
             if (amountRemaining < 1) _itemIcon.enabled = false;
 

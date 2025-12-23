@@ -11,10 +11,13 @@ namespace Blizzard.Installers
     public class MapGenerationServiceInstaller : MonoInstaller
     {
         [SerializeField] private List<ResourceGenInfo> _resourcesToGenerate;
+        [SerializeField] private bool _disable = false; // TEMP
 
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {
+            if (_disable) return;
+            
             Container.BindInterfacesAndSelfTo<MapGenerationService>()
                 .FromNew()
                 .AsSingle()

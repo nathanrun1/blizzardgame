@@ -7,6 +7,7 @@ namespace Blizzard.Installers
 {
     public class PathfindingServiceInstaller : MonoInstaller
     {
+        
         // ReSharper disable Unity.PerformanceAnalysis
         public override void InstallBindings()
         {

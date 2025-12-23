@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 3989951527430796683}
   - component: {fileID: 3645967852482406556}
   - component: {fileID: 1949217591942385515}
+  - component: {fileID: 173332325069247247}
   m_Layer: 6
   m_Name: Campfire
   m_TagString: Untagged
@@ -133,20 +134,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb3e56c07aa0e34c9212e13cb3f6432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startingHealth: 100
   _spriteRenderers:
   - {fileID: 245448152275529829}
+  _startingHealth: 100
   _animator: {fileID: 1949217591942385515}
   _light2D: {fileID: 1220903769132503672}
-  _fuelLevelAmount: 3
-  _lightIntensities:
-  - 0
-  - 0.5
-  - 0.75
-  - 1
-  _fuelThresholds: 00000000190000003c000000
-  _heatLevels: 0000000005000000070000000a000000
-  _maxFuel: 100
+  _initialForm: 0
+  _starFormInfo:
+    fuelPerMinute: 10
+    heat: 10
+  _teepeeFormInfo:
+    fuelPerMinute: 20
+    heat: 20
+  _cabinFormInfo:
+    fuelPerMinute: 25
+    heat: 30
+  _litIntensity: 2.5
+  _lowFuelLightIntensity: 1
+  _lowFuelHeatMultiplier: 0.5
 --- !u!212 &245448152275529829
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -167,6 +172,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -188,6 +195,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -297,3 +305,17 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &173332325069247247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7478012713066497398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 489c7938fe4549c4b79698c0673d8254, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blizzard::Blizzard.Obstacles.InteractionHandler
+  _interactableScript: {fileID: 6553422288155621748}
+  _maxDistance: 3

@@ -1,0 +1,31 @@
+want obstacle grid query type thing
+
+quadtree
+
+when querying obstacles within range, use quadtree
+
+Quadtree in C#?
+
+
+Layered dense grid
+
+have a grid represent all of the chunks basically right
+and then track when a chunk is changed, change that chunk and neighbors. OK sure fuck it.
+
+Ok keep quadtrees for object checking but yea we're chillin, we just have the value be subtracted and then zombies target anything based on where the spawn... Could even add value as more zombies target something maybe.
+
+when obstacle destroyed, only reset once enough obstacle "value" is gone
+
+can have a compute shader compute the chunk neighbor costs
+
+algo:
+1) A* enemy to obstacle
+2) construct flow fields of all overlapping chunks
+3) cache the chunks, return flow field wrapper
+
+bla bla bla
+
+
+Ok right so I wanted the pathfinding service flow field generation to just execute over relevant squares. That is, keep track of min max bounds and redo flow field with given bounds when they change.
+
+Either track minmax bounds in obstacle service or pathfinding service. Probably pathfinding service for that one.

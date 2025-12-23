@@ -46,8 +46,8 @@ namespace Blizzard.Obstacles.Concrete
         [Inject] private UIService _uiService;
         
         // TODO:
-        //   Link to UI
         //   Figure out form change
+        //      UI selection (slot selector thing) separate from showing active (green)
         //   Have fun!
         private static readonly int FuelLevel = Animator.StringToHash("FuelLevel");
 
@@ -62,18 +62,18 @@ namespace Blizzard.Obstacles.Concrete
         [SerializeField] private float _litIntensity;
         [SerializeField] private float _lowFuelLightIntensity;
         [SerializeField] private float _lowFuelHeatMultiplier;
+        [SerializeField] private ItemAmountPair _rebuildCost;
 
         private Dictionary<CampfireForm, CampfireFormInfo> _campfireFormInfo;
         private CampfireForm _curForm;
-        private BurnMode _curBurnMode;
+        private BurnMode _curBurnMode = BurnMode.Off;
         private float _mostRecentFuelConsumption = float.MinValue;
-        private bool _fuelAvailable = false;
         
         // public event Action OnRebuild; TODO
         public string PrimaryInteractText => "Fuel";
         public bool PrimaryInteractReady => true;
         public readonly InventorySlot fuelSlot = new();
-        public readonly InventorySlot reformSlot = new();
+        public readonly InventorySlot rebuildSlot = new();
 
         private void Awake()
         {
@@ -90,13 +90,13 @@ namespace Blizzard.Obstacles.Concrete
         private void OnEnable()
         {
             fuelSlot.Item = null;
-            reformSlot.Item = null;
-            UpdateContext(BurnMode.Off, _initialForm);
+            rebuildSlot.Item = null;
+            UpdateContext(BurnMode.Off, _initialForm, force: true);
         }
 
         private void FixedUpdate()
         {
-            if (_fuelAvailable && ShouldConsumeFuel())
+            if (!IsBurning())
                 ConsumeFuel();
         }
         
@@ -108,18 +108,35 @@ namespace Blizzard.Obstacles.Concrete
             });
         }
 
-        private bool ShouldConsumeFuel()
+        
+        /// <summary>
+        /// Attempts to rebuild the campfire with a new form. Returns whether successful, based on whether
+        /// sufficient cost provided in rebuild slot.
+        /// </summary>
+        public bool TryRebuild(CampfireForm form)
         {
-            return fuelSlot.Item.id == (int)ItemID.Wood && fuelSlot.Amount > 0 &&
-                   Time.time - _mostRecentFuelConsumption > 1f / (_campfireFormInfo[_curForm].fuelPerMinute / 60f);
+            if (_curForm == form || !rebuildSlot.Item || rebuildSlot.Item != _rebuildCost.item) return false;
+            
+            int removed = rebuildSlot.Remove(_rebuildCost.amount, false);
+            if (removed < _rebuildCost.amount) return false;
+            
+            UpdateContext(_curBurnMode, form);
+            return true;
         }
-
+        
+        /// <summary>
+        /// Determines whether the campfire is still burning on previously consumed fuel, i.e. whether not enough
+        /// time has passed since the last fuel consumption to necessitate more fuel consumption.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsBurning()
+        {
+            return Time.time - _mostRecentFuelConsumption <= 1f / (_campfireFormInfo[_curForm].fuelPerMinute / 60f);
+        }
 
         private void OnFuelSlotUpdate()
         {
-            if (_curBurnMode == BurnMode.Off)
-                _fuelAvailable = IsFuelInSlot();
-            else
+            if (IsBurning())
                 UpdateContext(IsFuelInSlot() ? BurnMode.High : BurnMode.Low, _curForm);
         }
         
@@ -131,13 +148,11 @@ namespace Blizzard.Obstacles.Concrete
             if (!IsFuelInSlot())
             {
                 UpdateContext(BurnMode.Off, _curForm);
-                _fuelAvailable = false;
             }
             else
             {
-                UpdateContext(fuelSlot.Amount == 1 ? BurnMode.Low : BurnMode.High, _curForm);
-                fuelSlot.SetAmountQuiet(fuelSlot.Amount - 1);
                 _mostRecentFuelConsumption = Time.time;
+                fuelSlot.Amount--;
             }
         }
 
@@ -149,9 +164,9 @@ namespace Blizzard.Obstacles.Concrete
         /// <summary>
         /// Updates heat and visuals according to burn mode and campfire form
         /// </summary>
-        private void UpdateContext(BurnMode burnMode, CampfireForm campfireForm)
+        private void UpdateContext(BurnMode burnMode, CampfireForm campfireForm, bool force = true)
         {
-            if (burnMode == _curBurnMode && campfireForm == _curForm) return;
+            if (!force && burnMode == _curBurnMode && campfireForm == _curForm) return;
             
             _curForm = campfireForm;
             _curBurnMode = burnMode;
@@ -160,6 +175,7 @@ namespace Blizzard.Obstacles.Concrete
                 case BurnMode.Off:
                     SetHeat(0);
                     _animator.SetInteger(FuelLevel, 0);
+                    _light2D.intensity = 0;
                     break;
                 case BurnMode.Low:
                     SetHeat(_campfireFormInfo[campfireForm].heat * _lowFuelHeatMultiplier);
