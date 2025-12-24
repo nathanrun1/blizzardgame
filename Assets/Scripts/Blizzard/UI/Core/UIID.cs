@@ -14,6 +14,7 @@
         InteractInfo = 6,
         ColorFlash = 7,
         Chest = 8,
-        Campfire = 9
+        Campfire = 9,
+        Debug = 10
     }
 }

@@ -95,10 +95,10 @@ GameObject:
   - component: {fileID: 2779274468379762220}
   - component: {fileID: 6553422288155621748}
   - component: {fileID: 245448152275529829}
-  - component: {fileID: 3989951527430796683}
   - component: {fileID: 3645967852482406556}
   - component: {fileID: 1949217591942385515}
   - component: {fileID: 173332325069247247}
+  - component: {fileID: 1038016036298544570}
   m_Layer: 6
   m_Name: Campfire
   m_TagString: Untagged
@@ -152,6 +152,10 @@ MonoBehaviour:
   _litIntensity: 2.5
   _lowFuelLightIntensity: 1
   _lowFuelHeatMultiplier: 0.5
+  _rebuildCost:
+    item: {fileID: 11400000, guid: d70d9448dee8d3445a44cf1290095397, type: 2}
+    amount: 5
+  curForm: 0
 --- !u!212 &245448152275529829
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -210,52 +214,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &3989951527430796683
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7478012713066497398}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
 --- !u!50 &3645967852482406556
 Rigidbody2D:
   serializedVersion: 5
@@ -319,3 +277,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: Blizzard::Blizzard.Obstacles.InteractionHandler
   _interactableScript: {fileID: 6553422288155621748}
   _maxDistance: 3
+--- !u!58 &1038016036298544570
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7478012713066497398}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 0.45

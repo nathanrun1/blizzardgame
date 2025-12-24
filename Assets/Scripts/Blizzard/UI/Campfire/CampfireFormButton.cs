@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Blizzard.UI.CampfireUI
+namespace Blizzard.UI
 {
     public class CampfireFormButton : MonoBehaviour
     {

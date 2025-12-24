@@ -193,7 +193,8 @@ namespace Blizzard.UI.Inventory
         /// </summary>
         public void SetPreviewActive(bool previewActive)
         {
-            if (!_previewItem) return;
+            if (!_showPreview) return;
+            Assert.IsTrue(_previewItem, "No preview item specified.");
             
             _itemPreviewIcon.enabled = previewActive;
             if (!previewActive) return;
