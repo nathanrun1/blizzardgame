@@ -99,7 +99,7 @@ namespace Blizzard.Obstacles
             obstacle.transform.position = obstaclePosition;
 
             // Set sorting order of obstacle based on layer (we assume current order is relative to layer's order & add)
-            foreach (var renderer in obstacle.GetComponentsInChildren<Renderer>(obstacle))
+            foreach (Renderer renderer in obstacle.GetComponentsInChildren<Renderer>(obstacle))
                 renderer.sortingOrder += ObstacleConstants.ObstacleLayerSortingLayers[obstacleData.obstacleLayer];
 
             obstacle.OnDestroy += () => OnObstacleDestroyed(gridPosition, obstacleData.obstacleLayer);
@@ -108,9 +108,10 @@ namespace Blizzard.Obstacles
 
             Grids[obstacleData.obstacleLayer].SetAt(gridPosition, obstacle);
 
+            UpdateTemperatureSimData(gridPosition);
+            
             if (obstacleData.obstacleLayer == ObstacleConstants.MainObstacleLayer)
             {
-                UpdateTemperatureSimData(gridPosition, obstacle);
                 AddToQuadtrees(gridPosition, obstacle.ObstacleFlags);
             }
 
@@ -175,9 +176,9 @@ namespace Blizzard.Obstacles
             if (Grids[obstacleLayer].TryGetValue(gridPosition, out var obstacle))
             {
                 Grids[obstacleLayer].ResetAt(gridPosition);
+                UpdateTemperatureSimData(gridPosition);
                 if (obstacleLayer == ObstacleConstants.MainObstacleLayer)
                 {
-                    UpdateTemperatureSimData(gridPosition, null);
                     RemoveFromQuadtrees(gridPosition);
                 }
             }
@@ -190,7 +191,7 @@ namespace Blizzard.Obstacles
         /// </summary>
         private void OnObstacleUpdated(Vector2Int gridPosition, ObstacleLayer obstacleLayer, Obstacle obstacle, bool flagsChanged)
         {
-            UpdateTemperatureSimData(gridPosition, obstacle);
+            UpdateTemperatureSimData(gridPosition);
             
             if (!flagsChanged) return;
             BLog.Log("ObstacleGridService", $"ObstacleFlags changed on obstacle at {gridPosition}");
@@ -201,22 +202,32 @@ namespace Blizzard.Obstacles
         }
 
         /// <summary>
-        /// Invoked whenever data relevant to temperature service is updated at a specific position (e.g. heat or insulation)
+        /// Invoked whenever data relevant to temperature service is updated at a specific position (e.g. heat or insulation).
+        /// Checks presence of main and floor layer obstacles, adjusting temperature grid accordingly.
         /// </summary>
-        private void UpdateTemperatureSimData(Vector2Int gridPosition, Obstacle obstacle)
+        private void UpdateTemperatureSimData(Vector2Int gridPosition)
         {
-            var newTemperatureCell = _temperatureService.Grid.GetAt(gridPosition);
-            if (obstacle)
+            TemperatureCell newTemperatureCell = _temperatureService.Grid.GetAt(gridPosition);
+            
+            // Main layer obstacles affect heat/insulation/ambient
+            if (Grids[ObstacleLayer.Main].TryGetValue(gridPosition, out Obstacle mainLayerObstacle))
             {
-                // Update temperature data using obstacle's heat and insulation values
-                newTemperatureCell.heat = obstacle.Heat;
-                newTemperatureCell.insulation = obstacle.Insulation;
+                newTemperatureCell.heat = mainLayerObstacle.Heat;
+                newTemperatureCell.insulation = mainLayerObstacle.Insulation;
+                newTemperatureCell.ambient =
+                    mainLayerObstacle.ObstacleFlags.HasFlag(ObstacleFlags.RemovesAmbient) ? 0 : 1;
             }
             else
             {
-                // No longer an obstacle at this grid position, use default values for heat/insulation
                 newTemperatureCell.heat = TemperatureConstants.DefaultHeatValue;
                 newTemperatureCell.insulation = TemperatureConstants.DefaultInsulationValue;
+                newTemperatureCell.ambient = 1;
+            }
+            
+            // Floor layer obstacles affect ambient (if floor, no ambient)
+            if (Grids[ObstacleLayer.Floor].TryGetValue(gridPosition, out Obstacle floorLayerObstacle))
+            {
+                newTemperatureCell.ambient = Math.Min(newTemperatureCell.ambient, 0);
             }
 
             _temperatureService.Grid.SetAt(gridPosition, newTemperatureCell);

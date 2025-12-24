@@ -102,7 +102,7 @@ namespace Blizzard.Pathfinding
         private void ObstacleAddedOrRemoved(Vector2Int pos, ObstacleLayer obstacleLayer, ObstacleFlags obstacleFlags)
         {
             // TEMP: simply recalculate entire flow field
-            var added = _obstacleGridService.IsOccupied(pos);
+            bool added = _obstacleGridService.IsOccupied(pos, obstacleLayer);
 
             // Add/Remove position from outermost bounds tracking
             if (obstacleFlags.HasFlag(ObstacleFlags.PlayerBuilt))

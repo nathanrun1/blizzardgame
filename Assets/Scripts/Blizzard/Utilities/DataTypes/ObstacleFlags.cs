@@ -16,6 +16,10 @@ namespace Blizzard.Utilities.DataTypes
         /// <summary>
         /// An obstacle that can be passed through
         /// </summary>
-        NoCollision = 1 << 2
+        NoCollision = 1 << 2,
+        /// <summary>
+        /// An obstacle that removes ambient temperature at its location
+        /// </summary>
+        RemovesAmbient = 1 << 3
     }
 }

@@ -3159,12 +3159,8 @@ MonoBehaviour:
   _startingItems:
   - item: {fileID: 11400000, guid: b47f3e859c8e6ee4d8d89cb19f24b749, type: 2}
     amount: 1
-  - item: {fileID: 11400000, guid: cd2b08fb8d5256743b7274d6dfe5913a, type: 2}
-    amount: 1
-  - item: {fileID: 11400000, guid: 58f069f80da867747ba5caace926de2a, type: 2}
-    amount: 1
-  - item: {fileID: 11400000, guid: d70d9448dee8d3445a44cf1290095397, type: 2}
-    amount: 10
+  - item: {fileID: 11400000, guid: c23287e61aa4e764db47c8d408cbb4b0, type: 2}
+    amount: 5
   _initialObstacles:
   - obstacle: {fileID: 11400000, guid: 69867a72efd47c0459738058e2070288, type: 2}
     position: {x: 0, y: 5}
@@ -4975,7 +4971,7 @@ Transform:
   m_GameObject: {fileID: 1963240226}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.2, y: 0.9, z: 5}
+  m_LocalPosition: {x: -2, y: 0, z: 5}
   m_LocalScale: {x: 9.896805, y: 6.9068565, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5027,15 +5023,15 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -20
+  m_SortingOrder: -1000
   m_Sprite: {fileID: 4292893384155057794, guid: 2e293f98f23bb2844a42540814788106, type: 3}
   m_Color: {r: 0.8490566, g: 0.8490566, b: 0.8490566, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 3.6550112, y: 6.6022854}
+  m_Size: {x: 15.42242, y: 26.024984}
   m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 1
+  m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
