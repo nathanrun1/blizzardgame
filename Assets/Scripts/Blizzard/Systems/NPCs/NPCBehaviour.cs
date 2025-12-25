@@ -90,7 +90,7 @@ namespace Blizzard.NPCs
             death = Health <= 0;
             if (death)
             {
-                Death();
+                Death(damageFlags);
                 Health = 0;
             }
             else
@@ -105,9 +105,9 @@ namespace Blizzard.NPCs
         /// <summary>
         /// Enemy death
         /// </summary>
-        protected virtual void Death()
+        protected virtual void Death(DamageFlags damageFlags)
         {
-            DropItems();
+            DropItems(directAdd: damageFlags.HasFlag(DamageFlags.Player));
             OnDeath?.Invoke();
         }
         
@@ -115,15 +115,16 @@ namespace Blizzard.NPCs
         /// Drops items specified by config, intended to be invoked on NPC death. If killed by player, will attempt
         /// to directly give the items.
         /// </summary>
-        private void DropItems()
+        /// <param name="directAdd">Attempt to first add dropped items directly to player inventory</param>
+        private void DropItems(bool directAdd)
         {
             List<ItemAmountPair> toDrop = new(_drops);
-            _inventoryService.TryAddItemsWithAnim(_uiService, transform.position, toDrop);
+            if (directAdd) _inventoryService.TryAddItemsWithAnim(_uiService, transform.position, toDrop);
             foreach (ItemAmountPair pair in toDrop) // Drop remaining on the ground
             {
-                var dropObj = _envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
+                ItemDrop dropObj = _envPrefabService.InstantiatePrefab("item_drop").GetComponent<ItemDrop>();
                 dropObj.transform.position = (Vector2)transform.position +
-                          RandomAssistant.RangeVector2(-GameConstants.CellSideLength, GameConstants.CellSideLength);
+                          RandomAssistant.RangeVector2(-GameConstants.CellSideLength / 2f, GameConstants.CellSideLength / 2f);
                 dropObj.Setup(pair);
             }
         }

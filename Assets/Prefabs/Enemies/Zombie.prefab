@@ -144,6 +144,9 @@ MonoBehaviour:
   _spriteRenderers:
   - {fileID: 3823765924476577408}
   _startingHealth: 100
+  _drops:
+  - item: {fileID: 11400000, guid: 5dfeb5bbc8c7c534f99ebeb2af227776, type: 2}
+    amount: 2
   _behaviour:
     walkSpeed: 1
     attackRange: 0.75

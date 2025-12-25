@@ -40,7 +40,7 @@ namespace Blizzard.Obstacles.Concrete
         /// </summary>
         private void Trigger(NPCBehaviour npc)
         {
-            npc.Strike(_damage, out _, DamageFlags.PlayerTrap);
+            npc.Strike(_damage, out _, DamageFlags.Structure);
             _spriteRenderer.sprite = _triggeredSprite;
             SetFlags(ObstacleFlags | ObstacleFlags.Detectable); // Trap is detectable now, until repaired.
             _ready = false;

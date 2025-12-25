@@ -1,18 +1,11 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 using Zenject;
-using Blizzard.Inventory;
-using Blizzard.UI;
-using Blizzard.UI.Core;
-using Blizzard.Inventory.Crafting;
 using Blizzard.NPCs;
 using Blizzard.NPCs.Core;
 using Blizzard.Player;
+using Blizzard.Utilities.DataTypes;
 using Blizzard.Utilities.Logging;
-using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 
 namespace Blizzard.Obstacles.Concrete
 {
@@ -97,8 +90,7 @@ namespace Blizzard.Obstacles.Concrete
 
         private void OnCrossbowFire()
         {
-            BLog.Log("Crossbow","FIRE!");
-            _currentTarget?.Strike(_damage, out _);
+            _currentTarget?.Strike(_damage, out _, DamageFlags.Structure);
         }
     }
 }

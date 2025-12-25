@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Blizzard.Inventory;
 using Blizzard.Inventory.Crafting;
 using Blizzard.Player;
+using Blizzard.UI.Basic;
 using Blizzard.Utilities;
 using Blizzard.UI.Core;
 using TMPro;
@@ -28,15 +29,16 @@ namespace Blizzard.UI
         [SerializeField] private GameObject _recipePanel;
         [SerializeField] private Button _craftButton;
 
-        [Header("Prefabs")] [SerializeField] private Button _categoryButtonPrefab;
-        [SerializeField] private Button _recipeButtonPrefab;
+        [Header("Prefabs")] 
+        [SerializeField] private Button _categoryButtonPrefab;
+        [SerializeField] private ItemDisplay _recipeButtonPrefab;
 
         [Inject] private InventoryService _inventoryService;
         [Inject] private UIService _uiService;
         [Inject] private EnvPrefabService _envPrefabService;
         [Inject] private PlayerService _playerService;
 
-        private List<Button> _activeRecipeButtons = new();
+        private List<ItemDisplay> _activeRecipeButtons = new();
 
         private bool _setup = false;
 
@@ -54,9 +56,9 @@ namespace Blizzard.UI
 
         private void LoadCategoriesUI()
         {
-            foreach (var category in _craftingDatabase.craftingCategories)
+            foreach (CraftingCategory category in _craftingDatabase.craftingCategories)
             {
-                var categoryButton = Instantiate(_categoryButtonPrefab, _categoriesButtonParent);
+                Button categoryButton = Instantiate(_categoryButtonPrefab, _categoriesButtonParent);
                 categoryButton.gameObject.SetActive(true);
                 categoryButton.onClick.AddListener(() => LoadRecipeListUI(category));
 
@@ -67,17 +69,17 @@ namespace Blizzard.UI
         private void LoadRecipeListUI(CraftingCategory category)
         {
             // Clear existing recipe buttons
-            foreach (var activeRecipeButton in _activeRecipeButtons) Destroy(activeRecipeButton.gameObject);
+            foreach (ItemDisplay activeRecipeButton in _activeRecipeButtons) Destroy(activeRecipeButton.gameObject);
             _activeRecipeButtons.Clear();
 
             _recipeListPanel.SetActive(true);
-            foreach (var recipe in category.recipes)
+            foreach (CraftingRecipe recipe in category.recipes)
             {
-                var recipeButton = Instantiate(_recipeButtonPrefab, _recipeListButtonParent);
+                ItemDisplay recipeButton = Instantiate(_recipeButtonPrefab, _recipeListButtonParent);
                 recipeButton.gameObject.SetActive(true);
-                recipeButton.onClick.AddListener(() => LoadRecipeUI(recipe));
-
-                recipeButton.GetComponentInChildren<TextMeshProUGUI>().text = recipe.result.displayName;
+                recipeButton.button.onClick.AddListener(() => LoadRecipeUI(recipe));
+                
+                recipeButton.DisplayItem(recipe.result, 1);
 
                 _activeRecipeButtons.Add(recipeButton); // Track active recipe buttons to remove on category switch
             }
