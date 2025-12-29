@@ -44,14 +44,12 @@ namespace Blizzard.UI
 
         public override void Setup(object args)
         {
-            if (!_setup) // Only need to setup once
-            {
-                _categoriesPanel.SetActive(true);
-                _recipeListPanel.SetActive(false);
-                _recipePanel.SetActive(false);
-                LoadCategoriesUI();
-                _setup = true;
-            }
+            if (_setup) return; // Only need to setup once
+            _categoriesPanel.SetActive(true);
+            _recipeListPanel.SetActive(false);
+            _recipePanel.SetActive(false);
+            LoadCategoriesUI();
+            _setup = true;
         }
 
         private void LoadCategoriesUI()
