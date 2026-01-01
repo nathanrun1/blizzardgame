@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Blizzard.Inventory;
 using Blizzard.Inventory.Crafting;
@@ -5,6 +6,9 @@ using Blizzard.Player;
 using Blizzard.UI.Basic;
 using Blizzard.Utilities;
 using Blizzard.UI.Core;
+using Blizzard.Utilities.Extensions;
+using Blizzard.Utilities.Logging;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +21,8 @@ namespace Blizzard.UI
         [Header("References")] [SerializeField]
         private CraftingDatabase _craftingDatabase;
 
+        [SerializeField] private Transform _root;
+        
         // -- Categories panel --
         [SerializeField] private GameObject _categoriesPanel;
         [SerializeField] private Transform _categoriesButtonParent;
@@ -28,10 +34,19 @@ namespace Blizzard.UI
         // -- Recipe panel -- 
         [SerializeField] private GameObject _recipePanel;
         [SerializeField] private Button _craftButton;
-
+        [SerializeField] private Image _recipeIcon;
+        [SerializeField] private TextMeshProUGUI _recipeTitle;
+        [SerializeField] private Transform _costsParent;
+        
+        [Header("Animation Config")]
+        [SerializeField] private float _outXPos = -630f;  // X position when not visible
+        [SerializeField] private float _inXPos = 0f;      // X position when visible
+        [SerializeField] private float _tweenDuration = 0.5f;
+        
         [Header("Prefabs")] 
         [SerializeField] private Button _categoryButtonPrefab;
         [SerializeField] private ItemDisplay _recipeButtonPrefab;
+        [SerializeField] private ItemDisplay _itemCostPrefab;
 
         [Inject] private InventoryService _inventoryService;
         [Inject] private UIService _uiService;
@@ -49,7 +64,15 @@ namespace Blizzard.UI
             _recipeListPanel.SetActive(false);
             _recipePanel.SetActive(false);
             LoadCategoriesUI();
+            LoadRecipeListUI(_craftingDatabase.craftingCategories[0]);  
+            LoadRecipeUI(_craftingDatabase.craftingCategories[0].recipes[0]);
+            InAnim();
             _setup = true;
+        }
+
+        public override void Close()
+        {
+            OutAnim(() => base.Close());
         }
 
         private void LoadCategoriesUI()
@@ -86,27 +109,66 @@ namespace Blizzard.UI
         private void LoadRecipeUI(CraftingRecipe recipe)
         {
             _recipePanel.gameObject.SetActive(true);
-
-            _craftButton.GetComponentInChildren<TextMeshProUGUI>().text = $"Craft {recipe.result.displayName}";
+            
             _craftButton.onClick.RemoveAllListeners();
-            _craftButton.onClick.AddListener(() => OnCraft(recipe));
+            _craftButton.onClick.AddListener(() =>
+            {
+                OnCraft(recipe);
+                LoadRecipeUI(recipe); // Refresh recipe UI given inventory changes (e.g. counts)
+            });
+            
+            // Basic info
+            _recipeIcon.sprite = recipe.result.icon;
+            _recipeTitle.text = $"{recipe.result.displayName}";
+            
+            // Recipe cost
+            _costsParent.DestroyChildren();
+            foreach (ItemAmountPair itemCost in recipe.cost)
+            {
+                ItemDisplay costDisplay = Instantiate(_itemCostPrefab, _costsParent);
+                costDisplay.SetIcon(itemCost.item.icon);
+                
+                int ownedCount = _inventoryService.CountOfItem(itemCost.item);
+                costDisplay.SetCountText($"{ownedCount} / {itemCost.amount}");
+            }
         }
 
         private void OnCraft(CraftingRecipe recipe)
         {
-            if (_inventoryService.TryRemoveItems(recipe.cost))
-            {
-                // Spent recipe successfully, give player the result
-                var amountAdded = _inventoryService.TryAddItem(recipe.result, recipe.resultAmount, true);
+            if (!_inventoryService.TryRemoveItems(recipe.cost)) return;
+            // Spent recipe successfully, give player the result
+            int amountAdded = _inventoryService.TryAddItem(recipe.result, recipe.resultAmount, true);
 
-                _uiService.ItemGain(recipe.result, amountAdded,
-                    default);
+            _uiService.ItemGain(recipe.result, amountAdded,
+                default);
 
-                if (amountAdded < recipe.resultAmount)
-                    // Drop item on ground, not successfully added to inventory
-                    InventoryServiceExtensions.DropItem(_envPrefabService, _playerService, recipe.result,
-                        recipe.resultAmount - amountAdded);
-            }
+            if (amountAdded < recipe.resultAmount)
+                // Drop item on ground, not successfully added to inventory
+                InventoryServiceExtensions.DropItem(_envPrefabService, _playerService, recipe.result,
+                    recipe.resultAmount - amountAdded);
+        }
+
+        private void InAnim()
+        {
+            RectTransform rootRect = (_root.transform as RectTransform)!;
+
+            DOTween.To(() => rootRect.anchoredPosition.x,
+                x => rootRect.anchoredPosition = new Vector2(x, rootRect.anchoredPosition.y), _inXPos, _tweenDuration)
+                .OnUpdate(() => BLog.Log(rootRect.anchoredPosition))
+                .SetEase(Ease.OutExpo)
+                .Play();
+        }
+
+        private void OutAnim(Action onComplete)
+        {
+            RectTransform rootRect = (_root.transform as RectTransform)!;
+
+            DOTween.To(() => rootRect.anchoredPosition.x,
+                    x => rootRect.anchoredPosition = new Vector2(x, rootRect.anchoredPosition.y), _outXPos, _tweenDuration)
+                .OnUpdate(() => BLog.Log(rootRect.anchoredPosition))
+                .SetEase(Ease.OutExpo)
+                .OnComplete(onComplete.Invoke)
+                .Play();
         }
     }
 }

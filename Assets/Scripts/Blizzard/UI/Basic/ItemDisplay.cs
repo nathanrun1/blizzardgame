@@ -27,5 +27,15 @@ namespace Blizzard.UI.Basic
 	        _itemIcon.sprite = item.icon;
 	        _itemCount.text = amount > 1 ? $"{amount}" : "";
         }
+
+        public void SetIcon(Sprite icon)
+        {
+            _itemIcon.sprite = icon;
+        }
+
+        public void SetCountText(string text)
+        {
+            _itemCount.text = text;
+        }
     }
 }

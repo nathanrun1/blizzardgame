@@ -37,7 +37,10 @@ namespace Blizzard.Utilities
         [Inject] private NPCService _npcService;
         [Inject] private PlayerService _playerService;
         [Inject] private EnemyWaveService _enemyWaveService;
-
+        
+        [FoldoutGroup("Hotkeys")]
+        [SerializeField] private KeyCode _openCraftUI;
+        
         [FoldoutGroup("Enemies")]
         [Button]
         [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
@@ -203,6 +206,8 @@ namespace Blizzard.Utilities
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
                 // TAB to print collider under pointer
                 PrintColliderUnderPointer();
+            if (UnityEngine.Input.GetKeyDown(_openCraftUI))
+                _uiService.ToggleUI(UIID.Crafting);
         }
     }
 }

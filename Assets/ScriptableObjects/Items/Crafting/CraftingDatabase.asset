@@ -53,8 +53,13 @@ MonoBehaviour:
         amount: 1
   - categoryName: Clothing
     recipes:
-    - result: {fileID: 11400000, guid: 056eb7c4c1406bf4ba7378cc99895859, type: 2}
+    - result: {fileID: 11400000, guid: 3df2dc5e66d39284db08a2fd743ad5a8, type: 2}
       resultAmount: 1
       cost:
       - item: {fileID: 11400000, guid: b1f64ca7c6b41af48a783bb30370c5fb, type: 2}
+        amount: 6
+    - result: {fileID: 11400000, guid: 056eb7c4c1406bf4ba7378cc99895859, type: 2}
+      resultAmount: 1
+      cost:
+      - item: {fileID: 11400000, guid: e64add643b123ff448eef0ab39765656, type: 2}
         amount: 6
