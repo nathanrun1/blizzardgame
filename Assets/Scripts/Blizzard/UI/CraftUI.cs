@@ -6,6 +6,7 @@ using Blizzard.Player;
 using Blizzard.UI.Basic;
 using Blizzard.Utilities;
 using Blizzard.UI.Core;
+using Blizzard.Utilities.Assistants;
 using Blizzard.Utilities.Extensions;
 using Blizzard.Utilities.Logging;
 using DG.Tweening;
@@ -59,20 +60,22 @@ namespace Blizzard.UI
 
         public override void Setup(object args)
         {
-            if (_setup) return; // Only need to setup once
-            _categoriesPanel.SetActive(true);
-            _recipeListPanel.SetActive(false);
-            _recipePanel.SetActive(false);
-            LoadCategoriesUI();
-            LoadRecipeListUI(_craftingDatabase.craftingCategories[0]);  
-            LoadRecipeUI(_craftingDatabase.craftingCategories[0].recipes[0]);
-            InAnim();
-            _setup = true;
+            if (!_setup)
+            {
+                _categoriesPanel.SetActive(true);
+                _recipeListPanel.SetActive(false);
+                _recipePanel.SetActive(false);
+                LoadCategoriesUI();
+                LoadRecipeListUI(_craftingDatabase.craftingCategories[0]);  
+                LoadRecipeUI(_craftingDatabase.craftingCategories[0].recipes[0]);
+                _setup = true;
+            }
+            TweenXPosition(_outXPos, _inXPos);
         }
 
         public override void Close()
         {
-            OutAnim(() => base.Close());
+            TweenXPosition(_inXPos, _outXPos, () => base.Close());
         }
 
         private void LoadCategoriesUI()
@@ -148,26 +151,15 @@ namespace Blizzard.UI
                     recipe.resultAmount - amountAdded);
         }
 
-        private void InAnim()
+        private void TweenXPosition(float startValue, float endValue, Action onComplete = null)
         {
             RectTransform rootRect = (_root.transform as RectTransform)!;
-
-            DOTween.To(() => rootRect.anchoredPosition.x,
-                x => rootRect.anchoredPosition = new Vector2(x, rootRect.anchoredPosition.y), _inXPos, _tweenDuration)
-                .OnUpdate(() => BLog.Log(rootRect.anchoredPosition))
+            rootRect.anchoredPosition = new Vector2(startValue, rootRect.anchoredPosition.y);
+            
+            BLog.Log($"Tweening from {rootRect.anchoredPosition.x} to {endValue}");
+            rootRect.DOAnchoredMoveX(endValue, _tweenDuration)
                 .SetEase(Ease.OutExpo)
-                .Play();
-        }
-
-        private void OutAnim(Action onComplete)
-        {
-            RectTransform rootRect = (_root.transform as RectTransform)!;
-
-            DOTween.To(() => rootRect.anchoredPosition.x,
-                    x => rootRect.anchoredPosition = new Vector2(x, rootRect.anchoredPosition.y), _outXPos, _tweenDuration)
-                .OnUpdate(() => BLog.Log(rootRect.anchoredPosition))
-                .SetEase(Ease.OutExpo)
-                .OnComplete(onComplete.Invoke)
+                .OnComplete(() => onComplete?.Invoke())
                 .Play();
         }
     }

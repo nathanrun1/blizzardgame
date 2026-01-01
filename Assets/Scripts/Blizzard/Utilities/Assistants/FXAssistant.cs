@@ -77,5 +77,18 @@ namespace Blizzard.Utilities.Assistants
 
             return sequence;
         }
+
+        /// <summary>
+        /// Tween the X component of a RectTransform's anchored position
+        /// </summary>
+        public static Tween DOAnchoredMoveX(this RectTransform rectTransform, float endValue, float duration)
+        {
+            return DOTween.To(
+                () => rectTransform.anchoredPosition.x,
+                x => rectTransform.anchoredPosition = new Vector2(x, rectTransform.anchoredPosition.y),
+                endValue,
+                duration
+            );
+        }
     }
 }
