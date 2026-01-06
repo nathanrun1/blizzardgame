@@ -54,7 +54,7 @@ namespace Blizzard.UI
 
             _ingredientSlotUi.LinkedSetup(furnaceArgs.ingredientSlot, true, true);
             _resultSlotUi.LinkedSetup(furnaceArgs.resultSlot, false, true);
-            _fuelSlotUi.LinkedSetup(furnaceArgs.fuelSlot, true, true);
+            _fuelSlotUi.LinkedSetup(furnaceArgs.fuelSlot, true, true); // TODO: fuel filter
             _linkedFurnaceState = furnaceArgs.furnaceState;
 
             _inputService.inputActions.UI.Cancel.performed += OnUICancelInput;  // Bind UI input

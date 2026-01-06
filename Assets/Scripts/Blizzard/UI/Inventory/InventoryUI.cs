@@ -107,7 +107,7 @@ namespace Blizzard.UI.Inventory
                     _diContainer.InstantiatePrefabForComponent<InventorySlotCtrl>(_inventorySlotPrefab,
                         _inventorySlotParent);
                 uiSlot.transform.SetAsLastSibling();
-                uiSlot.LinkedSetup(slot);
+                uiSlot.LinkedSetup(slot, true, true);
                 uiSlot.SetSelected(false); // Slots are by default not selected
                 uiSlot.SetMoveInEnabled(true); // Move in/out enabled for inventory
                 uiSlot.SetMoveOutEnabled(true); // ^^

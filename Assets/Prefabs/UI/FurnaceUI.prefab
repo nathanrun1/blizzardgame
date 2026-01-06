@@ -401,11 +401,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1584639901589793058, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_fontSize
-      value: 45.45
+      value: 50.55
       objectReference: {fileID: 0}
     - target: {fileID: 3611533440700460661, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4583902039140492557, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_Pivot.x
@@ -497,7 +497,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8568649690625731920, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_fontSize
-      value: 45.45
+      value: 53.45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -530,11 +530,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1584639901589793058, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_fontSize
-      value: 45.45
+      value: 50.55
       objectReference: {fileID: 0}
     - target: {fileID: 3611533440700460661, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4583902039140492557, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_Pivot.x
@@ -626,7 +626,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8568649690625731920, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_fontSize
-      value: 45.45
+      value: 53.45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -659,11 +659,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1584639901589793058, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_fontSize
-      value: 45.45
+      value: 50.55
       objectReference: {fileID: 0}
     - target: {fileID: 3611533440700460661, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4583902039140492557, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_Pivot.x
@@ -763,7 +763,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8568649690625731920, guid: 54b1be4304b935246ad1eb7577d465e9, type: 3}
       propertyPath: m_fontSize
-      value: 45.45
+      value: 53.45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

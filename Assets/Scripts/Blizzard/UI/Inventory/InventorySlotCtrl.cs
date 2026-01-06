@@ -6,16 +6,42 @@ using UnityEngine.UI;
 using UnityEngine.Assertions;
 using Zenject;
 using System.Collections;
+using System.Collections.Generic;
 using Blizzard.Input;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Blizzard.UI.Core;
 using Blizzard.Utilities.Logging;
+using Sirenix.Utilities;
 
 namespace Blizzard.UI.Inventory
 {
     public class InventorySlotCtrl : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
+        /// <summary>
+        /// Configuration for item transfer behavior
+        /// </summary>
+        [Serializable]
+        public struct TransferConfig
+        {
+            /// <summary>
+            /// Whether items can be moved into this slot
+            /// </summary>
+            public bool moveInEnabled;
+            /// <summary>
+            /// Whether items can be moved out of this slot
+            /// </summary>
+            public bool moveOutEnabled;
+            /// <summary>
+            /// If non-empty, only whitelisted items can be moved into this slot
+            /// </summary>
+            public List<ItemID> moveInWhitelist;
+            /// <summary>
+            /// If set to true, item transfer to this slot ignores item stack size
+            /// </summary>
+            public bool noStackLimit;
+        }
+        
         public Button slotButton;
 
         [Header("References")] 
@@ -26,6 +52,7 @@ namespace Blizzard.UI.Inventory
         [Header("Config")] 
         [SerializeField] private bool _showPreview = false;
         [SerializeField] private ItemData _previewItem;
+        [SerializeField] private TransferConfig _transferConfig;
         
         
         // Item Dragging
@@ -47,16 +74,6 @@ namespace Blizzard.UI.Inventory
 
         private static InventorySlotCtrl _mouseOverSlot = null; // Tracks which UI slot mouse is hovering over, if any
         private InventorySlot _linkedSlot;
-        /// <summary>
-        /// Whether items can be moved into this slot from other slots that have moving out enabled.
-        /// Only relevant if linked to an InventorySlot instance.
-        /// </summary>
-        private bool _moveInEnabled = false;
-        /// <summary>
-        /// Whether items can be moved out of this slot to other slots that have moving in enabled.
-        /// Only relevant if linked to an InventorySlot instance.
-        /// </summary>
-        private bool _moveOutEnabled = false;
 
         private struct DragState
         {
@@ -150,7 +167,7 @@ namespace Blizzard.UI.Inventory
         /// The inventory slot UI will automatically update when the linked slot is updated.
         /// Also allows the ability for moving items between slots through the UI.
         /// </summary>
-        public void LinkedSetup(InventorySlot slot, bool moveInEnabled = false, bool moveOutEnabled = false)
+        public void LinkedSetup(InventorySlot slot)
         {
             if (_linkedSlot != null)
             {
@@ -159,13 +176,26 @@ namespace Blizzard.UI.Inventory
             }
 
             Setup(slot.Item, slot.Amount);
-
-            _moveInEnabled = moveInEnabled;
-            _moveOutEnabled = moveOutEnabled;
-
+            
             _linkedSlot = slot;
             _linkedSlot.OnUpdate += OnLinkedSlotUpdated;
         }
+        public void LinkedSetup(InventorySlot slot, TransferConfig transferConfig)
+        {
+            LinkedSetup(slot);
+            _transferConfig = transferConfig;
+        }
+        public void LinkedSetup(InventorySlot slot, bool moveInEnabled, bool moveOutEnabled)
+        {
+            LinkedSetup(slot, new TransferConfig
+            {
+                moveInEnabled = moveInEnabled,
+                moveOutEnabled = moveOutEnabled,
+                moveInWhitelist = _transferConfig.moveInWhitelist
+            });
+        }
+
+        
 
         /// <summary>
         /// Unlinks this slot from its linked InventorySlot instance, if it has been linked.
@@ -183,9 +213,6 @@ namespace Blizzard.UI.Inventory
             _linkedSlot.OnUpdate -= OnLinkedSlotUpdated;
             _linkedSlot = null;
             if (setupEmpty) Setup(null, 0);
-
-            _moveInEnabled = false;
-            _moveOutEnabled = false;
         }
 
         /// <summary>
@@ -216,7 +243,6 @@ namespace Blizzard.UI.Inventory
         public void SetMoveInEnabled(bool moveInEnabled)
         {
             if (_linkedSlot == null) return;
-            _moveInEnabled = moveInEnabled;
         }
 
         /// <summary>
@@ -226,7 +252,6 @@ namespace Blizzard.UI.Inventory
         public void SetMoveOutEnabled(bool moveOutEnabled)
         {
             if (_linkedSlot == null) return;
-            _moveOutEnabled = moveOutEnabled;
         }
 
         /// <summary>
@@ -239,6 +264,19 @@ namespace Blizzard.UI.Inventory
             Setup(_linkedSlot.Item, _linkedSlot.Amount);
         }
 
+        private bool CanMoveItemsOut(InventorySlotCtrl destination, int amount)
+        {
+            bool bothLinked = _linkedSlot != null && destination._linkedSlot != null;
+            if (!bothLinked) return false;
+            
+            bool movingEnabled = _transferConfig.moveOutEnabled && destination._transferConfig.moveInEnabled;
+            bool itemExists = _linkedSlot.Item && _linkedSlot.Amount > 0 && amount > 0;
+            bool whitelisted = destination._transferConfig.moveInWhitelist.IsNullOrEmpty()
+                               || destination._transferConfig.moveInWhitelist.Contains((ItemID)_linkedSlot.Item.id);
+
+            return movingEnabled && itemExists && whitelisted;
+        }
+
         /// <summary>
         /// Attempts to move given amount of contained item out from this slot to another slot.
         /// Will move as many as possible, returns amount successfully moved.
@@ -249,15 +287,12 @@ namespace Blizzard.UI.Inventory
         public int TryMoveItemsOut(InventorySlotCtrl destination, int amount)
         {
             BLog.Log($"Attempting move out, amount: {amount}");
-            if (_linkedSlot == null || destination._linkedSlot == null) return 0; // Missing linked slot. Not allowed.
-            if (!_moveOutEnabled) return 0; // This slot does not have moving out enabled. Not allowed.
-            if (!destination._moveInEnabled) return 0; // Other slot does not have moving in enabled. Not allowed.
-            if (!_linkedSlot.Item || _linkedSlot.Amount == 0 || amount == 0) return 0; // Nothing to move out
+            if (!CanMoveItemsOut(destination, amount)) return 0;
 
             if (destination._linkedSlot.Item && destination._linkedSlot.Item != _linkedSlot.Item)
             {
                 // Different items, must swap.
-                if (!(_moveInEnabled && destination._moveOutEnabled))
+                if (!(_transferConfig.moveInEnabled && destination._transferConfig.moveOutEnabled))
                     return 0; // Both must have both directions enabled for swap.
                 if (amount != _linkedSlot.Amount) return 0; // Must move entire stack out to swap. Otherwise, no can do.
 
@@ -274,11 +309,10 @@ namespace Blizzard.UI.Inventory
 
             // Same items or other slot empty, move as much as possible
             int amountInDestination = !destination._linkedSlot.Item ? 0 : destination._linkedSlot.Amount;
-            int amountToMove =
+            int amountToMove = destination._transferConfig.noStackLimit ? amount :
                 Math.Min(_linkedSlot.Item.stackSize - amountInDestination,
                     amount); // Can move at most as much as there is space in other slot
             if (amountToMove < 0) return 0; // No space at all
-            BLog.Log($"Can move {amountToMove} to other slot. Other slot has {amountInDestination}, stack size is {_linkedSlot.Item.stackSize}");
             if (amountToMove > _linkedSlot.Amount)
             {
                 BLog.LogError("InventorySlotCtrl",
@@ -286,7 +320,7 @@ namespace Blizzard.UI.Inventory
                     $"amountToMove = {amountToMove}, _linkedSlot.Amount = {_linkedSlot.Amount}");
                 return 0;
             }
-
+            
             destination._linkedSlot.Amount += amountToMove;
             if (!destination._linkedSlot.Item)
                 destination._linkedSlot.Item = _linkedSlot.Item; // Added item to empty slot

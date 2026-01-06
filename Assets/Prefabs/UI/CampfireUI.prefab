@@ -56,6 +56,7 @@ MonoBehaviour:
   _teepeeFormButton: {fileID: 4650991751799993792}
   _cabinFormButton: {fileID: 686064046058401214}
   _formSelector: {fileID: 2875166062492642187}
+  _fuelRate: {fileID: 4151474087428172028}
 --- !u!1 &382295937369296472
 GameObject:
   m_ObjectHideFlags: 0
@@ -1854,7 +1855,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2094863131051455130, guid: f327b67311adcc34b8d97af5120f6647, type: 3}
       propertyPath: m_Name
-      value: Title (1)
+      value: FuelRate
       objectReference: {fileID: 0}
     - target: {fileID: 4907655304822063217, guid: f327b67311adcc34b8d97af5120f6647, type: 3}
       propertyPath: m_text
@@ -1993,3 +1994,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6828370511001574446, guid: f327b67311adcc34b8d97af5120f6647, type: 3}
   m_PrefabInstance: {fileID: 9045341109376395405}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4151474087428172028 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4907655304822063217, guid: f327b67311adcc34b8d97af5120f6647, type: 3}
+  m_PrefabInstance: {fileID: 9045341109376395405}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI

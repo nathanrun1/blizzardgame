@@ -810,6 +810,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BG_Selected
       objectReference: {fileID: 0}
+    - target: {fileID: 789099234569265887, guid: d976030a653af6e4dadce6180b8d9c3a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5531065320253511445, guid: d976030a653af6e4dadce6180b8d9c3a, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

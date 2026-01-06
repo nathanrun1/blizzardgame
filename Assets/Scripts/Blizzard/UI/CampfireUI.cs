@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Blizzard.Input;
+using Blizzard.Inventory;
 using Blizzard.Obstacles.Concrete;
 using Blizzard.UI.Core;
 using Blizzard.UI.Inventory;
 using Blizzard.Utilities.Logging;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -26,12 +29,13 @@ namespace Blizzard.UI
     
         [Header("References")]
         [SerializeField] private InventorySlotCtrl _fuelSlotUI;
-        [FormerlySerializedAs("_reformSlotUI")] [SerializeField] private InventorySlotCtrl _rebuildSlotUI;
+        [SerializeField] private InventorySlotCtrl _rebuildSlotUI;
         [SerializeField] private Button _rebuildButton;
         [SerializeField] private CampfireFormButton _starFormButton;
         [SerializeField] private CampfireFormButton _teepeeFormButton;
         [SerializeField] private CampfireFormButton _cabinFormButton;
         [SerializeField] private Transform _formSelector;
+        [SerializeField] private TextMeshProUGUI _fuelRate;
 
         private Campfire _campfire;
         private CampfireForm _selectedForm;
@@ -64,8 +68,19 @@ namespace Blizzard.UI
 
         private void SetupUI()
         {
-            _fuelSlotUI.LinkedSetup(_campfire.fuelSlot, true, true);
-            _rebuildSlotUI.LinkedSetup(_campfire.rebuildSlot, true, true);
+            _fuelSlotUI.LinkedSetup(_campfire.fuelSlot, new InventorySlotCtrl.TransferConfig
+            {
+                moveInEnabled = true,
+                moveOutEnabled = true,
+                moveInWhitelist = new List<ItemID>(){ ItemID.Wood },
+                noStackLimit = true
+            });
+            _rebuildSlotUI.LinkedSetup(_campfire.rebuildSlot, new InventorySlotCtrl.TransferConfig
+            {
+                moveInEnabled = true,
+                moveOutEnabled = true,
+                moveInWhitelist = new List<ItemID>(){ (ItemID)_campfire.rebuildCost.item.id }
+            });
             _formSelector.gameObject.SetActive(false);
             SetupButtons();
             RefreshActiveForm();
@@ -96,6 +111,7 @@ namespace Blizzard.UI
             _starFormButton.SetFormActive(_campfire.curForm == CampfireForm.Star);
             _teepeeFormButton.SetFormActive(_campfire.curForm == CampfireForm.Teepee);
             _cabinFormButton.SetFormActive(_campfire.curForm == CampfireForm.Cabin);
+            _fuelRate.text = $"{_campfire.GetCampfireFormInfo().fuelPerMinute} / min";
         }
 
         private void SelectForm(CampfireForm form)

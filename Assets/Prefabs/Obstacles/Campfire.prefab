@@ -141,18 +141,18 @@ MonoBehaviour:
   _light2D: {fileID: 1220903769132503672}
   _initialForm: 0
   _starFormInfo:
-    fuelPerMinute: 10
+    fuelPerMinute: 3
     heat: 10
   _teepeeFormInfo:
-    fuelPerMinute: 20
+    fuelPerMinute: 6
     heat: 20
   _cabinFormInfo:
-    fuelPerMinute: 25
+    fuelPerMinute: 10
     heat: 30
   _litIntensity: 2.5
   _lowFuelLightIntensity: 1
   _lowFuelHeatMultiplier: 0.5
-  _rebuildCost:
+  rebuildCost:
     item: {fileID: 11400000, guid: d70d9448dee8d3445a44cf1290095397, type: 2}
     amount: 5
   curForm: 0

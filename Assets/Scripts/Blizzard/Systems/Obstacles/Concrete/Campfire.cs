@@ -47,10 +47,6 @@ namespace Blizzard.Obstacles.Concrete
     {
         [Inject] private UIService _uiService;
         
-        // TODO:
-        //   Figure out form change
-        //      UI selection (slot selector thing) separate from showing active (green)
-        //   Have fun!
         private static readonly int FuelLevel = Animator.StringToHash("FuelLevel");
 
         [Header("References")] 
@@ -64,7 +60,7 @@ namespace Blizzard.Obstacles.Concrete
         [SerializeField] private float _litIntensity;
         [SerializeField] private float _lowFuelLightIntensity;
         [SerializeField] private float _lowFuelHeatMultiplier;
-        [SerializeField] private ItemAmountPair _rebuildCost;
+        public ItemAmountPair rebuildCost;
 
         private Dictionary<CampfireForm, CampfireFormInfo> _campfireFormInfo;
         private BurnMode _curBurnMode = BurnMode.Off;
@@ -116,14 +112,18 @@ namespace Blizzard.Obstacles.Concrete
         /// </summary>
         public bool TryRebuild(CampfireForm form)
         {
-            if (curForm == form || !rebuildSlot.Item || rebuildSlot.Item != _rebuildCost.item) return false;
+            if (curForm == form || !rebuildSlot.Item || rebuildSlot.Item != rebuildCost.item) return false;
             
-            int removed = rebuildSlot.Remove(_rebuildCost.amount, false);
-            BLog.Log($"Amount removed: {removed}");
-            if (removed < _rebuildCost.amount) return false;
+            int removed = rebuildSlot.Remove(rebuildCost.amount, false);
+            if (removed < rebuildCost.amount) return false;
             
             UpdateContext(_curBurnMode, form);
             return true;
+        }
+
+        public CampfireFormInfo GetCampfireFormInfo()
+        {
+            return _campfireFormInfo[curForm];
         }
         
         /// <summary>
