@@ -4,6 +4,18 @@ I regularly post gameplay updates [here](https://x.com/snowguydude)! You can als
 
 When this project is finished, it'll be uploaded to my [itch.io](https://nathanrun1.itch.io/) profile.
 
+## Media
+
+
+https://github.com/user-attachments/assets/8b167d1e-d108-4101-a2ee-5fa16aa32305
+
+https://github.com/user-attachments/assets/6b2b03a4-da2d-4133-9bf9-ca3f79f218d9
+
+https://github.com/user-attachments/assets/b4617a21-26b1-4b19-a18b-06ca27c2214a
+
+
+
+
 ## Design of the Temperature System
 The temperature system works by representing the temperature of each position in the world using a 2D grid. Each square in the grid represents a region (of customizable size) in the 2D scene that the player will build, fight and survive in. 
 Each square holds a "cell", which contains three values:
