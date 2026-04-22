@@ -6,6 +6,7 @@ using Zenject;
 using Sirenix.OdinInspector;
 using Blizzard.Temperature;
 using System.Linq;
+using System.Reflection;
 using Blizzard.Input;
 using Blizzard.Inventory;
 using Blizzard.NPCs;
@@ -32,6 +33,7 @@ namespace Blizzard.Utilities
         [Inject] private InventoryService _inventoryService;
         [Inject] private UIService _uiService;
         [Inject] private TemperatureService _temperatureService;
+        [Inject] private PlayerTemperatureService _playerTemperatureService;
         [Inject] private ObstacleGridService _obstacleGridService;
         [Inject] private InputService _inputService;
         [Inject] private NPCService _npcService;
@@ -164,6 +166,14 @@ namespace Blizzard.Utilities
 
         [FoldoutGroup("Temperature")] [SerializeField]
         private float _ambientTemperature;
+
+        [FoldoutGroup("Temperature")]
+        [Button]
+        private void SetBodyTemperature(float temperature)
+        {
+            PropertyInfo tempProp = typeof(PlayerTemperatureService).GetProperty("BodyTemperature");
+            tempProp!.SetValue(_playerTemperatureService, temperature);
+        }
 
         private Camera _camera;
 

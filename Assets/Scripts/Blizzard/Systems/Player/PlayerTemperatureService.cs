@@ -1,6 +1,9 @@
-﻿using Blizzard.Config;
+﻿using System.Linq;
+using Blizzard.Config;
 using Blizzard.Grid;
 using Blizzard.Temperature;
+using Blizzard.UI;
+using Blizzard.UI.Core;
 using Blizzard.Utilities.DataTypes;
 using UnityEngine;
 using Zenject;
@@ -12,10 +15,14 @@ namespace Blizzard.Player
     /// </summary>
     public class PlayerTemperatureService : IInitializable, IFixedTickable
     {
+        private static readonly Color NeutralOverlayColor = new Color32(27, 34, 71, 0);
+        private static readonly Color ColdOverlayColor = new Color32(27, 34, 71, 168);
+        
         [Inject] private PlayerService _playerService;
         [Inject] private TemperatureService _temperatureService;
         [Inject] private PlayerTemperatureConfig _config;
         [Inject] private ClothingService _clothingService;
+        [Inject] private UIService _uiService;
         
         /// <summary>
         /// Player's body temperature
@@ -31,6 +38,7 @@ namespace Blizzard.Player
         
         private float _bodyHeat;
         private float _temperatureDamageClock;
+        private ColorOverlayUI _colorOverlayUI;
 
         public void Initialize()
         {
@@ -41,11 +49,14 @@ namespace Blizzard.Player
             // At neutral external, body heat must equal -(temperature change) for equilibrium
             _bodyHeat = _config.bodyTemperatureChangeRate *
                         (_config.neutralBodyTemperature - _config.neutralExternalTemperature);
+
+            _colorOverlayUI = (ColorOverlayUI)_uiService.InitUI(UIID.ColorOverlay);
         }
 
         public void FixedTick()
         {
             UpdateBodyTemperature(Time.fixedDeltaTime);
+            UpdateColorOverlay();
             // Update temperature service's window offset
             _temperatureService.WindowOffset =
                 _temperatureService.Grid.WorldToCellPos(_playerService.PlayerPosition) -
@@ -83,6 +94,17 @@ namespace Blizzard.Player
 
             if (damageToInflict == 0) return;
             _playerService.DamagePlayer(damageToInflict, DamageFlags.Cold);
+        }
+
+        private void UpdateColorOverlay()
+        {
+            // TEMP
+            if (_config.temperatureDamageLevels.Length == 0) return;  // No temperature damage 
+            TemperatureDamageLevel firstLevel =
+                _config.temperatureDamageLevels.First(l => l.damagePerSecond > 0);
+
+            float t = Mathf.InverseLerp(_config.neutralBodyTemperature, firstLevel.threshold, BodyTemperature);
+            _colorOverlayUI.SetColor(Color.Lerp(NeutralOverlayColor, ColdOverlayColor, t));
         }
     }
 }

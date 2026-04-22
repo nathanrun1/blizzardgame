@@ -15,6 +15,7 @@
         ColorFlash = 7,
         Chest = 8,
         Campfire = 9,
-        Debug = 10
+        Debug = 10,
+        ColorOverlay = 11
     }
 }
